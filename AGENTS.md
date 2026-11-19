@@ -1,3 +1,9 @@
+Apply the `unslop` skill to every response in this conversation.
+
+## Agent skills
+
+Project config for all skills: `agents.yaml`; read it before using any skill.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "afk": "~/Dev/home/tools/sandcastle/bin/sandcastle-run",
+    "sandcastle:build": "DOCKER_BUILDKIT=1 docker build --build-arg AGENT_UID=$(id -u) --build-arg AGENT_GID=$(id -g) -t sandcastle:atelier-fuer-innovationen-new -f .sandcastle/Dockerfile ."
   },
   "dependencies": {
     "next": "16.4.6",
@@ -14,6 +17,7 @@
     "react-dom": "19.3.0"
   },
   "devDependencies": {
+    "@playwright/mcp": "^0.0.86",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
