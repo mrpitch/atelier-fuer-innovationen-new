@@ -1,0 +1,30 @@
+# Project config for all skills. Schema: `~/Dev/home/tools/agents-config/bin/agents-config schema`.
+# Validate: `~/Dev/home/tools/agents-config/bin/agents-config validate`.
+version: 1
+
+project:
+  name: atelier-fuer-innovationen-new
+  description: Next.js static site; rebuild of atelier-fuer-innovationen
+  locale: de
+  type: single-package
+
+paths:
+  sourceRoots: [src]
+
+commands:
+  lint: pnpm lint
+  typecheck: pnpm typecheck
+  build: pnpm build
+  check: pnpm typecheck && pnpm lint
+
+workflow:
+  autoMergeAfkSubissues: true
+
+release:
+  versionBumpCommand: "pnpm version {level} --no-git-tag-version"
+
+sandbox:
+  checkCommand: pnpm typecheck && pnpm lint
+
+docs:
+  layout: diataxis
