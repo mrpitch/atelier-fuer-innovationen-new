@@ -6,3 +6,4 @@ base-branch.txt
 claude.json
 repair-context.md
 preserved/
+!.env.example
