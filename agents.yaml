@@ -23,7 +23,7 @@ workflow:
     number: 11
 
 release:
-  versionBumpCommand: "pnpm version {level} --no-git-tag-version"
+  versionBumpCommand: 'pnpm version {level} --no-git-tag-version'
 
 sandbox:
   checkCommand: pnpm check
