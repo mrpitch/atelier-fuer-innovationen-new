@@ -1,0 +1,26 @@
+# Prettier also reads the root .gitignore. The entries below are either tracked
+# files or live under a nested .gitignore, which Prettier does not read.
+
+# Lockfiles, at any depth: the root one and the CDK subproject's (#4)
+pnpm-lock.yaml
+
+# Next.js build output and generated types
+.next
+out
+next-env.d.ts
+
+# Sandcastle run artefacts (listed in .sandcastle/.gitignore)
+.sandcastle/worktrees
+.sandcastle/logs
+.sandcastle/container-cache
+.sandcastle/claude.json
+.sandcastle/repair-context.md
+
+# implement-epic notes, kept on the host and never committed
+.epic-notes
+
+# Generated docs index
+docs/index.md
+
+# CDK subproject (#4) synthesis output
+cdk/cdk.out

@@ -15,7 +15,7 @@ commands:
   lint: pnpm lint
   typecheck: pnpm typecheck
   build: pnpm build
-  check: pnpm typecheck && pnpm lint
+  check: pnpm check
 
 workflow:
   autoMergeAfkSubissues: true
@@ -26,7 +26,7 @@ release:
   versionBumpCommand: "pnpm version {level} --no-git-tag-version"
 
 sandbox:
-  checkCommand: pnpm typecheck && pnpm lint
+  checkCommand: pnpm check
 
 docs:
   layout: diataxis
