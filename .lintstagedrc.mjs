@@ -1,12 +1,12 @@
-// The two globs never overlap, so no file is written by two tasks at once.
+// The TypeScript glob and its negation never overlap, so no two tasks write the same file at once.
 const config = {
-	// --no-warn-ignored keeps files under ESLint's ignores (the CDK subproject from #4) from
-	// failing the commit with an "ignored file" warning.
-	// The typecheck is a function so lint-staged passes it no file names: given files, tsc ignores
-	// tsconfig.json. It runs once per commit.
 	'*.{ts,tsx,mts,cts}': [
+		// --no-warn-ignored keeps files ESLint ignores, such as the CDK subproject from #4, from
+		// failing the commit with an "ignored file" warning.
 		'eslint --fix --max-warnings 0 --no-warn-ignored',
 		'prettier --write',
+		// A function, so lint-staged passes no file names. Given file names, tsc ignores
+		// tsconfig.json. The typecheck runs once per commit.
 		() => 'pnpm typecheck',
 	],
 	'!(*.ts|*.tsx|*.mts|*.cts)': 'prettier --write --ignore-unknown',

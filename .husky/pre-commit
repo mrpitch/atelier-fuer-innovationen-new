@@ -1,1 +1,10 @@
 pnpm exec lint-staged
+
+# lint-staged never passes deleted files to its tasks. A commit that deletes TypeScript files and
+# stages no other TypeScript file still gets its one typecheck, here.
+staged_ts() {
+	git diff --cached --name-only --diff-filter="$1" -- '*.ts' '*.tsx' '*.mts' '*.cts'
+}
+if [ -n "$(staged_ts D)" ] && [ -z "$(staged_ts ACMR)" ]; then
+	pnpm typecheck
+fi
