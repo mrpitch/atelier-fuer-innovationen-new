@@ -19,6 +19,8 @@ commands:
 
 workflow:
   autoMergeAfkSubissues: true
+  projectStatus:
+    number: 11
 
 release:
   versionBumpCommand: "pnpm version {level} --no-git-tag-version"
