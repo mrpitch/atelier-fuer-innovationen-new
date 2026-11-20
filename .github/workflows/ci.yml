@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 env:
-  # The runner never commits, so husky's prepare script has nothing to install.
+  # HUSKY=0 makes husky's prepare script skip the hook install. The runner never commits.
   HUSKY: '0'
 
 jobs:
