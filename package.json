@@ -1,31 +1,36 @@
 {
-  "name": "atelier-fuer-innovationen-new",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "typecheck": "next typegen && tsc --noEmit",
-    "afk": "~/Dev/home/tools/sandcastle/bin/sandcastle-run",
-    "sandcastle:build": "DOCKER_BUILDKIT=1 docker build --build-arg AGENT_UID=$(id -u) --build-arg AGENT_GID=$(id -g) -t sandcastle:atelier-fuer-innovationen-new -f .sandcastle/Dockerfile ."
-  },
-  "dependencies": {
-    "next": "16.4.6",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
-  },
-  "devDependencies": {
-    "@playwright/mcp": "^0.0.86",
-    "@tailwindcss/turbopack": "4.3.3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.4.6",
-    "tailwindcss": "4.3.3",
-    "typescript": "^5"
-  },
-  "packageManager": "pnpm@12.4.1"
+	"name": "atelier-fuer-innovationen-new",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "eslint --max-warnings 0",
+		"typecheck": "next typegen && tsc --noEmit",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"check": "pnpm format:check && pnpm lint && pnpm typecheck",
+		"afk": "~/Dev/home/tools/sandcastle/bin/sandcastle-run",
+		"sandcastle:build": "DOCKER_BUILDKIT=1 docker build --build-arg AGENT_UID=$(id -u) --build-arg AGENT_GID=$(id -g) -t sandcastle:atelier-fuer-innovationen-new -f .sandcastle/Dockerfile ."
+	},
+	"dependencies": {
+		"next": "16.4.6",
+		"react": "19.3.0",
+		"react-dom": "19.3.0"
+	},
+	"devDependencies": {
+		"@playwright/mcp": "^0.0.86",
+		"@tailwindcss/turbopack": "4.3.3",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"eslint": "^9",
+		"eslint-config-next": "16.4.6",
+		"prettier": "^3.10.1",
+		"prettier-plugin-tailwindcss": "^0.8.1",
+		"tailwindcss": "4.3.3",
+		"typescript": "^5"
+	},
+	"packageManager": "pnpm@12.4.1"
 }
