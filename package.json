@@ -11,6 +11,7 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"check": "pnpm format:check && pnpm lint && pnpm typecheck",
+		"prepare": "husky",
 		"afk": "~/Dev/home/tools/sandcastle/bin/sandcastle-run",
 		"sandcastle:build": "DOCKER_BUILDKIT=1 docker build --build-arg AGENT_UID=$(id -u) --build-arg AGENT_GID=$(id -g) -t sandcastle:atelier-fuer-innovationen-new -f .sandcastle/Dockerfile ."
 	},
@@ -27,6 +28,8 @@
 		"@types/react-dom": "^19",
 		"eslint": "^9",
 		"eslint-config-next": "16.4.6",
+		"husky": "^9.1.7",
+		"lint-staged": "^17.6.1",
 		"prettier": "^3.10.1",
 		"prettier-plugin-tailwindcss": "^0.8.1",
 		"tailwindcss": "4.3.3",
