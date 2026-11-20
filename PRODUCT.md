@@ -25,6 +25,8 @@ The content is laid out as a **Wissensstadt** the visitor walks through: one Zen
 
 - German only, for UI copy and content. Domain terms stay German and follow the project glossary (Zentrum, Stadtviertel, Gestaltungsschwerpunkt, Stadtrundgang, MOSAIK, Medienspiegel and so on).
 - The original Xenia texts are reproduced verbatim. Protected copy is never rewritten, summarised, split or merged.
+- UI labels spell the Stadtviertel "Potenziale". Original texts keep their own spelling.
+- A Kapitel has one canonical home, under its Thema: `/themen/<thema>/kapitel-<n>/<abschnitt>`. Viertel pages link to it; they don't host a second copy.
 - Static site (Next.js static export). No server features and no search backend.
 - Light and dark mode.
 
