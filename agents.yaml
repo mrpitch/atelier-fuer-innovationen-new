@@ -18,6 +18,23 @@ commands:
   build: pnpm build
   check: pnpm check
 
+git:
+  trunk: main
+  branchPrefix:
+    feature: feat/
+    epic: epic/
+    security: hotfix/security-update-
+tracker:
+  type: github
+  prsAreRequests: false
+labels:
+  epic: epic
+  readyForAgent: afk
+  readyForHuman: hitl
+  needsTriage: needs-triage
+  needsInfo: needs-info
+  wontfix: wontfix
+
 workflow:
   projectStatus:
     number: 11
