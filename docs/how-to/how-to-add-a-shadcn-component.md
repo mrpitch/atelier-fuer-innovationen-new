@@ -9,7 +9,7 @@ last_reviewed: 2026-11-21
 
 # How to add a shadcn component or Pro Block
 
-Prerequisite for Pro Blocks: `SHADCNDESIGN_LICENSE_KEY` in `.env.local` ([shadcn setup](../reference/components/shadcn-setup.md#license-key)).
+Prerequisite for Pro Blocks: `SHADCNDESIGN_LICENSE_KEY` in `.env` ([shadcn setup](../reference/components/shadcn-setup.md#license-key)).
 
 ## Steps
 
@@ -55,7 +55,7 @@ Both pass, and `git status` shows no stray changes in `globals.css`.
 
 | Symptom                                               | Fix                                                                                                                                                                                                                 |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `401` or `403` from `@shadcndesign`                   | The key is missing, empty or expired. Check `.env.local` in the directory you run the CLI in                                                                                                                        |
+| `401` or `403` from `@shadcndesign`                   | The key is missing, empty or expired. Check `.env` in the directory you run the CLI in                                                                                                                              |
 | `404` from `@shadcndesign`                            | The registry URL in `components.json` was changed; it must keep the literal `{style}/{name}`                                                                                                                        |
 | `'lucide-react' import is restricted` in `pnpm lint`  | Step 2 isn't done for that file                                                                                                                                                                                     |
 | `'radix-ui'` or `'@radix-ui/…'` import is restricted  | The code came from a Radix source. Install the item from the registry, which serves its `base-nova` variant, or port it to `@base-ui/react` ([Component blueprint](../reference/components/component-blueprint.md)) |
