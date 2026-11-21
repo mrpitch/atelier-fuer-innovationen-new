@@ -19,7 +19,6 @@ commands:
   check: pnpm check
 
 workflow:
-  autoMergeAfkSubissues: true
   projectStatus:
     number: 11
 
