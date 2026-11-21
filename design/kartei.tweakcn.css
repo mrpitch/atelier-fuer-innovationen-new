@@ -1,0 +1,129 @@
+/*
+ * Theme "Kartei" for shadcn/ui (tweakcn format).
+ * Paste into tweakcn.com/editor/theme via "Import" to edit it there.
+ *
+ * Idea: Xenia as a research archive of 1996, reopened today. Stone-grey archive
+ * paper, index cards with coloured tabs, graphite text, one ink colour taken
+ * from the Siemens research labs (petrol), and one coral signal for
+ * "Sie sind hier". Hairline rules, precise mono labels, big year numerals.
+ *
+ * Trends from Mobbin research (museum, archive, editorial and map sections):
+ * warm grey paper instead of white, a display serif with an italic phrase in
+ * colour, one high-chroma signal on neutrals, cartographic hairlines with mono
+ * labels, very large numerals for history.
+ *
+ * Light: Archivstein #f1eee8 · Karteikarte #fbfaf7 · Graphit #1f2421 ·
+ *        Petrol #00676b · Koralle #e5482b (marks only) · Haarlinie #d6d1c5
+ * Dark:  Lesesaal #121615 · Petrol hell #5cc8c2 · Koralle #ff8a6e
+ */
+
+:root {
+	--background: oklch(0.9498 0.0086 84.57);
+	--foreground: oklch(0.2541 0.0092 159.38);
+	--card: oklch(0.985 0.0041 91.45);
+	--card-foreground: oklch(0.2541 0.0092 159.38);
+	--popover: oklch(0.985 0.0041 91.45);
+	--popover-foreground: oklch(0.2541 0.0092 159.38);
+	--primary: oklch(0.4668 0.0794 199.47);
+	--primary-foreground: oklch(1 0 0);
+	--secondary: oklch(0.9283 0.0162 187.32);
+	--secondary-foreground: oklch(0.3616 0.0615 199.62);
+	--muted: oklch(0.9165 0.0128 86.83);
+	--muted-foreground: oklch(0.4806 0.0116 125.87);
+	--accent: oklch(0.9138 0.0462 39.79);
+	--accent-foreground: oklch(0.4306 0.1336 34.58);
+	--destructive: oklch(0.5466 0.1775 33.52);
+	--destructive-foreground: oklch(1 0 0);
+	--border: oklch(0.8613 0.0172 88.01);
+	--input: oklch(0.8182 0.0204 87.53);
+	--ring: oklch(0.4668 0.0794 199.47);
+	--chart-1: oklch(0.4668 0.0794 199.47);
+	--chart-2: oklch(0.6214 0.1984 32.66);
+	--chart-3: oklch(0.5825 0.0857 93.65);
+	--chart-4: oklch(0.462 0.0713 255.54);
+	--chart-5: oklch(0.4858 0.0718 338.57);
+	--sidebar: oklch(0.9289 0.0116 84.58);
+	--sidebar-foreground: oklch(0.2541 0.0092 159.38);
+	--sidebar-primary: oklch(0.4668 0.0794 199.47);
+	--sidebar-primary-foreground: oklch(1 0 0);
+	--sidebar-accent: oklch(0.9283 0.0162 187.32);
+	--sidebar-accent-foreground: oklch(0.3616 0.0615 199.62);
+	--sidebar-border: oklch(0.8613 0.0172 88.01);
+	--sidebar-ring: oklch(0.4668 0.0794 199.47);
+
+	--font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+	--font-serif: 'Literata', Georgia, serif;
+	--font-mono: 'DM Mono', ui-monospace, monospace;
+
+	--radius: 0.25rem;
+
+	--shadow-color: oklch(0.2541 0.0092 159.38);
+	--shadow-opacity: 0;
+	--shadow-blur: 0px;
+	--shadow-spread: 0px;
+	--shadow-offset-x: 0px;
+	--shadow-offset-y: 0px;
+	--letter-spacing: 0em;
+	--spacing: 0.25rem;
+
+	/* Project tokens beyond tweakcn */
+	--font-display: 'Instrument Serif', 'Literata', Georgia, serif;
+	--signal: oklch(0.6214 0.1984 32.66);
+
+	/* Viertel index-tab colours */
+	--viertel-annaeherung: oklch(0.9065 0.027 304.82);
+	--viertel-maerkte: oklch(0.9124 0.0219 256.73);
+	--viertel-kontexte: oklch(0.9172 0.0234 190.14);
+	--viertel-inszenierung: oklch(0.9097 0.0331 91.68);
+	--viertel-zukunft: oklch(0.924 0.0614 94.14);
+	--viertel-wertschoepfung: oklch(0.9039 0.0373 43.07);
+	--viertel-potenziale: oklch(0.8963 0.0339 359.25);
+	--viertel-fuehrung: oklch(0.9127 0.0284 126.83);
+}
+
+.dark {
+	--background: oklch(0.1955 0.0065 178.89);
+	--foreground: oklch(0.9389 0.0094 99.99);
+	--card: oklch(0.2367 0.0096 173.35);
+	--card-foreground: oklch(0.9389 0.0094 99.99);
+	--popover: oklch(0.2367 0.0096 173.35);
+	--popover-foreground: oklch(0.9389 0.0094 99.99);
+	--primary: oklch(0.7681 0.0997 190.37);
+	--primary-foreground: oklch(0.1819 0.0136 187.44);
+	--secondary: oklch(0.322 0.0412 192.84);
+	--secondary-foreground: oklch(0.9032 0.0438 189.29);
+	--muted: oklch(0.261 0.0107 176.32);
+	--muted-foreground: oklch(0.7316 0.0127 133.41);
+	--accent: oklch(0.3018 0.066 32.24);
+	--accent-foreground: oklch(0.8688 0.072 36.67);
+	--destructive: oklch(0.7561 0.1482 34.52);
+	--destructive-foreground: oklch(0.1955 0.0065 178.89);
+	--border: oklch(0.3164 0.0121 170.92);
+	--input: oklch(0.3736 0.0129 173.55);
+	--ring: oklch(0.7681 0.0997 190.37);
+	--chart-1: oklch(0.7681 0.0997 190.37);
+	--chart-2: oklch(0.7561 0.1482 34.52);
+	--chart-3: oklch(0.8148 0.0945 94.39);
+	--chart-4: oklch(0.7503 0.0786 257.68);
+	--chart-5: oklch(0.7547 0.0813 336.2);
+	--sidebar: oklch(0.2367 0.0096 173.35);
+	--sidebar-foreground: oklch(0.9389 0.0094 99.99);
+	--sidebar-primary: oklch(0.7681 0.0997 190.37);
+	--sidebar-primary-foreground: oklch(0.1819 0.0136 187.44);
+	--sidebar-accent: oklch(0.322 0.0412 192.84);
+	--sidebar-accent-foreground: oklch(0.9032 0.0438 189.29);
+	--sidebar-border: oklch(0.3164 0.0121 170.92);
+	--sidebar-ring: oklch(0.7681 0.0997 190.37);
+
+	--signal: oklch(0.7561 0.1482 34.52);
+
+	/* Viertel index-tab colours */
+	--viertel-annaeherung: oklch(0.2771 0.0298 298.77);
+	--viertel-maerkte: oklch(0.2748 0.0291 259.09);
+	--viertel-kontexte: oklch(0.2921 0.0322 192.31);
+	--viertel-inszenierung: oklch(0.2852 0.0231 93.01);
+	--viertel-zukunft: oklch(0.3083 0.0364 96.91);
+	--viertel-wertschoepfung: oklch(0.2913 0.0325 37.39);
+	--viertel-potenziale: oklch(0.2828 0.036 356.2);
+	--viertel-fuehrung: oklch(0.2836 0.0256 140.4);
+}
