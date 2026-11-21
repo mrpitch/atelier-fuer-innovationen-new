@@ -1,5 +1,9 @@
 Apply the `unslop` skill to every response in this conversation.
 
+## Standards
+
+Before writing or changing code, read the docs for its area in `docs/reference/`: `global/` for where files go, `css/` for styling, `components/` for UI components and icons, `react/` for components and the static export. `docs/index.md` lists every doc.
+
 ## Agent skills
 
 Project config for all skills: `agents.yaml`; read it before using any skill.
