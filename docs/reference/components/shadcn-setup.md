@@ -52,8 +52,8 @@ authoritative: true
 
 | Where                                   | Needed for                               | How it gets there                                                                    |
 | --------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
-| `.env.local` in the main checkout       | `shadcn add @shadcndesign/…` on the host | Added by hand: `SHADCNDESIGN_LICENSE_KEY=SD-…` from the shadcndesign Customer Portal |
-| `.env.local` in an Orca worktree        | the same, inside the worktree            | Orca copies it from the main checkout (`.worktreeinclude`)                           |
+| `.env` in the main checkout             | `shadcn add @shadcndesign/…` on the host | Added by hand: `SHADCNDESIGN_LICENSE_KEY=SD-…` from the shadcndesign Customer Portal |
+| `.env` in an Orca worktree              | the same, inside the worktree            | Orca copies it from the main checkout (`.worktreeinclude`)                           |
 | `.sandcastle/.env` in the main checkout | an afk run that installs a block         | Added by hand; `.sandcastle/.env.example` names the variable                         |
 | CI, `pnpm build`                        | nothing                                  | Blocks are copied into the repository at install time, so builds never fetch them    |
 
