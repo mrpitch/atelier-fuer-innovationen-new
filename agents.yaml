@@ -52,12 +52,16 @@ docs:
   adrDir: docs/adr
   conventions:
     - 'PRODUCT.md and DESIGN.md (from /impeccable) live at the repo root. DESIGN.md specifies the Kartei tokens; src/lib/styles/variables-kartei.css and fonts/kartei.ts implement them, so a token change updates both.'
-    - 'Figma app file: ms4MqN4CJhsLTMTKqTSC8p (Atelier für Innovationen). Project components are on its Components page. The numbered pages 1–6 hold the finished screens; leave them alone. The Redesign Spike page is the source for design analysis; design updates go on the Redesign Updates page.'
+    - 'Figma app file with all designs: https://www.figma.com/design/ms4MqN4CJhsLTMTKqTSC8p/Atelier-f%C3%BCr-Innovationen (`figma.app`). The numbered pages 1–6 (1 · Startseite to 6 · Impressum, Datenschutz, Sitemap) hold the finished screens; leave them alone. Project components are on the Components page (`figma.app.componentsPage`). The Redesign Spike page is the source for design analysis; design updates go on the Redesign Updates page (`figma.app.templatesPage`).'
 
 figma:
   kit:
     fileKey: 4EJ76bQptCoMzeCin5ZeOM
     libraryName: 'shadcn/ui kit for Figma (PRO) - October 2026'
+  app:
+    fileKey: ms4MqN4CJhsLTMTKqTSC8p
+    componentsPage: '36560:18329' # Components
+    templatesPage: '36665:1637' # Redesign Updates
   brandStyleMode: Kartei
 
 icons:
