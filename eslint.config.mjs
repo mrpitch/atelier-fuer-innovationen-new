@@ -1,8 +1,23 @@
 import { defineConfig, globalIgnores } from 'eslint/config'
+import { builtinRules } from 'eslint/use-at-your-own-risk'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
 import prettier from 'eslint-config-prettier/flat'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
+
+// Flat config doesn't merge two blocks that configure the same rule for one file: the later
+// block's options replace the earlier one's. A per-file override that disables one check's
+// restrictions would silently disable another check's restrictions on the same rule too. So
+// each restriction check gets the core `no-restricted-imports` or `no-restricted-syntax` rule
+// under its own name here, and configures only its own instance below. The next check that
+// needs to restrict imports or syntax adds its own instance rather than extending an existing
+// one.
+const restrictions = {
+	rules: {
+		'icon-registry-imports': builtinRules.get('no-restricted-imports'),
+		'base-ui-imports': builtinRules.get('no-restricted-imports'),
+	},
+}
 
 const eslintConfig = defineConfig([
 	...nextVitals,
@@ -19,7 +34,7 @@ const eslintConfig = defineConfig([
 	{
 		// The files eslint-config-next registers its plugins for.
 		files: ['**/*.{js,jsx,mjs,ts,tsx,mts,cts}'],
-		plugins: { 'simple-import-sort': simpleImportSort },
+		plugins: { 'simple-import-sort': simpleImportSort, restrictions },
 		rules: {
 			'@typescript-eslint/no-unused-vars': [
 				'warn',
@@ -35,10 +50,9 @@ const eslintConfig = defineConfig([
 			'simple-import-sort/imports': 'error',
 			'simple-import-sort/exports': 'error',
 
-			// shadcn and Pro Blocks installs import lucide-react directly; swap those imports
-			// for the registry as part of each install. Primitives come from Base UI (style
-			// base-nova), so Radix code copied from elsewhere fails here instead of mixing in.
-			'no-restricted-imports': [
+			// Icon registry (icon-registry.md): shadcn and Pro Blocks installs import
+			// lucide-react directly; swap those imports for the registry as part of each install.
+			'restrictions/icon-registry-imports': [
 				'error',
 				{
 					paths: [
@@ -48,6 +62,14 @@ const eslintConfig = defineConfig([
 								'Render icons with <Icon iconName="..." /> from @/components/ui/icons. See docs/reference/components/icon-registry.md.',
 						},
 					],
+				},
+			],
+
+			// Component blueprint (component-blueprint.md): primitives come from Base UI (style
+			// base-nova), so Radix code copied from elsewhere fails here instead of mixing in.
+			'restrictions/base-ui-imports': [
+				'error',
+				{
 					patterns: [
 						{
 							group: ['radix-ui', '@radix-ui/*'],
@@ -70,7 +92,7 @@ const eslintConfig = defineConfig([
 	},
 	{
 		files: ['src/components/ui/icons.tsx'],
-		rules: { 'no-restricted-imports': 'off' },
+		rules: { 'restrictions/icon-registry-imports': 'off' },
 	},
 ])
 

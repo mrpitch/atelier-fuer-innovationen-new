@@ -51,7 +51,7 @@ const icons = {
 
 ## Enforcement
 
-`no-restricted-imports` in `eslint.config.mjs` rejects `lucide-react` everywhere except `src/components/ui/icons.tsx`. `pnpm lint` and the pre-commit hook fail on a direct import.
+`restrictions/icon-registry-imports` in `eslint.config.mjs` rejects `lucide-react` everywhere except `src/components/ui/icons.tsx`. `pnpm lint` and the pre-commit hook fail on a direct import.
 
 The shadcn CLI and the Pro Blocks registry always write `import { XIcon } from 'lucide-react'` into the files they install; that is the CLI's template, not a setting. Swapping those imports for `<Icon>` is part of every install: [How to add a shadcn component or Pro Block](../../how-to/how-to-add-a-shadcn-component.md).
 
