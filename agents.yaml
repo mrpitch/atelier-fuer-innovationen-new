@@ -30,3 +30,12 @@ sandbox:
 
 docs:
   layout: diataxis
+  conventions:
+    - "PRODUCT.md (product truth, from /impeccable init) lives at the repo root; DESIGN.md, once written, goes next to it."
+    - "Figma app file: ms4MqN4CJhsLTMTKqTSC8p (Atelier für Innovationen). Project components are on its Components page. The numbered pages 1–6 hold the finished screens; leave them alone. The Redesign Spike page is the source for design analysis; design updates go on the Redesign Updates page."
+
+figma:
+  kit:
+    fileKey: 4EJ76bQptCoMzeCin5ZeOM
+    libraryName: "shadcn/ui kit for Figma (PRO) - October 2026"
+  brandStyleMode: Atelier

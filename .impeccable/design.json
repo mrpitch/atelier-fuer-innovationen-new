@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-20T00:00:00Z",
+  "title": "Design System: Xenia · Städte des Wissens",
+  "extensions": {
+    "colorMeta": {
+      "tinte-auf-leder": { "role": "primary", "displayName": "Tinte auf Leder", "canonical": "oklch(43.4% 0.039 42.0)", "tonalRamp": ["#110906", "#31231e", "#534038", "#795f56", "#9c8379", "#bea9a0", "#decdc6", "#f9ebe6"] },
+      "morgenlicht": { "role": "secondary", "displayName": "Morgenlicht", "canonical": "oklch(92.0% 0.065 74.4)", "tonalRamp": ["#120901", "#322410", "#554126", "#7b613d", "#9e8462", "#c0aa8e", "#dfceb8", "#faecdb"] },
+      "tiefes-leder": { "role": "secondary", "displayName": "Tiefes Leder", "canonical": "oklch(35.0% 0.069 40.8)", "tonalRamp": ["#150703", "#371f17", "#5d3b2f", "#865a49", "#aa7d6d", "#caa497", "#e8c9bf", "#ffe9e0"] },
+      "papier": { "role": "neutral", "displayName": "Papier", "canonical": "oklch(98.2% 0 0)", "tonalRamp": ["#0b0b0b", "#262626", "#454545", "#666666", "#898989", "#aeaeae", "#d1d1d1", "#eeeeee"] },
+      "blatt": { "role": "neutral", "displayName": "Blatt" },
+      "druckschwarz": { "role": "neutral", "displayName": "Druckschwarz", "canonical": "oklch(24.4% 0 0)" },
+      "bleistift": { "role": "neutral", "displayName": "Bleistift" },
+      "loeschpapier": { "role": "neutral", "displayName": "Löschpapier" },
+      "falzlinie": { "role": "neutral", "displayName": "Falzlinie" },
+      "tinte-auf-leder-dark": { "role": "primary", "displayName": "Tinte auf Leder (Dark)" },
+      "morgenlicht-dark": { "role": "secondary", "displayName": "Morgenlicht (Dark)" },
+      "papier-dark": { "role": "neutral", "displayName": "Papier (Dark)" },
+      "blatt-dark": { "role": "neutral", "displayName": "Blatt (Dark)" },
+      "druckschwarz-dark": { "role": "neutral", "displayName": "Druckschwarz (Dark)" },
+      "bleistift-dark": { "role": "neutral", "displayName": "Bleistift (Dark)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Startseite hero only; station and Abschnitt titles use it at 56–64px." },
+      "headline": { "displayName": "Headline", "purpose": "One statement heading per section." },
+      "title": { "displayName": "Title", "purpose": "Section names, Viertel names, Rundgang and Thema titles." },
+      "text": { "displayName": "Text", "purpose": "The original Xenia texts; 608px column." },
+      "body": { "displayName": "Body", "purpose": "Introductions and interface prose." },
+      "ui": { "displayName": "UI", "purpose": "Nav items, buttons, item titles." },
+      "label": { "displayName": "Label", "purpose": "Numbers and measurements only; 14px on mobile." }
+    },
+    "shadows": [
+      { "name": "tab-lift", "value": "0 1px 3px rgba(0,0,0,0.10), 0 1px 2px -1px rgba(0,0,0,0.10)", "purpose": "Active tab trigger only." },
+      { "name": "overlay", "value": "0 8px 24px rgba(32,32,32,0.12)", "purpose": "Provisional. Menus, sheets and drawers that float over the page." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "390px" },
+      { "name": "tablet", "value": "768px" },
+      { "name": "tablet-landscape", "value": "1024px" },
+      { "name": "desktop", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one next step per view.",
+      "html": "<button class=\"ds-btn-primary\">Rundgang starten <span aria-hidden=\"true\">→</span></button>",
+      "css": ".ds-btn-primary { background: #644a40; color: #ffffff; font: 500 14px/20px Inter, system-ui, sans-serif; height: 32px; padding: 0 10px; border: 1px solid #644a40; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; } .ds-btn-primary:hover { background: #534038; } .ds-btn-primary:focus-visible { outline: 2px solid #644a40; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A step that leads elsewhere in the city.",
+      "html": "<button class=\"ds-btn-secondary\">Kapitel 3 lesen <span aria-hidden=\"true\">→</span></button>",
+      "css": ".ds-btn-secondary { background: #ffdfb5; color: #582d1d; font: 500 14px/20px Inter, system-ui, sans-serif; height: 32px; padding: 0 10px; border: 1px solid #ffdfb5; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; } .ds-btn-secondary:hover { background: #dfceb8; } .ds-btn-secondary:focus-visible { outline: 2px solid #644a40; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Alternative actions and Kontakt in the header.",
+      "html": "<button class=\"ds-btn-outline\">Als Rundgang ansehen</button>",
+      "css": ".ds-btn-outline { background: #f9f9f9; color: #202020; font: 500 14px/20px Inter, system-ui, sans-serif; height: 32px; padding: 0 10px; border: 1px solid #d8d8d8; border-radius: 8px; cursor: pointer; } .ds-btn-outline:hover { background: #efefef; } .ds-btn-outline:focus-visible { outline: 2px solid #644a40; outline-offset: 2px; }"
+    },
+    {
+      "name": "Header Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Eight areas; the current one sits on Morgenlicht.",
+      "html": "<nav class=\"ds-nav\"><a>Idee</a><a>Stadtplan</a><a>Rundgänge</a><a aria-current=\"page\">Themen</a><a>Bibliothek</a><a>Chronik</a><a>Menschen</a><a class=\"ds-nav-kontakt\">Kontakt</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 4px; font: 500 14px/20px Inter, system-ui, sans-serif; color: #202020; } .ds-nav a { padding: 4px 10px; border-radius: 6px; cursor: pointer; } .ds-nav a:hover { background: #efefef; } .ds-nav a[aria-current=page] { background: #ffdfb5; color: #582d1d; } .ds-nav .ds-nav-kontakt { border: 1px solid #d8d8d8; margin-left: 8px; } .ds-nav a:focus-visible { outline: 2px solid #644a40; outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Text field; search itself is an open decision.",
+      "html": "<input class=\"ds-input\" placeholder=\"Suchen in Texten, Vierteln, Aufsätzen …\">",
+      "css": ".ds-input { background: transparent; color: #202020; font: 400 14px/20px Inter, system-ui, sans-serif; height: 32px; padding: 4px 10px; border: 1px solid #d8d8d8; border-radius: 8px; width: 320px; } .ds-input::placeholder { color: #646464; } .ds-input:focus-visible { outline: 2px solid #644a40; outline-offset: 1px; }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Text type in the Bibliothek list.",
+      "html": "<span class=\"ds-badge\">Aufsatz</span>",
+      "css": ".ds-badge { background: #ffdfb5; color: #582d1d; font: 500 12px/16px Inter, system-ui, sans-serif; height: 20px; padding: 2px 8px; border-radius: 9999px; display: inline-flex; align-items: center; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat Blatt surface with a hairline.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-title\">Medienspiegel</p><p class=\"ds-card-desc\">25 Artikel</p></div>",
+      "css": ".ds-card { background: #fcfcfc; color: #202020; border: 1px solid #d8d8d8; border-radius: 12px; padding: 16px; width: 260px; } .ds-card-title { font: 500 14px/20px Inter, system-ui, sans-serif; margin: 0; } .ds-card-desc { font: 400 14px/20px Inter, system-ui, sans-serif; color: #646464; margin: 4px 0 0; }"
+    },
+    {
+      "name": "Viertel-Kachel",
+      "kind": "custom",
+      "refersTo": "viertel-tile",
+      "description": "Square map tile of the Stadtplan.",
+      "html": "<a class=\"ds-tile\"><span class=\"ds-tile-num\">Viertel 03</span><svg class=\"ds-tile-art\" width=\"96\" height=\"96\" viewBox=\"0 0 96 96\" aria-hidden=\"true\"><circle cx=\"48\" cy=\"44\" r=\"36\" fill=\"#ffdfb5\"/><rect x=\"34\" y=\"24\" width=\"28\" height=\"44\" rx=\"4\" fill=\"#fcfcfc\" stroke=\"#202020\" stroke-width=\"2\"/><line x1=\"14\" y1=\"68\" x2=\"82\" y2=\"68\" stroke=\"#202020\" stroke-width=\"2\"/></svg><span class=\"ds-tile-name\">Kontexte</span><span class=\"ds-tile-sub\">„Eine Welt für morgen“</span></a>",
+      "css": ".ds-tile { display: flex; flex-direction: column; gap: 8px; width: 300px; height: 300px; padding: 28px; background: #f9f9f9; border: 1px solid #d8d8d8; color: #202020; box-sizing: border-box; cursor: pointer; } .ds-tile:hover { background: #fcfcfc; } .ds-tile:focus-visible { outline: 2px solid #644a40; outline-offset: -2px; } .ds-tile-num { font: 500 12px/16px 'Geist Mono', ui-monospace, monospace; color: #646464; } .ds-tile-art { margin: auto 0; } .ds-tile-name { font: 400 34px/1.05 Newsreader, Georgia, serif; letter-spacing: -0.01em; } .ds-tile-sub { font: 400 14px/20px Inter, system-ui, sans-serif; color: #646464; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Die Wissensstadt auf Papier",
+    "overview": "The site is an architectural city map you can walk on: drawn, numbered and spatial. The Stadtplan is a real grid of districts set around a dark centre. Every Viertel has a small line-drawn building on a disc of Morgenlicht. A Rundgang is a row of those buildings you step along. The paper is calm, warm and learned. Ink-brown lines and type sit on off-white paper. Peach light falls only where the visitor is meant to go next.\n\nThe map is the frame and the original Xenia text is the destination. Headings and the source texts are set in a quiet book serif. Interface words are set in a plain sans, and numbers and measurements in a monospace, like the scale bar on a map. Density is low: generous margins, one main thing per view, and navigation that points the way without competing with the text.",
+    "keyCharacteristics": [
+      "Off-white paper, ink-brown type and lines, Morgenlicht peach as the single warm accent.",
+      "Book serif for headings and original texts; Inter for interface; Geist Mono only for numbers and metadata.",
+      "Flat surfaces separated by hairlines and tints; the dark Zentrum tile is the one inverted surface.",
+      "Line-drawn buildings on Morgenlicht discs identify every Viertel, Thema and the Stadtplatz.",
+      "Small, gently rounded controls (28–32px tall, 8px corners)."
+    ],
+    "rules": [
+      { "name": "The One Light Rule", "body": "Morgenlicht marks where the visitor is or should go next: the current place, the next step, a chosen nav item. Never use it as a decorative background.", "section": "colors" },
+      { "name": "The Ink Rule", "body": "Text and line art are Druckschwarz or Tinte auf Leder. Grey text is Bleistift, never lighter. On Morgenlicht, text is Tiefes Leder.", "section": "colors" },
+      { "name": "The Source Text Rule", "body": "Original Xenia texts are always set in Newsreader at Text size or larger, and interface copy never is. A reader can tell at a glance what is source and what is site.", "section": "typography" },
+      { "name": "The No Kicker Rule", "body": "There are no labels above headings. A heading names itself. Metadata goes below the title as a meta line, and attributions go below the quote.", "section": "typography" },
+      { "name": "The Scale Bar Rule", "body": "Geist Mono is for numbers, counts, dates and durations. It never carries prose, button labels or section names. On mobile it's at least 14px.", "section": "typography" },
+      { "name": "The Text Leads Rule", "body": "On a reading page the text column is the widest thing on screen. When navigation competes with it, collapse the navigation.", "section": "layout" },
+      { "name": "The Paper Rule", "body": "Anything that's part of the page is flat. Only something that floats above the page (menu, sheet, drawer) may cast a shadow. A border and a shadow never appear on the same element.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do set every original Xenia text in Newsreader at 20px or larger, in a column no wider than 608px.",
+      "Do mark the current place and the next step with Morgenlicht, and nothing else.",
+      "Do give every Viertel, Thema and the Stadtplatz its line-drawn building on a Morgenlicht disc. Reuse the existing illustration components rather than drawing new ones.",
+      "Do bind every colour to the Mode variables, so Light and Dark both work.",
+      "Do name places by their glossary names (\"das Viertel der Kontexte\"), and use numbers only where the sequence matters."
+    ],
+    "donts": [
+      "Don't put a label or kicker above a heading.",
+      "Don't use Geist Mono for prose, buttons or section names, or below 14px on mobile.",
+      "Don't add shadows to cards, tiles or anything that sits on the page.",
+      "Don't use a one-sided bar or border to highlight a quote or note. Use italics, a tint or a full border.",
+      "Don't number things that aren't a sequence (nav items, Rundgang cards)."
+    ]
+  }
+}
