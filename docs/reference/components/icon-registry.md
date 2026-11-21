@@ -57,7 +57,7 @@ The shadcn CLI and the Pro Blocks registry always write `import { XIcon } from '
 
 ## Icons inside controls
 
-radix-nova buttons adjust their padding for an icon marked with `data-icon`:
+base-nova buttons adjust their padding for an icon marked with `data-icon`:
 
 ```tsx
 <Button variant="ghost">

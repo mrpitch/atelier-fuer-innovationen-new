@@ -64,7 +64,7 @@ The theme maps no shadow tokens, so `shadow-*` utilities carry Tailwind's defaul
 - Only layers that float above the page cast a shadow: menus, popovers, select lists, the active tab trigger.
 - A border and a shadow never sit on the same element.
 
-The radix-nova primitives already follow this: buttons, inputs and cards are flat, while popover, select and dropdown menu carry `shadow-md` and the active tab `shadow-sm`. The one exception is the sheet's `shadow-lg`; the Kartei kit gives sheets and drawers no shadow, so remove it when a sheet is built.
+The base-nova primitives already follow this: buttons, inputs and cards are flat, while popover, select and dropdown menu carry `shadow-md` and the active tab `shadow-sm`. The one exception is the sheet's `shadow-lg`; the Kartei kit gives sheets and drawers no shadow, so remove it when a sheet is built.
 
 ## Spacing
 

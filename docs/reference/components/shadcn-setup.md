@@ -1,8 +1,8 @@
 ---
 type: reference
 title: shadcn setup
-description: The components.json settings (radix-nova style, aliases, the @shadcndesign Pro Blocks registry), the packages behind them, and where the Pro Blocks license key lives.
-tags: [shadcn, components, pro-blocks, radix, configuration, license]
+description: The components.json settings (base-nova style on Base UI, aliases, the @shadcndesign Pro Blocks registry), the packages behind them, and where the Pro Blocks license key lives.
+tags: [shadcn, components, pro-blocks, base-ui, configuration, license]
 status: stable
 last_reviewed: 2026-11-21
 authoritative: true
@@ -14,7 +14,7 @@ authoritative: true
 
 | Key             | Value                        | Why                                                                                                      |
 | --------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `style`         | `radix-nova`                 | Radix primitives at the Kartei control sizes: 32px buttons and inputs, 24px `xs` buttons (DESIGN.md)     |
+| `style`         | `base-nova`                  | Base UI primitives at the Kartei control sizes: 32px buttons and inputs, 24px `xs` buttons (DESIGN.md)   |
 | `tailwind.css`  | `src/lib/styles/globals.css` | The CLI writes CSS here; move what it adds into the right file in `src/lib/styles/`                      |
 | `iconLibrary`   | `lucide`                     | Installed files import lucide; the imports get swapped for `<Icon>`: [Icon registry](./icon-registry.md) |
 | `rtl`           | `false`                      | German only                                                                                              |
@@ -27,15 +27,15 @@ authoritative: true
 
 ## Packages
 
-| Package                    | Role                                                                                              |
-| -------------------------- | ------------------------------------------------------------------------------------------------- |
-| `shadcn`                   | The CLI, and `shadcn/tailwind.css`: accordion keyframes and the `data-*` variants radix-nova uses |
-| `radix-ui`                 | All Radix primitives in one package (`import { Dialog as DialogPrimitive } from 'radix-ui'`)      |
-| `cn`                       | Class merging, the shadcn replacement for `clsx` plus `tailwind-merge`                            |
-| `class-variance-authority` | `cva()` variants                                                                                  |
-| `lucide-react`             | Icons, imported only by `src/components/ui/icons.tsx`                                             |
-| `tw-animate-css`           | Enter and exit animations                                                                         |
-| `next-themes`              | Dark mode through the `dark` class                                                                |
+| Package                    | Role                                                                                                                                      |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `shadcn`                   | The CLI, and `shadcn/tailwind.css`: accordion keyframes and the `data-*` variants base-nova uses                                          |
+| `@base-ui/react`           | The primitives, one subpath each (`import { Dialog as DialogPrimitive } from '@base-ui/react/dialog'`), plus `useRender` and `mergeProps` |
+| `cn`                       | Class merging, the shadcn replacement for `clsx` plus `tailwind-merge`                                                                    |
+| `class-variance-authority` | `cva()` variants                                                                                                                          |
+| `lucide-react`             | Icons, imported only by `src/components/ui/icons.tsx`                                                                                     |
+| `tw-animate-css`           | Enter and exit animations                                                                                                                 |
+| `next-themes`              | Dark mode through the `dark` class                                                                                                        |
 
 ## Pro Blocks registry
 
@@ -46,7 +46,7 @@ authoritative: true
 }
 ```
 
-`{style}` and `{name}` are filled in by the CLI. The registry serves each block in the `radix-nova` variant. Blocks land in `src/components/pro-blocks/<category>/` (`shadcn.proBlocksDir` in `agents.yaml`); their shared utilities are `src/lib/styles/pro-blocks.css`.
+`{style}` and `{name}` are filled in by the CLI. The registry serves each block in its `base-nova` variant. Blocks land in `src/components/pro-blocks/<category>/` (`shadcn.proBlocksDir` in `agents.yaml`); their shared utilities are `src/lib/styles/pro-blocks.css`.
 
 ## License key
 

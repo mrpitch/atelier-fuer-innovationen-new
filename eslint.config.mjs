@@ -36,7 +36,8 @@ const eslintConfig = defineConfig([
 			'simple-import-sort/exports': 'error',
 
 			// shadcn and Pro Blocks installs import lucide-react directly; swap those imports
-			// for the registry as part of each install.
+			// for the registry as part of each install. Primitives come from Base UI (style
+			// base-nova), so Radix code copied from elsewhere fails here instead of mixing in.
 			'no-restricted-imports': [
 				'error',
 				{
@@ -45,6 +46,13 @@ const eslintConfig = defineConfig([
 							name: 'lucide-react',
 							message:
 								'Render icons with <Icon iconName="..." /> from @/components/ui/icons. See docs/reference/components/icon-registry.md.',
+						},
+					],
+					patterns: [
+						{
+							group: ['radix-ui', '@radix-ui/*'],
+							message:
+								'shadcn here runs on Base UI: import primitives from @base-ui/react and use the render prop instead of asChild. See docs/reference/components/component-blueprint.md.',
 						},
 					],
 				},

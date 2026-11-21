@@ -1,5 +1,6 @@
+import { mergeProps } from '@base-ui/react/merge-props'
+import { useRender } from '@base-ui/react/use-render'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Slot } from 'radix-ui'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils/cn'
@@ -20,19 +21,20 @@ const taglineVariants = cva(
 	},
 )
 
-interface TaglineProps
-	extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof taglineVariants> {
-	asChild?: boolean
-}
+type TaglineProps = useRender.ComponentProps<'div'> & VariantProps<typeof taglineVariants>
 
-function Tagline({ className, variant, asChild = false, children, ...props }: TaglineProps) {
-	const Comp = asChild ? Slot.Root : 'div'
-
-	return (
-		<Comp className={cn(taglineVariants({ variant, className }))} {...props}>
-			{children}
-		</Comp>
-	)
+function Tagline({ className, variant, render, ...props }: TaglineProps) {
+	return useRender({
+		defaultTagName: 'div',
+		render,
+		props: mergeProps<'div'>(
+			{
+				'data-slot': 'tagline',
+				className: cn(taglineVariants({ variant, className })),
+			} as React.ComponentProps<'div'>,
+			props,
+		),
+	})
 }
 
 export { Tagline, taglineVariants }

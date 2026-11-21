@@ -33,7 +33,7 @@ const viertelTint = {
 ## Variants
 
 - `dark:` is class-based (`next-themes`), but tokens already switch with the theme. Reach for `dark:` only where a token can't express the difference.
-- State: prefer `aria-*` and `data-*` variants over JavaScript-toggled classes. `shadcn/tailwind.css` adds `data-open:`, `data-closed:`, `data-checked:`, `data-disabled:`, `data-active:` and more, which match both Radix's `data-state` and plain `data-open` attributes.
+- State: prefer `aria-*` and `data-*` variants over JavaScript-toggled classes. Base UI marks state with attributes, and `shadcn/tailwind.css` adds matching variants: `data-open:`, `data-closed:`, `data-checked:`, `data-disabled:`, `data-active:` and more. Enter and exit transitions use `data-starting-style:` and `data-ending-style:`.
 - Parent and sibling state: `group-*` and `peer-*`, named when nested (`group/button`).
 - Motion: `motion-safe:` for anything that animates.
 - Responsive: mobile first. Unprefixed classes are the mobile layout; `md:` and `lg:` add to it. Use container queries (`@container`, `@md:`) when a component's layout depends on its parent, not the viewport.
