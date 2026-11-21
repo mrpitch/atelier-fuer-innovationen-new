@@ -32,6 +32,7 @@ const restrictions = {
 		'unmeasured-memoization': builtinRules.get('no-restricted-syntax'),
 		'inline-jsx-handlers': builtinRules.get('no-restricted-syntax'),
 		'multiple-exports-per-file': builtinRules.get('no-restricted-syntax'),
+		'multiple-component-exports-per-file': builtinRules.get('no-restricted-syntax'),
 	},
 }
 
@@ -368,7 +369,7 @@ const eslintConfig = defineConfig([
 		files: ['src/components/**/*.{ts,tsx}'],
 		ignores: ['src/components/ui/**', 'src/components/pro-blocks/**'],
 		rules: {
-			'restrictions/multiple-exports-per-file': [
+			'restrictions/multiple-component-exports-per-file': [
 				'error',
 				{
 					selector:
