@@ -26,12 +26,15 @@ release:
   versionBumpCommand: 'pnpm version {level} --no-git-tag-version'
 
 sandbox:
-  checkCommand: pnpm check
+  # Static export: only `next build` catches server features (Server Actions, cookies,
+  # dynamic routes without generateStaticParams), so the sandbox builds too.
+  checkCommand: pnpm check && pnpm build
 
 docs:
   layout: diataxis
+  adrDir: docs/adr
   conventions:
-    - 'PRODUCT.md (product truth, from /impeccable init) lives at the repo root; DESIGN.md, once written, goes next to it.'
+    - 'PRODUCT.md and DESIGN.md (from /impeccable) live at the repo root. DESIGN.md specifies the Kartei tokens; src/lib/styles/variables-kartei.css and fonts/kartei.ts implement them, so a token change updates both.'
     - 'Figma app file: ms4MqN4CJhsLTMTKqTSC8p (Atelier für Innovationen). Project components are on its Components page. The numbered pages 1–6 hold the finished screens; leave them alone. The Redesign Spike page is the source for design analysis; design updates go on the Redesign Updates page.'
 
 figma:
@@ -39,3 +42,13 @@ figma:
     fileKey: 4EJ76bQptCoMzeCin5ZeOM
     libraryName: 'shadcn/ui kit for Figma (PRO) - October 2026'
   brandStyleMode: Kartei
+
+icons:
+  wrapper:
+    component: Icon
+    prop: iconName
+    file: src/components/ui/icons.tsx
+    doc: docs/reference/components/icon-registry.md
+
+shadcn:
+  proBlocksDir: src/components/pro-blocks

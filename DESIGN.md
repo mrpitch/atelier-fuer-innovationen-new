@@ -182,7 +182,7 @@ The site is the Xenia research archive of 1996, reopened today. It is stone-grey
 
 The map is the frame and the original Xenia text is the destination. Headings, large numerals and the source texts are set in book serifs. Interface words are set in a plain grotesque. Labels, counts and measurements are set in a monospace, like the stamps and shelf marks on archive cards. Density is low: generous margins, one main thing per view, and navigation that points the way without competing with the text.
 
-The system is the shadcn/ui kit in its "Kartei" style mode, with Light and Dark themes, extended with the Xenia components (Viertel-Kachel, Rundgang-Karte, Thema-Karte, Weg components and the illustration set). Kartei is the default style of the Figma file `ms4MqN4CJhsLTMTKqTSC8p`: every page carries the Kartei mode of the `Style` collection. "Atelier" and "Xeniapolis" remain as alternative modes. The code-side theme is `design/kartei.tweakcn.css`. The code has not implemented it yet.
+The system is the shadcn/ui kit in its "Kartei" style mode, with Light and Dark themes, extended with the Xenia components (Viertel-Kachel, Rundgang-Karte, Thema-Karte, Weg components and the illustration set). Kartei is the default style of the Figma file `ms4MqN4CJhsLTMTKqTSC8p`: every page carries the Kartei mode of the `Style` collection. "Atelier" and "Xeniapolis" remain as alternative modes. In code, `src/lib/styles/variables-kartei.css` holds the Kartei tokens and `src/lib/styles/fonts/kartei.ts` loads its fonts; the alternative modes stay as tweakcn files in `design/`.
 
 **Key Characteristics:**
 
@@ -391,7 +391,7 @@ Quiet signage: small, barely rounded, never louder than the heading they serve.
 
 Places where the screens break their own system. They're recorded here, not adopted as rules:
 
-- The published kit library (`4EJ76bQptCoMzeCin5ZeOM`) still has `font/family/serif` and `font/family/heading` set to Newsreader in the Kartei mode, so the Figma pages render headings and source text in Newsreader. The theme (`design/kartei.tweakcn.css`) and the local `Style` collection in the app file say Literata and Instrument Serif. Align the kit and republish, then re-check title sizes and line heights against Instrument Serif, which is narrower than Newsreader.
+- The published kit library (`4EJ76bQptCoMzeCin5ZeOM`) still has `font/family/serif` and `font/family/heading` set to Newsreader in the Kartei mode, so the Figma pages render headings and source text in Newsreader. The code (`src/lib/styles/fonts/kartei.ts`) and the local `Style` collection in the app file say Literata and Instrument Serif. Align the kit and republish, then re-check title sizes and line heights against Instrument Serif, which is narrower than Newsreader.
 - On mobile, the Station and Abschnitt titles are set in Schibsted Grotesk ExtraBold 36px instead of the display serif.
 - On mobile, the pull quotes on the Startseite and Thema-Seite are set in Schibsted Grotesk 500 18px, which breaks the Source Text Rule.
 - The Thema-Karte uses a raw 12px corner radius instead of the kit's 8px card radius.

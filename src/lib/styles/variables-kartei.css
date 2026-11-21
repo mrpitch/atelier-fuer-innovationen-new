@@ -1,6 +1,11 @@
 /*
- * Theme "Kartei" for shadcn/ui (tweakcn format).
- * Paste into tweakcn.com/editor/theme via "Import" to edit it there.
+ * Theme "Kartei" for shadcn/ui (tweakcn format): colours, radius and the
+ * project tokens for light and dark. theme.css maps them to Tailwind.
+ *
+ * Font families are not set here. next/font defines --font-sans, --font-serif,
+ * --font-heading and --font-mono in fonts/kartei.ts; a literal family in this
+ * file would override them. To edit the theme in tweakcn.com/editor/theme,
+ * import this file, then paste the result back without its font lines.
  *
  * Idea: Xenia as a research archive of 1996, reopened today. Stone-grey archive
  * paper, index cards with coloured tabs, graphite text, one ink colour taken
@@ -51,10 +56,6 @@
 	--sidebar-border: oklch(0.8613 0.0172 88.01);
 	--sidebar-ring: oklch(0.4668 0.0794 199.47);
 
-	--font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
-	--font-serif: 'Literata', Georgia, serif;
-	--font-mono: 'DM Mono', ui-monospace, monospace;
-
 	--radius: 0.25rem;
 
 	--shadow-color: oklch(0.2541 0.0092 159.38);
@@ -67,7 +68,6 @@
 	--spacing: 0.25rem;
 
 	/* Project tokens beyond tweakcn */
-	--font-display: 'Instrument Serif', 'Literata', Georgia, serif;
 	--signal: oklch(0.6214 0.1984 32.66);
 
 	/* Viertel index-tab colours */

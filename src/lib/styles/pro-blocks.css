@@ -1,0 +1,92 @@
+/* Pro Blocks utilities, from `shadcn add @shadcndesign/styles`. Changes from the vendor:
+ * - headings use --font-heading (Instrument Serif) instead of --font-sans
+ * - headings use weight 400, the only weight Instrument Serif has; 600 would be a faked bold
+ * - the mobile overrides sit inside @layer base, so utility classes still override them
+ * - the global `button { cursor: pointer }` is dropped */
+@layer base {
+	.heading-xl {
+		font-family: var(--font-heading);
+		font-size: 3.75rem;
+		line-height: 1;
+		font-weight: 400;
+		letter-spacing: -0.025em;
+		text-wrap: pretty;
+	}
+	.heading-lg {
+		font-family: var(--font-heading);
+		font-size: 3rem;
+		line-height: 1;
+		font-weight: 400;
+		letter-spacing: -0.025em;
+		text-wrap: pretty;
+	}
+	.heading-md {
+		font-family: var(--font-heading);
+		font-size: 2.25rem;
+		line-height: 2.5rem;
+		font-weight: 400;
+		letter-spacing: -0.025em;
+		text-wrap: pretty;
+	}
+	.heading-sm {
+		font-family: var(--font-heading);
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 400;
+		letter-spacing: -0.025em;
+		text-wrap: pretty;
+	}
+	.container-padding-x {
+		padding-inline: 1.5rem;
+	}
+	.section-padding-y {
+		padding-block: 6rem;
+	}
+	.section-title-gap-xl {
+		gap: 1.5rem;
+	}
+	.section-title-gap-lg {
+		gap: 1.25rem;
+	}
+	.section-title-gap-md {
+		gap: 1.25rem;
+	}
+	.section-title-gap-sm {
+		gap: 1rem;
+	}
+	@media (max-width: 40rem) {
+		.heading-xl {
+			font-size: 3rem;
+		}
+		.heading-lg {
+			font-size: 2.25rem;
+			line-height: 2.5rem;
+		}
+		.heading-md {
+			font-size: 1.875rem;
+			line-height: 2.25rem;
+		}
+		.heading-sm {
+			font-size: 1.25rem;
+			line-height: 1.75rem;
+		}
+		.container-padding-x {
+			padding-inline: 1rem;
+		}
+		.section-padding-y {
+			padding-block: 4rem;
+		}
+		.section-title-gap-xl {
+			gap: 1.25rem;
+		}
+		.section-title-gap-lg {
+			gap: 1rem;
+		}
+		.section-title-gap-md {
+			gap: 1rem;
+		}
+		.section-title-gap-sm {
+			gap: 1rem;
+		}
+	}
+}
