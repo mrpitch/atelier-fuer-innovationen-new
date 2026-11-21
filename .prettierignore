@@ -27,5 +27,8 @@ next-env.d.ts
 # Generated docs index
 docs/index.md
 
+# Metadata the impeccable skill generates next to DESIGN.md
+.impeccable/design.json
+
 # Synthesis output of the CDK subproject from #4
 cdk/cdk.out

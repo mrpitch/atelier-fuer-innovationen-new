@@ -17,17 +17,17 @@ The site's URL scheme follows the reader's walk through the Wissensstadt, not th
 
 Each content type has exactly one URL rule in the content graph, built from resolved relationships and derived numbers:
 
-| Type | URL |
-|---|---|
-| Viertel | `/stadt/{viertel}` |
-| Zentrum | `/stadt/zentrum` |
-| Kapitel | `/stadt/{viertel}/kapitel-{n}` |
-| Abschnitt | `/stadt/{viertel}/kapitel-{n}/{m}` |
-| Rundgang | `/rundgaenge/{rundgang}` |
-| Station | `/rundgaenge/{rundgang}/{n}` |
-| Thema, Themen-Ort | `/themen/{thema}` |
-| Aufsatz | `/bibliothek/aufsaetze/{slug}` |
-| Seite | its folder path |
+| Type              | URL                                |
+| ----------------- | ---------------------------------- |
+| Viertel           | `/stadt/{viertel}`                 |
+| Zentrum           | `/stadt/zentrum`                   |
+| Kapitel           | `/stadt/{viertel}/kapitel-{n}`     |
+| Abschnitt         | `/stadt/{viertel}/kapitel-{n}/{m}` |
+| Rundgang          | `/rundgaenge/{rundgang}`           |
+| Station           | `/rundgaenge/{rundgang}/{n}`       |
+| Thema, Themen-Ort | `/themen/{thema}`                  |
+| Aufsatz           | `/bibliothek/aufsaetze/{slug}`     |
+| Seite             | its folder path                    |
 
 Files sit where they belong in the domain: Kapitel under their Leitthema, Abschnitte in their Kapitel, Stationen in their Rundgang. Document IDs are paths under `src/content` and never appear in URLs.
 
