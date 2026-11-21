@@ -1,0 +1,118 @@
+/*
+ * Theme "Faltplan" for shadcn/ui (tweakcn format).
+ * Paste into tweakcn.com/editor/theme via "Import" to edit it there.
+ *
+ * Idea: Xenia as a printed, folded city map of a German city, about 1995.
+ * Cream map paper, black print, Verkehrsrot for routes and actions,
+ * Ortsschild-Gelb for "Sie sind hier", pastel legend fills per Viertel,
+ * DIN-style signage type, square corners, no shadows: it is paper.
+ *
+ * Light: Kartenpapier #f4efe1 · Druckschwarz #1a1a1a · Verkehrsrot #b8141f ·
+ *        Ortsschild-Gelb #f5b800 · Falz #cfc6ad
+ * Dark:  Nachtplan #15171a · Papierweiß #ece6d6 · Rücklicht #ff6b5e
+ */
+
+:root {
+	--background: oklch(0.9522 0.0193 90.54);
+	--foreground: oklch(0.2178 0 0);
+	--card: oklch(0.979 0.0123 91.52);
+	--card-foreground: oklch(0.2178 0 0);
+	--popover: oklch(0.979 0.0123 91.52);
+	--popover-foreground: oklch(0.2178 0 0);
+	--primary: oklch(0.4997 0.1933 25.8);
+	--primary-foreground: oklch(1 0 0);
+	--secondary: oklch(0.2178 0 0);
+	--secondary-foreground: oklch(0.9522 0.0193 90.54);
+	--muted: oklch(0.9132 0.0264 90.11);
+	--muted-foreground: oklch(0.4474 0.0234 87.57);
+	--accent: oklch(0.8164 0.1675 84.4);
+	--accent-foreground: oklch(0.2178 0 0);
+	--destructive: oklch(0.4997 0.1933 25.8);
+	--destructive-foreground: oklch(1 0 0);
+	--border: oklch(0.8272 0.0354 90.54);
+	--input: oklch(0.7742 0.0388 90.1);
+	--ring: oklch(0.4997 0.1933 25.8);
+	--chart-1: oklch(0.4997 0.1933 25.8);
+	--chart-2: oklch(0.5172 0.1185 147.62);
+	--chart-3: oklch(0.4754 0.1134 249.83);
+	--chart-4: oklch(0.6434 0.141 68.2);
+	--chart-5: oklch(0.4861 0.1238 300.19);
+	--sidebar: oklch(0.9341 0.0235 90.76);
+	--sidebar-foreground: oklch(0.2178 0 0);
+	--sidebar-primary: oklch(0.4997 0.1933 25.8);
+	--sidebar-primary-foreground: oklch(1 0 0);
+	--sidebar-accent: oklch(0.8164 0.1675 84.4);
+	--sidebar-accent-foreground: oklch(0.2178 0 0);
+	--sidebar-border: oklch(0.8272 0.0354 90.54);
+	--sidebar-ring: oklch(0.4997 0.1933 25.8);
+
+	--font-sans: 'Barlow', ui-sans-serif, system-ui, sans-serif;
+	--font-serif: 'Source Serif 4', Georgia, serif;
+	--font-mono: 'Overpass Mono', ui-monospace, monospace;
+
+	--radius: 0rem;
+
+	--shadow-color: oklch(0.2178 0 0);
+	--shadow-opacity: 0;
+	--shadow-blur: 0px;
+	--shadow-spread: 0px;
+	--shadow-offset-x: 0px;
+	--shadow-offset-y: 0px;
+	--letter-spacing: 0em;
+	--spacing: 0.25rem;
+
+	/* Viertel legend fills: project tokens beyond tweakcn (illustration discs, tile washes) */
+	--viertel-annaeherung: oklch(0.9057 0.0267 302.56);
+	--viertel-maerkte: oklch(0.8998 0.0439 54.86);
+	--viertel-kontexte: oklch(0.9043 0.0261 231.64);
+	--viertel-inszenierung: oklch(0.8944 0.036 11.42);
+	--viertel-zukunft: oklch(0.9261 0.0821 95.57);
+	--viertel-wertschoepfung: oklch(0.9023 0.0474 132.54);
+	--viertel-potenziale: oklch(0.8974 0.0318 84.59);
+	--viertel-fuehrung: oklch(0.8939 0.0112 243.67);
+}
+
+.dark {
+	--background: oklch(0.2038 0.0067 258.37);
+	--foreground: oklch(0.9253 0.0223 89.8);
+	--card: oklch(0.2421 0.0089 255.59);
+	--card-foreground: oklch(0.9253 0.0223 89.8);
+	--popover: oklch(0.2421 0.0089 255.59);
+	--popover-foreground: oklch(0.9253 0.0223 89.8);
+	--primary: oklch(0.7094 0.1831 27.67);
+	--primary-foreground: oklch(0.2038 0.0067 258.37);
+	--secondary: oklch(0.9253 0.0223 89.8);
+	--secondary-foreground: oklch(0.2038 0.0067 258.37);
+	--muted: oklch(0.2708 0.0109 254.02);
+	--muted-foreground: oklch(0.7134 0.0254 88.27);
+	--accent: oklch(0.8164 0.1675 84.4);
+	--accent-foreground: oklch(0.2038 0.0067 258.37);
+	--destructive: oklch(0.7094 0.1831 27.67);
+	--destructive-foreground: oklch(0.2038 0.0067 258.37);
+	--border: oklch(0.3503 0.014 256.77);
+	--input: oklch(0.4104 0.0155 255.6);
+	--ring: oklch(0.7094 0.1831 27.67);
+	--chart-1: oklch(0.7094 0.1831 27.67);
+	--chart-2: oklch(0.737 0.1278 148.69);
+	--chart-3: oklch(0.7121 0.1045 247.08);
+	--chart-4: oklch(0.8164 0.1675 84.4);
+	--chart-5: oklch(0.7419 0.1098 300.92);
+	--sidebar: oklch(0.2421 0.0089 255.59);
+	--sidebar-foreground: oklch(0.9253 0.0223 89.8);
+	--sidebar-primary: oklch(0.7094 0.1831 27.67);
+	--sidebar-primary-foreground: oklch(0.2038 0.0067 258.37);
+	--sidebar-accent: oklch(0.8164 0.1675 84.4);
+	--sidebar-accent-foreground: oklch(0.2038 0.0067 258.37);
+	--sidebar-border: oklch(0.3503 0.014 256.77);
+	--sidebar-ring: oklch(0.7094 0.1831 27.67);
+
+	/* Viertel legend fills: project tokens beyond tweakcn (illustration discs, tile washes) */
+	--viertel-annaeherung: oklch(0.2882 0.0293 295.98);
+	--viertel-maerkte: oklch(0.3007 0.0295 53.29);
+	--viertel-kontexte: oklch(0.2956 0.028 236.41);
+	--viertel-inszenierung: oklch(0.2871 0.036 5.38);
+	--viertel-zukunft: oklch(0.324 0.0444 97.52);
+	--viertel-wertschoepfung: oklch(0.3013 0.0402 138.06);
+	--viertel-potenziale: oklch(0.3001 0.0208 82.59);
+	--viertel-fuehrung: oklch(0.2902 0.0154 252.36);
+}
