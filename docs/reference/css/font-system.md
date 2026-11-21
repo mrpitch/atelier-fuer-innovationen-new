@@ -47,8 +47,6 @@ export { heading, mono, sans, serif } from './kartei'
 <body className={cn(sans.variable, serif.variable, heading.variable, mono.variable, 'flex min-h-full flex-col')}>
 ```
 
-They don't go on `<html>`. `theme.css` maps `--font-sans: var(--font-sans)` so that `font-sans` reads the `next/font` value, and Tailwind also writes that self-reference to `:root`. On `<html>` it would compete with the `next/font` class at equal specificity, and only the order of the CSS chunks would decide which wins. On `<body>` the class always wins.
-
 ## Rules
 
 - Load fonts with `next/font` only. `variables-*.css` holds no `font-family` literal, and no stylesheet links Google Fonts.

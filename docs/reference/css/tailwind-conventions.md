@@ -19,16 +19,6 @@ Tailwind CSS v4. The theme is configured in CSS (`src/lib/styles/theme.css`); th
 | Tokens, not raw values | Colours, radii and fonts come from the theme: `bg-card`, `text-muted-foreground`, `rounded-lg`, `font-heading`. No palette colours (`text-zinc-600`) or arbitrary colours (`bg-[#00676b]`): [Design tokens](./design-tokens.md) |
 | Spacing scale          | Use the 4px scale (`gap-6`, `px-2.5`). Arbitrary values (`p-[13px]`) only for a measured one-off, such as the 416 × 340px Stadtplan tile                                                                                        |
 | Order                  | `prettier-plugin-tailwindcss` sorts classes in `className`, `cn()` and `cva()` on `pnpm format` and in the pre-commit hook. Don't order them by hand                                                                            |
-| Static class names     | Write complete class names. Tailwind finds classes by scanning source text, so `bg-viertel-${slug}` never reaches the CSS. Map values to full names instead                                                                     |
-| Merging                | Combine conditional or overridable classes with `cn()` from `'cn'`, which resolves conflicts (`cn('px-2', className)`)                                                                                                          |
-
-```tsx
-// A lookup with complete class names, not a template string.
-const viertelTint = {
-	kontexte: 'bg-viertel-kontexte',
-	maerkte: 'bg-viertel-maerkte',
-} as const
-```
 
 ## Variants
 

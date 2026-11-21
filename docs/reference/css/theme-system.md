@@ -40,7 +40,6 @@ One theme is active per build. Kartei is the active theme; its source is DESIGN.
 ```
 
 - Tailwind v4 compiles through `@tailwindcss/turbopack`, set as the `*.css` loader in `next.config.ts`. There is no PostCSS config and no `tailwind.config` file.
-- `src/app/layout.tsx` imports `@/lib/styles/globals.css` once. No other file imports global CSS.
 - The base layer sets `bg-background text-foreground font-sans` on `<body>` and `border-border outline-ring/50` on every element.
 
 ## Dark mode
