@@ -56,7 +56,8 @@ export interface ContentGraph {
 	getBody(id: string): ReturnType<typeof importBody>
 	readonly navigation: NavigationNode
 	// The Sitemap page and sitemap.xml both read this instead of re-deriving
-	// it: the whole Navigation tree, flattened and published-only (issue #34).
+	// it: every content type's published documents, flattened into one list
+	// (issue #34, extended to every type in issue #60).
 	readonly sitemap: readonly NavigationLink[]
 	getBreadcrumbs(id: string): readonly NavigationLink[]
 	getPrevious(id: string): NavigationLink | undefined

@@ -37,7 +37,9 @@ export interface Navigation {
 // Every content type's resolved shape carries an id, a url and a (Short)
 // title — Seite included — so one function builds a NavigationLink for any
 // of them.
-function toLink(document: { readonly id: string; readonly url: string } & ShortTitled): NavigationLink {
+function toLink(
+	document: { readonly id: string; readonly url: string } & ShortTitled,
+): NavigationLink {
 	return { id: document.id, url: document.url, title: shortTitleOrTitle(document) }
 }
 
