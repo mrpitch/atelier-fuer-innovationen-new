@@ -627,4 +627,97 @@ describe('buildContentGraph', () => {
 			}
 		})
 	})
+
+	describe('Translations (issue #36)', () => {
+		it("inherits a Viertel's number and ID from the German document, taking Leitsatz and Steckbrief from the translation when present", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+
+			const german = graph.getViertel('stadt/erste-viertel')
+			const translated = graph.getViertel('stadt/erste-viertel', 'xx')
+
+			expect(german?.number).toBe(1)
+			expect(translated?.id).toBe(german?.id)
+			expect(translated?.number).toBe(german?.number)
+			// title isn't set by the translation, so it falls back to German.
+			expect(translated?.title).toBe(german?.title)
+			expect(translated?.leitsatz).toBe('Translated leitsatz.')
+			expect(translated?.steckbrief.prozessansatz).toBe('Translated prozessansatz.')
+			expect(translated?.steckbrief.bauform).toBe('Translated bauform.')
+			expect(translated?.body).toContain('Translated Testinhalt.')
+			expect(translated?.url).toBe('/xx/stadt/translated-viertel')
+		})
+
+		it('resolves a translated Viertel slug to its prefixed localized URL, and lists it among the localized Viertel', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+
+			expect(graph.getLocalizedViertel('xx').map((viertel) => viertel.id)).toEqual([
+				'stadt/erste-viertel',
+			])
+
+			const resolved = graph.resolveUrl('/xx/stadt/translated-viertel')
+			expect(resolved?.kind).toBe('viertel')
+			expect(resolved?.kind === 'viertel' && resolved.viertel.id).toBe('stadt/erste-viertel')
+			expect(resolved?.locale).toBe('xx')
+
+			// The German Viertel's own URL is unaffected by the translation.
+			const german = graph.resolveUrl('/stadt/erste-viertel')
+			expect(german?.kind).toBe('viertel')
+			expect(german?.locale).toBeUndefined()
+		})
+
+		it('falls back to the German document when a locale has no translation', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+
+			const fallback = graph.getSeite('ohne-uebersetzung', 'xx')
+			expect(fallback?.title).toBe('Ohne Übersetzung')
+			expect(fallback?.description).toBe('Platzhalter für Tests.')
+			expect(fallback?.body).toContain('Deutscher Testinhalt.')
+			expect(fallback?.url).toBe('/xx/ohne-uebersetzung')
+		})
+
+		it('uses a translated slug for a prefixed localized URL, and the translated body', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+
+			const translated = graph.getSeite('mit-uebersetzung', 'xx')
+			expect(translated?.title).toBe('With translation')
+			expect(translated?.description).toBe('Placeholder for tests.')
+			expect(translated?.body).toContain('Translated body.')
+			expect(translated?.url).toBe('/xx/with-translation')
+
+			// The German document and its URL are unaffected by the translation.
+			const german = graph.getSeite('mit-uebersetzung')
+			expect(german?.title).toBe('Mit Übersetzung')
+			expect(german?.body).toContain('Deutscher Testinhalt.')
+			expect(german?.url).toBe('/mit-uebersetzung')
+		})
+
+		it("uses a translated slug for the root Seite's own prefixed URL, instead of dropping it", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+
+			const translated = graph.getSeite('', 'xx')
+			expect(translated?.url).toBe('/xx/start')
+		})
+
+		it('has no configured locales, and no prefixed Seiten, by default', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
+
+			expect(graph.locales).toEqual([])
+			expect(graph.getLocalizedSeiten('xx')).toEqual([])
+			expect(graph.getSeite('kontakt', 'xx')).toBeUndefined()
+		})
+
+		it('fails when a translation sets a non-translatable field, naming the file and the field', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'translation-invalid-field'), ['xx'])
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe('index.xx.mdx')
+				expect(validationError.field).toBe('draft')
+				expect(validationError.reason).toMatch(/translatable/i)
+			}
+		})
+	})
 })

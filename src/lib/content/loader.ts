@@ -15,7 +15,7 @@ import {
 	ZENTRUM_FIELD,
 } from './errors'
 import { splitDocument } from './frontmatter'
-import type { MenuEntry, Site, ViertelSteckbrief } from './schemas'
+import type { MenuEntry, Site, TranslationFrontmatter, ViertelSteckbrief } from './schemas'
 import {
 	abschnittFrontmatterSchema,
 	aufsatzFrontmatterSchema,
@@ -27,6 +27,7 @@ import {
 	siteSchema,
 	stationFrontmatterSchema,
 	themaFrontmatterSchema,
+	translationFrontmatterSchema,
 	viertelFrontmatterSchema,
 	viertelOrderSchema,
 	zentrumFrontmatterSchema,
@@ -34,10 +35,17 @@ import {
 
 export type { Site, ViertelSteckbrief } from './schemas'
 
-// Only German exists today (ADR-0001), but a document's ID drops any locale
-// suffix so a later locale file doesn't get its own ID.
-const LOCALES = ['de']
-const LOCALE_SUFFIX_PATTERN = new RegExp(`\\.(${LOCALES.join('|')})$`)
+// German, the default locale, has no file suffix of its own (ADR-0001); a
+// document's ID drops a trailing one, so a later translation shares its
+// non-localised ID. "de" sits here only so the ID of a stray file literally
+// named *.de.mdx (there shouldn't be one) still collapses correctly — it is
+// NOT the configured-locales list (buildContentGraph's own `locales`
+// parameter, issue #36), which is empty by default and non-empty only in
+// tests exercising a translation; the two lists happen to share vocabulary
+// but answer different questions, so this one is named for its own purpose
+// rather than reusing "locales".
+const ID_SUFFIX_LOCALES = ['de']
+const LOCALE_SUFFIX_PATTERN = new RegExp(`\\.(${ID_SUFFIX_LOCALES.join('|')})$`)
 
 export interface Seite {
 	readonly id: string
@@ -172,11 +180,26 @@ function validateFrontmatter<T>(schema: z.ZodType<T>, file: string, data: unknow
 	return result.data
 }
 
+// A document's own translation file (issue #36), e.g. idee/index.mdx's
+// sibling idee/index.xx.mdx for locale "xx" — excluded here, by shape, so
+// it's never mistaken for a separate standalone document by whatever type's
+// location rule scans this folder, configured locale or not (a stray
+// translation file for an unconfigured locale should still never become a
+// bogus document). loadTranslation (below) is the one place that reads a
+// translation file, by its own document's ID, rather than by appearing in
+// this listing.
+const TRANSLATION_FILE_PATTERN = /\.[a-z]{2,3}\.mdx$/
+
+function isTranslationPath(relativePath: string): boolean {
+	return TRANSLATION_FILE_PATTERN.test(relativePath)
+}
+
 function listMdxFiles(contentDir: string): string[] {
 	const entries = fs.readdirSync(contentDir, { recursive: true, withFileTypes: true })
 	return entries
 		.filter((entry) => entry.isFile() && entry.name.endsWith('.mdx'))
 		.map((entry) => path.relative(contentDir, path.join(entry.parentPath, entry.name)))
+		.filter((relativePath) => !isTranslationPath(relativePath))
 		.sort()
 }
 
@@ -737,4 +760,69 @@ export function loadMenus(contentDir: string): ReadonlyMap<string, RawMenu> {
 	}
 
 	return result
+}
+
+// Translatable fields (issue #36): every content type's translation file may
+// set title, Short title, description and slug; a Viertel's may also set its
+// own Leitsatz and Steckbrief (content-layer.md). Every other field — a
+// Seite's Draft state, a Viertel's number, any reference — is always the
+// German document's; a translation file setting one of those is a
+// validation error, not silently ignored, below.
+const SEITE_TRANSLATABLE_KEYS = ['title', 'shortTitle', 'description', 'slug']
+const VIERTEL_TRANSLATABLE_KEYS = [...SEITE_TRANSLATABLE_KEYS, 'leitsatz', 'steckbrief']
+
+export interface Translation {
+	// The translation file's path relative to the content directory, for
+	// error messages.
+	readonly file: string
+	readonly frontmatter: TranslationFrontmatter
+	readonly body: string
+}
+
+// A document's sibling translation file for one locale (issue #36, ADR-0001),
+// e.g. idee/index.mdx's translation for locale "xx" is idee/index.xx.mdx; the
+// root Seite's (id '') is index.xx.mdx. Undefined when the locale has no
+// translation for this document — the fallback to the German document is
+// translation.ts's job, not this function's. A frontmatter key outside
+// `translatableKeys` throws naming the file and that key directly, the same
+// shape every other ContentValidationError in this module uses.
+function loadTranslation(
+	contentDir: string,
+	id: string,
+	locale: string,
+	translatableKeys: readonly string[],
+): Translation | undefined {
+	const base = id === '' ? 'index' : path.join(id, 'index')
+	const file = `${base}.${locale}.mdx`
+	const absolutePath = path.join(contentDir, file)
+	if (!fs.existsSync(absolutePath)) return undefined
+
+	const raw = fs.readFileSync(absolutePath, 'utf8')
+	const { frontmatter, body } = splitDocument(file, raw)
+
+	const rawFrontmatter = (frontmatter ?? {}) as Record<string, unknown>
+	for (const key of Object.keys(rawFrontmatter)) {
+		if (!translatableKeys.includes(key)) {
+			throw new ContentValidationError(file, key, 'is not a translatable field')
+		}
+	}
+
+	const data = validateFrontmatter(translationFrontmatterSchema, file, frontmatter)
+	return { file, frontmatter: data, body }
+}
+
+export function loadSeiteTranslation(
+	contentDir: string,
+	id: string,
+	locale: string,
+): Translation | undefined {
+	return loadTranslation(contentDir, id, locale, SEITE_TRANSLATABLE_KEYS)
+}
+
+export function loadViertelTranslation(
+	contentDir: string,
+	id: string,
+	locale: string,
+): Translation | undefined {
+	return loadTranslation(contentDir, id, locale, VIERTEL_TRANSLATABLE_KEYS)
 }
