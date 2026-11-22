@@ -47,6 +47,7 @@ export default async function KapitelPage({ params }: PageProps<'/stadt/[viertel
 	const Body = await graph.getBody(kapitel.id)
 	const abschnitte = graph.getAbschnitteByKapitel(kapitel.id)
 	const abschnitteCount = t('kapitel.abschnitteCount', { n: abschnitte.length })
+	const themenOrte = graph.getThemenByKapitel(kapitel.id)
 
 	return (
 		<main>
@@ -65,6 +66,18 @@ export default async function KapitelPage({ params }: PageProps<'/stadt/[viertel
 					))}
 				</ol>
 			</nav>
+			{themenOrte.length > 0 && (
+				<nav aria-label={t('kapitel.themenOrtHeading')}>
+					<h2>{t('kapitel.themenOrtHeading')}</h2>
+					<ul>
+						{themenOrte.map((thema) => (
+							<li key={thema.id}>
+								<Link href={thema.url}>{shortTitleOrTitle(thema)}</Link>
+							</li>
+						))}
+					</ul>
+				</nav>
+			)}
 		</main>
 	)
 }

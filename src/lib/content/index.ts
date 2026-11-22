@@ -15,6 +15,7 @@ export type {
 	Kapitel,
 	Seite,
 	Site,
+	Thema,
 	Viertel,
 	ViertelSteckbrief,
 	Zentrum,

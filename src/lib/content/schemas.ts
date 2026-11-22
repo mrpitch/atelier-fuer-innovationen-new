@@ -106,6 +106,19 @@ export const kapitelFrontmatterSchema = z.object({
 
 export type KapitelFrontmatter = z.infer<typeof kapitelFrontmatterSchema>
 
+// A Thema (glossary) is the Leitthema or a Themen-Ort (issue #31). The
+// Leitthema has no Kapitel reference; a Themen-Ort's `kapitelId` names the
+// one Kapitel it branches off from, checked against the actual Kapitel by
+// `references.ts`, not here — the same split Aufsatz's `viertelId` makes.
+export const themaFrontmatterSchema = z.object({
+	title: z.string().min(1),
+	description: z.string().min(1),
+	shortTitle: z.string().min(1).optional(),
+	kapitelId: z.string().min(1).optional(),
+})
+
+export type ThemaFrontmatter = z.infer<typeof themaFrontmatterSchema>
+
 // An Abschnitt (glossary) belongs to one Kapitel by its folder location, not
 // by reference. Its position, number and URL come from the Kapitel's own
 // meta.json order (abschnitt.ts), never from frontmatter.

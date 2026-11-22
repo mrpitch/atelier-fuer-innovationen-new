@@ -19,7 +19,10 @@ export const de = {
 	'aufsatz.readingTime': 'ca. {n} Min.',
 	'kapitel.number': 'Kapitel {n}',
 	'kapitel.abschnitteCount': '{n} Abschnitte',
+	'kapitel.themenOrtHeading': 'Themen-Ort',
 	'abschnitt.readingTime': 'ca. {n} Min.',
+	'themen.navigation': 'Die drei Themen',
+	'thema.kapitelHeading': 'Kapitel',
 } as const
 
 export type DictionaryKey = keyof typeof de
