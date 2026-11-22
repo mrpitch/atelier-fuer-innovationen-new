@@ -169,4 +169,77 @@ describe('buildContentGraph', () => {
 			}
 		})
 	})
+
+	describe('Viertel and Zentrum', () => {
+		it('numbers the Viertel by their position in the Viertel order file, ignoring any frontmatter number', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			expect(graph.viertel.map((viertel) => viertel.id)).toEqual([
+				'stadt/erste-viertel',
+				'stadt/zweite-viertel',
+			])
+			expect(graph.viertel.map((viertel) => viertel.number)).toEqual([1, 2])
+			// erste-viertel's frontmatter sets `number: 99`; its real number still
+			// comes from its position (1), proving frontmatter can't set it.
+			expect(graph.getViertel('stadt/erste-viertel')?.number).toBe(1)
+		})
+
+		it('reads the Leitsatz and Steckbrief from structured frontmatter fields', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			const viertel = graph.getViertel('stadt/erste-viertel')
+			expect(viertel?.leitsatz).toBe('Platzhalter-Leitsatz.')
+			expect(viertel?.steckbrief).toEqual({
+				prozessansatz: 'Platzhalter-Prozessansatz.',
+				bauform: 'Platzhalter-Bauform.',
+				prozessdokument: 'Platzhalter-Prozessdokument.',
+				imStadtzentrum: 'Platzhalter.',
+			})
+		})
+
+		it('loads the Zentrum as its own type, not a Viertel and with no number', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			expect(graph.zentrum.id).toBe('stadt/zentrum')
+			expect(graph.zentrum.url).toBe('/stadt/zentrum')
+			expect(graph.zentrum.title).toBe('Zentrum')
+			expect(graph.zentrum).not.toHaveProperty('number')
+		})
+
+		it('still loads the Stadt landing Seite itself as a plain Seite', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			const stadt = graph.getSeite('stadt')
+			expect(stadt?.url).toBe('/stadt')
+			expect(stadt?.shortTitle).toBe('Stadtplan')
+		})
+
+		it('fails when the Viertel order file lists an unknown ID, naming the file and the ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'stadt-order-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('stadt', 'viertel-order.json'))
+				expect(validationError.field).toBe('stadt/nichtvorhanden')
+				expect(validationError.reason).toMatch(/no matching/i)
+			}
+		})
+
+		it('fails when the Viertel order file omits an actual Viertel, naming the file and the ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'stadt-order-missing-child'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('stadt', 'viertel-order.json'))
+				expect(validationError.field).toBe('stadt/erste-viertel')
+				expect(validationError.reason).toMatch(/missing/i)
+			}
+		})
+	})
 })

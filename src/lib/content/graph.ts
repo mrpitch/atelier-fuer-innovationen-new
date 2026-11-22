@@ -1,9 +1,18 @@
-import type { Seite, Site } from './loader'
-import { loadMenus, loadMeta, loadSeiten, loadSite } from './loader'
+import type { Seite, Site, Viertel, Zentrum } from './loader'
+import {
+	loadMenus,
+	loadMeta,
+	loadSeiten,
+	loadSite,
+	loadViertelDocuments,
+	loadViertelOrder,
+	loadZentrum,
+} from './loader'
 import type { MenuLink } from './menu'
 import { resolveMenus } from './menu'
 import type { NavigationLink, NavigationNode } from './navigation'
 import { buildNavigation } from './navigation'
+import { orderViertel } from './viertel'
 
 export interface ContentGraph {
 	readonly seiten: readonly Seite[]
@@ -16,6 +25,13 @@ export interface ContentGraph {
 	// name is the Menu file's basename (header, footer, …). Unknown to an
 	// unlisted Menu returns an empty list rather than throwing.
 	getMenu(name: string): readonly MenuLink[]
+	// The 8 Viertel (glossary), ordered and numbered by the Viertel order
+	// file (loader.ts, viertel.ts).
+	readonly viertel: readonly Viertel[]
+	getViertel(id: string): Viertel | undefined
+	// The Zentrum (glossary): its own type, not a Viertel, exactly one per
+	// site.
+	readonly zentrum: Zentrum
 }
 
 // The one public interface for content (ADR-0002): built from loader output,
@@ -25,6 +41,8 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 	const navigation = buildNavigation(seiten, loadMeta(contentDir))
 	const site = loadSite(contentDir)
 	const menus = resolveMenus(seiten, loadMenus(contentDir))
+	const viertel = orderViertel(loadViertelOrder(contentDir), loadViertelDocuments(contentDir))
+	const zentrum = loadZentrum(contentDir)
 
 	return {
 		seiten,
@@ -39,5 +57,10 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		getMenu(name) {
 			return menus.get(name) ?? []
 		},
+		viertel,
+		getViertel(id) {
+			return viertel.find((item) => item.id === id)
+		},
+		zentrum,
 	}
 }

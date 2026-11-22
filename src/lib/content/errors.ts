@@ -15,6 +15,17 @@ export const SITE_FIELD = '(site)'
 // has no matching Seite instead names that ID directly (issue #27).
 export const MENU_FIELD = '(menu)'
 
+// The field name when the Zentrum document's problem isn't tied to one
+// frontmatter key: the file is missing, or a schema issue with no path of its
+// own (issue #28).
+export const ZENTRUM_FIELD = '(zentrum)'
+
+// The field name when the Viertel order file's problem isn't tied to one
+// listed ID: invalid JSON, or a schema issue with no path of its own. A
+// listed ID with no matching Viertel, or a Viertel missing from the list,
+// instead names that ID directly, the same way meta.json does (issue #28).
+export const VIERTEL_ORDER_FIELD = '(viertel-order)'
+
 export class ContentValidationError extends Error {
 	readonly file: string
 	readonly field: string

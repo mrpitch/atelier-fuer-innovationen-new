@@ -6,6 +6,13 @@ export const de = {
 	'navigation.next': 'Nächste Seite',
 	'layout.headerMenu': 'Hauptnavigation',
 	'layout.footerMenu': 'Fußzeilen-Navigation',
+	'stadt.navigation': 'Viertel und Zentrum der Wissensstadt',
+	'stadt.zentrumHeading': 'Zentrum',
+	'stadt.viertelHeading': 'Die acht Viertel',
+	'viertel.steckbrief.prozessansatz': 'Prozessansatz',
+	'viertel.steckbrief.bauform': 'Bauform',
+	'viertel.steckbrief.prozessdokument': 'Prozessdokument',
+	'viertel.steckbrief.imStadtzentrum': 'Im Stadtzentrum',
 } as const
 
 export type DictionaryKey = keyof typeof de
