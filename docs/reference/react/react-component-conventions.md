@@ -4,7 +4,7 @@ title: React component conventions
 description: How components are written here - structure, state, effects, event handlers, props and the Server/Client split in a static export.
 tags: [react, components, typescript, state, hooks, server-components]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
@@ -25,10 +25,11 @@ React 19 with Next.js App Router. UI components additionally follow the [Compone
 
 ## Event handlers
 
-Keep handlers short; move logic into a helper in `src/lib/utils/` when it grows.
+Keep handlers short; move logic into a helper in `src/lib/utils/` when it grows. Lint wants a handler named `handle…`, so rename a prop you forward when you destructure it (`{ onSelect: handleSelect }`), or pass it as `props.onSelect`.
 
 ## Props and composition
 
+- Derive props from the element or primitive instead of restating them: `React.ComponentProps<'a'>`, the part's own type around a Base UI part (`AccordionPrimitive.Item.Props`), `useRender.ComponentProps<'a'>` for a component that can render as another element.
 - Composition over configuration: `children` and slots before a growing list of boolean props.
 - Semantic, predictable prop names.
 

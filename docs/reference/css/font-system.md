@@ -4,7 +4,7 @@ title: Font system
 description: The four font variables (sans, serif, heading, mono), the Kartei families behind them, where next/font loads them.
 tags: [css, fonts, next-font, typography, theming]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 

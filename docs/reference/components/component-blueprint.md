@@ -4,7 +4,7 @@ title: Component blueprint
 description: The structure every UI component follows, matching the base-nova shadcn source - function components on Base UI primitives, data-slot, CVA variants, cn() and the render prop for composition.
 tags: [components, react, shadcn, base-ui, cva]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
@@ -15,7 +15,7 @@ Components follow the source the shadcn CLI installs for the `base-nova` style: 
 - `data-slot`: the root element carries `data-slot="<kebab-name>"` (`data-slot="viertel-tile"`). Parents style parts with `has-data-[slot=…]:` or `*:data-[slot=…]:` instead of an extra prop.
 - Variants: `cva()` from `class-variance-authority`; the component exports its `…Variants` function.
 - Classes: `className` always goes through `cn()` from `'cn'`, last, so callers can override.
-- Icons: `<Icon iconName="…" />`, never a lucide import: [Icon registry](./icon-registry.md). Inside a button, mark it `data-icon="inline-start"` or `"inline-end"` so the padding adjusts.
+- Icons: `<Icon iconName="…" />` ([Icon registry](./icon-registry.md)). Inside a button, mark it `data-icon="inline-start"` or `"inline-end"` so the padding adjusts.
 
 ## Around a Base UI primitive, with variants
 
@@ -52,7 +52,7 @@ export { Button, buttonVariants }
 
 ## Rendering as another element
 
-`useRender` swaps the element for whatever `render` passes and merges the props. Its `state` becomes data attributes: `{ slot: 'badge', variant }` renders `data-slot="badge" data-variant="default"`.
+A project component that needs `render` builds on `useRender`, which swaps the element for whatever `render` passes and merges the props. Its `state` becomes data attributes: `{ slot: 'badge', variant }` renders `data-slot="badge" data-variant="default"`.
 
 ```tsx
 import { mergeProps } from '@base-ui/react/merge-props'

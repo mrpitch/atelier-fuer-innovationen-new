@@ -4,7 +4,7 @@ title: Folder structure
 description: Where code lives under src/ (app, components, lib, content), how files are named, and when a concern in src/lib gets its own domain folder.
 tags: [architecture, folder-structure, conventions, components, lib]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
