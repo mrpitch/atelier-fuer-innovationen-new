@@ -3,6 +3,7 @@ import { builtinRules } from 'eslint/use-at-your-own-risk'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
 import prettier from 'eslint-config-prettier/flat'
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 
 // Flat config doesn't merge two blocks that configure the same rule for one file: the later
@@ -11,7 +12,9 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort'
 // each restriction check gets the core `no-restricted-imports` or `no-restricted-syntax` rule
 // under its own name here, and configures only its own instance below. The next check that
 // needs to restrict imports or syntax adds its own instance rather than extending an existing
-// one.
+// one. The `*-classes` instances are better-tailwindcss's `no-restricted-classes` under the same
+// rule: each one checks the classes in `className`, `cn()` and `cva()` for one Kartei token rule.
+const noRestrictedClasses = betterTailwindcss.rules['no-restricted-classes']
 const restrictions = {
 	rules: {
 		'icon-registry-imports': builtinRules.get('no-restricted-imports'),
@@ -39,8 +42,25 @@ const restrictions = {
 		'dynamic-params-syntax': builtinRules.get('no-restricted-syntax'),
 		'use-client-route-syntax': builtinRules.get('no-restricted-syntax'),
 		'static-export-config-syntax': builtinRules.get('no-restricted-syntax'),
+		'palette-color-classes': noRestrictedClasses,
+		'arbitrary-value-classes': noRestrictedClasses,
+		'arbitrary-size-classes': noRestrictedClasses,
+		'signal-text-classes': noRestrictedClasses,
+		'desktop-first-classes': noRestrictedClasses,
+		'dark-variant-classes': noRestrictedClasses,
+		'unnamed-group-classes': noRestrictedClasses,
 	},
 }
+
+// Class patterns are regular expressions matched against each whole class, variants included
+// (`md:hover:text-white`). `(?:^|:)` anchors on the start of the class or a variant boundary, so
+// `max-w-sm` and `data-[size=sm]:h-8` stay out of reach.
+const colorUtility =
+	'(?:text|bg|border(?:-[xytrblse])?|ring|ring-offset|outline|divide|accent|caret|fill|stroke|shadow|inset-shadow|inset-ring|drop-shadow|from|via|to|decoration)'
+const paletteColor =
+	'(?:black|white|(?:slate|gray|zinc|neutral|stone|mauve|olive|mist|taupe|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\\d{2,3})'
+const sizeUtility =
+	'(?:p[xytrbles]?|m[xytrbles]?|gap(?:-[xy])?|space-[xy]|size|w|h|min-[wh]|max-[wh]|inset(?:-[xy])?|top|right|bottom|left|start|end|basis)'
 
 const noTemplateLiteralClassNamesMessage =
 	'Tailwind finds classes by scanning source text, so a template literal never reaches the CSS. Map values to complete class names instead. See docs/reference/css/tailwind-conventions.md.'
@@ -101,6 +121,83 @@ const eslintConfig = defineConfig([
 							group: ['radix-ui', '@radix-ui/*'],
 							message:
 								'shadcn here runs on Base UI: import primitives from @base-ui/react and use the render prop instead of asChild. See docs/reference/components/component-blueprint.md.',
+						},
+					],
+				},
+			],
+
+			// Kartei tokens (design-tokens.md, tailwind-conventions.md), everywhere in src/:
+			// installed shadcn primitives and Pro Blocks are owned by the repo and follow them.
+			'restrictions/palette-color-classes': [
+				'error',
+				{
+					restrict: [
+						{
+							pattern: `(?:^|:)!?${colorUtility}-${paletteColor}(?:/[^:]*)?!?$`,
+							message:
+								'Palette colours bypass the theme and break dark mode. Use a token utility such as bg-card, text-foreground or text-muted-foreground. See docs/reference/css/design-tokens.md.',
+						},
+					],
+				},
+			],
+
+			'restrictions/arbitrary-value-classes': [
+				'error',
+				{
+					restrict: [
+						{
+							pattern: `(?:^|:)!?${colorUtility}-\\[(?:#|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\\(|color:)`,
+							message:
+								'Arbitrary colours bypass the theme and break dark mode. Use a token utility such as bg-primary or text-muted-foreground. See docs/reference/css/design-tokens.md.',
+						},
+						{
+							pattern: '(?:^|:)!?rounded(?:-(?:s|e|t|r|b|l|ss|se|ee|es|tl|tr|br|bl))?-\\[',
+							message:
+								'Arbitrary radii bypass the theme. Use the radius scale: rounded-sm, rounded-lg (4px), rounded-xl (8px) or rounded-none. See docs/reference/css/design-tokens.md.',
+						},
+						{
+							pattern: '(?:^|:)!?font-\\[(?!\\d|number:)',
+							message:
+								'Arbitrary font families bypass the theme. Use font-sans, font-serif, font-mono or font-heading. See docs/reference/css/font-system.md.',
+						},
+					],
+				},
+			],
+
+			'restrictions/arbitrary-size-classes': [
+				'error',
+				{
+					restrict: [
+						{
+							pattern: `(?:^|:)!?-?(?:${sizeUtility}-\\[|text-\\[(?:[\\d.]|length:))`,
+							message:
+								'Use the 4px spacing scale (p-3 is 12px, w-24 is 96px) or a text-* size. A measured one-off, such as the 416 × 340px Stadtplan tile, gets an eslint-disable comment that states the measurement. See docs/reference/css/design-tokens.md.',
+						},
+					],
+				},
+			],
+
+			'restrictions/signal-text-classes': [
+				'error',
+				{
+					restrict: [
+						{
+							pattern: '(?:^|:)!?text-signal(?:/[^:]*)?!?$',
+							message:
+								'Koralle has 3.4:1 contrast on Archivstein, so signal never colours text. Use text-foreground, text-muted-foreground or text-accent-foreground, and keep bg-signal for the "Sie sind hier" marker. See docs/reference/css/design-tokens.md.',
+						},
+					],
+				},
+			],
+
+			'restrictions/desktop-first-classes': [
+				'error',
+				{
+					restrict: [
+						{
+							pattern: '(?:^|:)@?max-(?:[a-z0-9]+|\\[[^\\]]*\\])(?:/[a-z0-9-]+)?:',
+							message:
+								'Write the mobile layout as unprefixed classes and add to it with sm:, md: or lg:. There are no max-* variants. See docs/reference/css/tailwind-conventions.md.',
 						},
 					],
 				},
@@ -414,6 +511,37 @@ const eslintConfig = defineConfig([
 
 			'react/jsx-handler-names': ['error', { checkLocalVariables: true }],
 			'react/no-array-index-key': 'error',
+
+			'restrictions/dark-variant-classes': [
+				'error',
+				{
+					restrict: [
+						{
+							pattern: '(?:^|:)dark:',
+							message:
+								'Tokens switch with the theme, so dark: is unused. Use a token utility, or disable this rule for the line with a comment saying why no token covers the difference. See docs/reference/css/theme-system.md.',
+						},
+					],
+				},
+			],
+
+			'restrictions/unnamed-group-classes': [
+				'error',
+				{
+					restrict: [
+						{
+							pattern: '^(?:group|peer)$',
+							message:
+								'Name the group or peer, e.g. group/button, so nested groups stay apart. See docs/reference/css/tailwind-conventions.md.',
+						},
+						{
+							pattern: '(?:^|:)(?:group|peer)-(?:[^:/\\[]|\\[[^\\]]*\\])+:',
+							message:
+								'Name the group or peer in its variants too, e.g. group-hover/button:, and on the element, e.g. group/button. See docs/reference/css/tailwind-conventions.md.',
+						},
+					],
+				},
+			],
 		},
 	},
 	{
