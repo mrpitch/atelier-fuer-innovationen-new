@@ -6,7 +6,7 @@ import type { Seite, Translation, Viertel } from './loader'
 // final path segment — an ancestor segment is never translated by this
 // mechanism, since no sub-issue needs a nested translated tree yet.
 function localizedUrl(id: string, locale: string, slug: string | undefined): string {
-	if (id === '') return `/${locale}`
+	if (id === '') return slug === undefined ? `/${locale}` : `/${locale}/${slug}`
 	const segments = id.split('/')
 	if (slug !== undefined) segments[segments.length - 1] = slug
 	return `/${locale}/${segments.join('/')}`

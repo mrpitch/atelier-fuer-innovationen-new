@@ -7,6 +7,7 @@ import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
 import { RundgaengeListe } from '@/components/rundgang/rundgaenge-liste'
 import { ThemenListe } from '@/components/thema/themen-liste'
+import { ViertelDetail } from '@/components/viertel/viertel-detail'
 import { ViertelListe } from '@/components/viertel/viertel-liste'
 import { buildContentGraph } from '@/lib/content'
 
@@ -41,27 +42,33 @@ function slugFromUrl(url: string): string[] {
 export function generateStaticParams() {
 	const german = graph.seiten.map((seite) => ({ slug: slugFromUrl(seite.url) }))
 	// Prefixed routes only exist once a locale is configured (issue #36,
-	// ADR-0001) — graph.locales is empty today, so this contributes nothing.
-	const translated = graph.locales.flatMap((locale) =>
+	// ADR-0001) — graph.locales is empty today, so neither of these
+	// contributes anything. A Viertel's own unprefixed German route comes
+	// from its dedicated page (src/app/stadt/[viertel]/page.tsx), not here —
+	// only its localized, prefixed URLs belong to the catch-all.
+	const translatedSeiten = graph.locales.flatMap((locale) =>
 		graph.getLocalizedSeiten(locale).map((seite) => ({ slug: slugFromUrl(seite.url) })),
 	)
-	return [...german, ...translated]
+	const translatedViertel = graph.locales.flatMap((locale) =>
+		graph.getLocalizedViertel(locale).map((viertel) => ({ slug: slugFromUrl(viertel.url) })),
+	)
+	return [...german, ...translatedSeiten, ...translatedViertel]
 }
 
 export async function generateMetadata({ params }: PageProps<'/[[...slug]]'>): Promise<Metadata> {
 	const { slug } = await params
 	const resolved = graph.resolveUrl(urlFromSlug(slug))
 	if (!resolved) notFound()
-	const { seite } = resolved
+	const document = resolved.kind === 'seite' ? resolved.seite : resolved.viertel
 
 	return {
-		title: seite.title,
-		description: seite.description,
-		alternates: { canonical: seite.url },
+		title: document.title,
+		description: document.description,
+		alternates: { canonical: document.url },
 		openGraph: {
-			title: seite.title,
-			description: seite.description,
-			url: seite.url,
+			title: document.title,
+			description: document.description,
+			url: document.url,
 			siteName: graph.site.name,
 		},
 	}
@@ -71,15 +78,33 @@ export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
 	const { slug } = await params
 	const resolved = graph.resolveUrl(urlFromSlug(slug))
 	if (!resolved) notFound()
-	const { seite } = resolved
-	const id = seite.id
 
 	// A translated page's body is always the German body for now (issue #36
 	// is plumbing, not a shipped translation): no extra locale is configured,
 	// so this never runs in production, and there is no translated MDX to
 	// compile through Next's MDX pipeline yet (graph.getBody only imports the
-	// German file). Breadcrumbs and previous/next stay the German Navigation
-	// for the same reason.
+	// German file). Breadcrumbs, previous/next and a Viertel's related
+	// Aufsätze/Stationen/Kapitel stay the German Navigation and data for the
+	// same reason — only the fields a translation can set actually change.
+	if (resolved.kind === 'viertel') {
+		const { viertel } = resolved
+		const Body = await graph.getBody(viertel.id)
+
+		return (
+			<main>
+				<ViertelDetail
+					viertel={viertel}
+					Body={Body}
+					kapitel={graph.getKapitelByViertel(viertel.id)}
+					aufsaetze={graph.getAufsaetzeByViertel(viertel.id)}
+					stationen={graph.getStationenByOrt(viertel.id)}
+				/>
+			</main>
+		)
+	}
+
+	const { seite } = resolved
+	const id = seite.id
 	const Body = await graph.getBody(id)
 
 	return (

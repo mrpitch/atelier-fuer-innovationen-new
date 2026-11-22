@@ -39,11 +39,13 @@ export type { Site, ViertelSteckbrief } from './schemas'
 // document's ID drops a trailing one, so a later translation shares its
 // non-localised ID. "de" sits here only so the ID of a stray file literally
 // named *.de.mdx (there shouldn't be one) still collapses correctly — it is
-// not the configured-locales list (buildContentGraph's own `locales`
+// NOT the configured-locales list (buildContentGraph's own `locales`
 // parameter, issue #36), which is empty by default and non-empty only in
-// tests exercising a translation.
-const LOCALES = ['de']
-const LOCALE_SUFFIX_PATTERN = new RegExp(`\\.(${LOCALES.join('|')})$`)
+// tests exercising a translation; the two lists happen to share vocabulary
+// but answer different questions, so this one is named for its own purpose
+// rather than reusing "locales".
+const ID_SUFFIX_LOCALES = ['de']
+const LOCALE_SUFFIX_PATTERN = new RegExp(`\\.(${ID_SUFFIX_LOCALES.join('|')})$`)
 
 export interface Seite {
 	readonly id: string

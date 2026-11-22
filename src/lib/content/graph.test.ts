@@ -644,7 +644,25 @@ describe('buildContentGraph', () => {
 			expect(translated?.steckbrief.prozessansatz).toBe('Translated prozessansatz.')
 			expect(translated?.steckbrief.bauform).toBe('Translated bauform.')
 			expect(translated?.body).toContain('Translated Testinhalt.')
-			expect(translated?.url).toBe('/xx/stadt/erste-viertel')
+			expect(translated?.url).toBe('/xx/stadt/translated-viertel')
+		})
+
+		it('resolves a translated Viertel slug to its prefixed localized URL, and lists it among the localized Viertel', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+
+			expect(graph.getLocalizedViertel('xx').map((viertel) => viertel.id)).toEqual([
+				'stadt/erste-viertel',
+			])
+
+			const resolved = graph.resolveUrl('/xx/stadt/translated-viertel')
+			expect(resolved?.kind).toBe('viertel')
+			expect(resolved?.kind === 'viertel' && resolved.viertel.id).toBe('stadt/erste-viertel')
+			expect(resolved?.locale).toBe('xx')
+
+			// The German Viertel's own URL is unaffected by the translation.
+			const german = graph.resolveUrl('/stadt/erste-viertel')
+			expect(german?.kind).toBe('viertel')
+			expect(german?.locale).toBeUndefined()
 		})
 
 		it('falls back to the German document when a locale has no translation', () => {
@@ -671,6 +689,13 @@ describe('buildContentGraph', () => {
 			expect(german?.title).toBe('Mit Übersetzung')
 			expect(german?.body).toContain('Deutscher Testinhalt.')
 			expect(german?.url).toBe('/mit-uebersetzung')
+		})
+
+		it("uses a translated slug for the root Seite's own prefixed URL, instead of dropping it", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+
+			const translated = graph.getSeite('', 'xx')
+			expect(translated?.url).toBe('/xx/start')
 		})
 
 		it('has no configured locales, and no prefixed Seiten, by default', () => {

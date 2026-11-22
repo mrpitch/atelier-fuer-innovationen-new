@@ -59,6 +59,12 @@ function localizeAll<T extends { readonly id: string }>(
 	)
 }
 
+// A locale's localized documents as a list, the shared shape behind every
+// getLocalized*() accessor and resolveUrl's own locale loop (issue #36).
+function localizedList<T>(byLocale: ReadonlyMap<string, ReadonlyMap<string, T>>, locale: string) {
+	return [...(byLocale.get(locale)?.values() ?? [])]
+}
+
 // resolveUrl's one lookup shape, shared between the German list and each
 // configured locale's own localized list (issue #36).
 function findByUrl<T extends { readonly url: string }>(
@@ -98,10 +104,19 @@ export interface ContentGraph {
 	// per Seite once a locale is configured — empty for an unconfigured one.
 	getLocalizedSeiten(locale: string): readonly Seite[]
 	// Resolves a URL (the catch-all route's own joined `slug` param) back to
-	// the Seite it names and, for a locale's own prefixed URL, that locale —
-	// the one place a URL is parsed instead of built, so a route asks the
-	// graph rather than parsing a locale prefix by hand (ADR-0001, ADR-0003).
-	resolveUrl(url: string): { readonly seite: Seite; readonly locale?: string } | undefined
+	// the Seite or Viertel it names and, for a locale's own prefixed URL,
+	// that locale — the one place a URL is parsed instead of built, so a
+	// route asks the graph rather than parsing a locale prefix by hand
+	// (ADR-0001, ADR-0003). A Viertel's own unprefixed German URL also
+	// resolves here, even though its dedicated route
+	// (src/app/stadt/[viertel]/page.tsx) is the one Next.js actually serves
+	// it from — this stays the graph's one complete URL→document mapping.
+	resolveUrl(
+		url: string,
+	):
+		| { readonly kind: 'seite'; readonly seite: Seite; readonly locale?: string }
+		| { readonly kind: 'viertel'; readonly viertel: Viertel; readonly locale?: string }
+		| undefined
 	readonly navigation: NavigationNode
 	// The Sitemap page and sitemap.xml both read this instead of re-deriving
 	// it: every content type's published documents, flattened into one list
@@ -121,6 +136,10 @@ export interface ContentGraph {
 	// locale's translated view (issue #36) — the same rule getSeite's own
 	// `locale` parameter follows, above.
 	getViertel(id: string, locale?: string): Viertel | undefined
+	// Every Viertel translated into `locale` (issue #36) — the Viertel
+	// counterpart of getLocalizedSeiten, above; empty for an unconfigured
+	// locale.
+	getLocalizedViertel(locale: string): readonly Viertel[]
 	// The Zentrum (glossary): its own type, not a Viertel, exactly one per
 	// site.
 	readonly zentrum: Zentrum
@@ -237,15 +256,21 @@ export function buildContentGraph(
 		getBody: importBody,
 		locales,
 		getLocalizedSeiten(locale) {
-			return [...(seitenByLocale.get(locale)?.values() ?? [])]
+			return localizedList(seitenByLocale, locale)
 		},
 		resolveUrl(url) {
-			const german = findByUrl(seiten, url)
-			if (german) return { seite: german }
+			const germanSeite = findByUrl(seiten, url)
+			if (germanSeite) return { kind: 'seite', seite: germanSeite }
+
+			const germanViertel = findByUrl(viertel, url)
+			if (germanViertel) return { kind: 'viertel', viertel: germanViertel }
 
 			for (const locale of locales) {
-				const localized = findByUrl([...(seitenByLocale.get(locale)?.values() ?? [])], url)
-				if (localized) return { seite: localized, locale }
+				const localizedSeite = findByUrl(localizedList(seitenByLocale, locale), url)
+				if (localizedSeite) return { kind: 'seite', seite: localizedSeite, locale }
+
+				const localizedViertel = findByUrl(localizedList(viertelByLocale, locale), url)
+				if (localizedViertel) return { kind: 'viertel', viertel: localizedViertel, locale }
 			}
 
 			return undefined
@@ -274,6 +299,9 @@ export function buildContentGraph(
 		getViertel(id, locale) {
 			if (locale !== undefined) return viertelByLocale.get(locale)?.get(id)
 			return viertel.find((item) => item.id === id)
+		},
+		getLocalizedViertel(locale) {
+			return localizedList(viertelByLocale, locale)
 		},
 		zentrum,
 		aufsaetze,
