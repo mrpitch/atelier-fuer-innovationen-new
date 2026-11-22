@@ -44,10 +44,12 @@ export function isRelativeImagePath(src: string): boolean {
 	return !ABSOLUTE_OR_SCHEME_PATTERN.test(src)
 }
 
-// Markdown's image syntax, ![alt](src) — the only way a body references an
-// image: content MDX has no imports, so an image can't be a JSX component
-// prop the way a Viertel teaser's ID is.
-const IMAGE_PATTERN = /!\[[^\]]*\]\(([^)\s]+)\)/g
+// Markdown's image syntax, ![alt](src) or ![alt](src "title") — the only way
+// a body references an image: content MDX has no imports, so an image can't
+// be a JSX component prop the way a Viertel teaser's ID is. The optional
+// title (quoted) must not be swallowed into the path, or a titled image
+// would silently skip both the existence check and the copy step.
+const IMAGE_PATTERN = /!\[[^\]]*\]\(\s*([^)\s]+)(?:\s+(?:"[^"]*"|'[^']*'))?\s*\)/g
 
 // Every relative image path a body references, in source order — feeds both
 // the loader's existence check and content-images.mts's copy step.

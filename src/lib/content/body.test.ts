@@ -54,6 +54,11 @@ describe('extractRelativeImages', () => {
 		const body = '![Eins](eins.jpg) und ![Zwei](./unterordner/zwei.jpg)'
 		expect(extractRelativeImages(body)).toEqual(['eins.jpg', './unterordner/zwei.jpg'])
 	})
+
+	it('collects a relative image path that carries a title, without the title', () => {
+		const body = `![Alt](./foto.jpg "Ein Titel")`
+		expect(extractRelativeImages(body)).toEqual(['./foto.jpg'])
+	})
 })
 
 describe('resolveBodyAssetPath', () => {

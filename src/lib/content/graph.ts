@@ -187,13 +187,11 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		...stationDocuments,
 		...themen,
 	]
+	for (const { id, body } of bodyDocuments) {
+		validateViertelTeaserReferences(documentFile(id), body, viertel)
+	}
 	const bodyImages = [
-		...new Set(
-			bodyDocuments.flatMap(({ id, body }) => {
-				validateViertelTeaserReferences(documentFile(id), body, viertel)
-				return validateBodyImages(contentDir, id, body)
-			}),
-		),
+		...new Set(bodyDocuments.flatMap(({ id, body }) => validateBodyImages(contentDir, id, body))),
 	]
 
 	return {

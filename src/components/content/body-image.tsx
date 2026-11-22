@@ -13,7 +13,7 @@ function createBodyImage(documentId: string) {
 	function BodyImage({ src, alt, ...props }: React.ComponentProps<'img'>) {
 		if (typeof src !== 'string') return null
 		const resolvedSrc = isRelativeImagePath(src) ? `/${resolveBodyAssetPath(documentId, src)}` : src
-		return <img src={resolvedSrc} alt={alt ?? ''} {...props} />
+		return <img data-slot="body-image" src={resolvedSrc} alt={alt ?? ''} {...props} />
 	}
 	return BodyImage
 }
