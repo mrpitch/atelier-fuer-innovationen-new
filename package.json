@@ -7,12 +7,13 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "eslint --max-warnings 0",
+		"spellcheck": "cspell --no-progress \"src/content/**/*.mdx\"",
 		"typecheck": "next typegen && tsc --noEmit",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"test": "vitest run",
 		"content:check": "node scripts/content-check.mts",
-		"check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm content:check",
+		"check": "pnpm format:check && pnpm lint && pnpm spellcheck && pnpm typecheck && pnpm test && pnpm content:check",
 		"prepare": "husky",
 		"afk": "~/Dev/home/tools/sandcastle/bin/sandcastle-run",
 		"sandcastle:build": "DOCKER_BUILDKIT=1 docker build --build-arg AGENT_UID=$(id -u) --build-arg AGENT_GID=$(id -g) -t sandcastle:atelier-fuer-innovationen-new -f .sandcastle/Dockerfile ."
@@ -61,5 +62,10 @@
 	"engines": {
 		"node": ">=24"
 	},
-	"packageManager": "pnpm@12.4.1"
+	"packageManager": "pnpm@12.4.1",
+	"remarkConfig": {
+		"plugins": [
+			"remark-frontmatter"
+		]
+	}
 }

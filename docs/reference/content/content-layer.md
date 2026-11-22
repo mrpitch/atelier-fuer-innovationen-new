@@ -1,8 +1,8 @@
 ---
 type: reference
 title: Content layer
-description: Content types, document IDs, frontmatter validation and the content:check script.
-tags: [content, mdx, zod, validation, content-check]
+description: Content types, document IDs, frontmatter validation, the content:check script and content quality tooling.
+tags: [content, mdx, zod, validation, content-check, eslint, cspell, lychee]
 status: stable
 last_reviewed: 2026-11-22
 authoritative: true
@@ -54,3 +54,23 @@ class ContentValidationError extends Error {
 `scripts/content-check.mts` builds the content graph from a content directory — the real `src/content` by default, or a directory passed as its one argument — and exits non-zero on the first `ContentValidationError`, printing the file, field and reason. `pnpm content:check` runs it against the real content directory; `pnpm check` runs `content:check` after the test suite.
 
 The script runs under plain Node, not a bundler, so it can't use path aliases like `@/lib/content`. It imports the content graph by relative path instead, with `scripts/ts-extension-loader.mjs` registered as a module hook: Node's native TypeScript support needs a file extension on every relative import, while the content graph's own files stay extensionless like the rest of the codebase. The hook only retries a failed relative resolution with `.ts` appended; it has no effect on the bundler that builds the actual site.
+
+## MDX lint
+
+`eslint.config.mjs` lints `.mdx` with [`eslint-plugin-mdx`](https://github.com/mdx-js/eslint-mdx)'s flat `native` rules (remark-lint equivalents that run as real ESLint rules, not the deprecated `mdx/remark` fallback) plus code-block linting (`mdx.createRemarkProcessor({ lintCodeBlocks: true })`, so a fenced code block in content is linted like the language it claims).
+
+Frontmatter parses as YAML (not as a stray heading) because `package.json`'s `remarkConfig` field lists `remark-frontmatter`: `eslint-plugin-mdx` detects a project's remark config automatically (via `unified-engine`) and reuses it for its own parsing, the same mechanism `next.config.ts` uses for the real build.
+
+Content MDX (`src/content/**/*.mdx`) additionally rejects `import` and `export`: content can only use the component set the MDX provider registers, never its own. This is the `restrictions/content-mdx-import-export` rule in `eslint.config.mjs` (see the file's own comment for why each restriction gets the base rule under its own name).
+
+## Spell check
+
+`cspell.json` checks `src/content/**/*.mdx` (`pnpm spellcheck`, which `pnpm check` runs) against [`@cspell/dict-de-de`](https://github.com/streetsidesoftware/cspell-dicts) with compound words allowed: content is German only, for UI copy and content (PRODUCT.md), with no English fallback. Two `ignoreRegExpList` patterns keep non-prose text out of the check: frontmatter values for `id`/`slug`-like keys, and JSX tags and their props. The `words` list seeds the [glossary](../glossary.md)'s domain vocabulary and the brand's proper nouns (Xenia, Xeniapolis, Volkmann), which the German dictionary doesn't know.
+
+## Pre-commit
+
+`.lintstagedrc.mjs` runs ESLint and cspell on staged `.mdx`, and `content:check` once per commit when a staged file could affect the content graph: anything under `src/content/` or `src/lib/content/`, or a `meta.json` anywhere — the content, loader code, and the `meta.json`/Menus/site data inputs [About the architecture](../../explanation/about-architecture.md) shows feeding the loader, as later epic sub-issues add them.
+
+## CI
+
+`.github/workflows/ci.yml`'s `check` job runs [`lychee`](https://github.com/lycheeverse/lychee) over the built `out/` after `pnpm build`, with `--offline` so only local links are checked (an unrelated external site being down can't fail a PR) and `--base out` so root-relative hrefs resolve against the export's own files.

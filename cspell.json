@@ -1,0 +1,36 @@
+{
+	"version": "0.2",
+	// Content is German only, for UI copy and content (PRODUCT.md): no English fallback.
+	"language": "de",
+	"import": ["@cspell/dict-de-de/cspell-ext.json"],
+	"allowCompoundWords": true,
+	"ignoreRegExpList": [
+		// Frontmatter IDs and slugs are identifiers, not prose: `id: foo-bar`, `slug: foo-bar`,
+		// `customId: foo-bar`. Anchored to the key itself, not any key ending in "id"/"slug", so
+		// a real word like `valid` or `uuid` doesn't exempt its whole line.
+		"/^\\s*(?:id|slug|[a-zA-Z]+Id)\\s*:\\s*.*$/gm",
+		// JSX tags and their props aren't prose either: `<ViertelCard id="01" />`.
+		"/<[^>]+>/g"
+	],
+	"words": [
+		// docs/reference/glossary.md headwords.
+		"Navigation",
+		"Menu",
+		"Seite",
+		"Viertel",
+		"Leitsatz",
+		"Steckbrief",
+		"Zentrum",
+		"Rundgang",
+		"Station",
+		"Thema",
+		"Leitthema",
+		"Kapitel",
+		"Abschnitt",
+		"Aufsatz",
+		// Proper nouns (PRODUCT.md).
+		"Xenia",
+		"Xeniapolis",
+		"Volkmann"
+	]
+}
