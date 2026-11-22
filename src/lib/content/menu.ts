@@ -12,15 +12,16 @@ export interface MenuLink {
 
 // A content entry's label is the target's Short title, else its title — the
 // same rule Navigation uses. An external entry's label is written in the
-// Menu file itself. In production a Draft target fails the same way a
-// missing one does (issue #33: a Menu entry can't publish a link to an
-// unpublished Draft) — `development` lifts that one restriction, the only
-// difference between the two modes.
+// Menu file itself. A Draft target fails the same way a missing one does
+// (issue #33: a Menu entry can't publish a link to an unpublished Draft) —
+// `isVisible` is the same predicate graph.ts filters Navigation by, so a
+// Draft resolves in dev and fails everywhere else, with no visibility rule
+// of its own here.
 function resolveEntry(
 	file: string,
 	entry: MenuEntry,
 	byId: ReadonlyMap<string, Seite>,
-	development: boolean,
+	isVisible: (seite: Seite) => boolean,
 ): MenuLink {
 	if ('url' in entry) return { url: entry.url, label: entry.label }
 
@@ -28,7 +29,7 @@ function resolveEntry(
 	if (!seite) {
 		throw new ContentValidationError(file, entry.id, 'menu lists an ID with no matching Seite')
 	}
-	if (seite.draft && !development) {
+	if (!isVisible(seite)) {
 		throw new ContentValidationError(
 			file,
 			entry.id,
@@ -41,7 +42,7 @@ function resolveEntry(
 export function resolveMenus(
 	seiten: readonly Seite[],
 	rawMenus: ReadonlyMap<string, RawMenu>,
-	development: boolean,
+	isVisible: (seite: Seite) => boolean,
 ): ReadonlyMap<string, readonly MenuLink[]> {
 	const byId = new Map(seiten.map((seite) => [seite.id, seite]))
 	const resolved = new Map<string, readonly MenuLink[]>()
@@ -49,7 +50,7 @@ export function resolveMenus(
 	for (const [name, menu] of rawMenus) {
 		resolved.set(
 			name,
-			menu.entries.map((entry) => resolveEntry(menu.file, entry, byId, development)),
+			menu.entries.map((entry) => resolveEntry(menu.file, entry, byId, isVisible)),
 		)
 	}
 

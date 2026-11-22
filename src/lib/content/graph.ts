@@ -113,7 +113,7 @@ export function buildContentGraph(
 
 	const navigation = buildNavigation(allSeiten, loadMeta(contentDir), isVisible)
 	const site = loadSite(contentDir)
-	const menus = resolveMenus(allSeiten, loadMenus(contentDir), development)
+	const menus = resolveMenus(allSeiten, loadMenus(contentDir), isVisible)
 	const viertel = orderViertel(loadViertelOrder(contentDir), loadViertelDocuments(contentDir))
 	const zentrum = loadZentrum(contentDir)
 	const aufsaetze = resolveAufsaetze(loadAufsatzDocuments(contentDir), viertel)
