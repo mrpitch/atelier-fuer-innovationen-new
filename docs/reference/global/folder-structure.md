@@ -68,6 +68,7 @@ A concern gets a domain folder once it needs at least two of these:
 | Domain folder | What it owns                                                                                   |
 | ------------- | ---------------------------------------------------------------------------------------------- |
 | `content/`    | The content layer of epic #23: loader, frontmatter schemas per content type, the content graph |
+| `dictionary/` | The German UI dictionary (issue #26): lookup by key, interpolation                             |
 
 A domain folder has an `index.ts` as its public API. Consumers import from `@/lib/<domain>`, never from a file inside it.
 

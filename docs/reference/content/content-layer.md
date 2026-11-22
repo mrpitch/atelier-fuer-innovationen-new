@@ -40,14 +40,28 @@ A validation failure throws `ContentValidationError` (`src/lib/content/errors.ts
 ```ts
 class ContentValidationError extends Error {
 	readonly file: string // path under the content directory
-	readonly field: string // the offending frontmatter key, dotted path
-	readonly reason: string // the Zod issue's message
+	readonly field: string // the offending frontmatter key, dotted path, or a meta.json ID
+	readonly reason: string // the Zod issue's message, or the meta.json rule that failed
 }
 ```
 
+The same error carries a `meta.json` problem (below): `file` is the `meta.json` path, `field` is the offending ID.
+
 ## The content graph
 
-`buildContentGraph(contentDir)` (`src/lib/content/graph.ts`) is the one public interface for content: it runs the loader over `contentDir` and returns a `ContentGraph` with a `seiten` list and a `getSeite(id)` lookup. Taking `contentDir` as a parameter, rather than hardcoding `src/content`, is what lets tests point it at a fixture directory ([Testing conventions](../testing/testing-conventions.md)).
+`buildContentGraph(contentDir)` (`src/lib/content/graph.ts`) is the one public interface for content: it runs the loader over `contentDir` and returns a `ContentGraph` with a `seiten` list, a `getSeite(id)` lookup, and the Navigation reads below. Taking `contentDir` as a parameter, rather than hardcoding `src/content`, is what lets tests point it at a fixture directory ([Testing conventions](../testing/testing-conventions.md)).
+
+## Order and Navigation
+
+A folder can hold a `meta.json` that lists its children's IDs in order and nothing else — the file is a bare JSON array of strings, validated by `metaSchema` in `schemas.ts`. The listed IDs are full document IDs (above, "Document IDs"), not names relative to the folder: a `meta.json` inside `src/content/eltern/` lists its children as `eltern/erstes`, `eltern/zweites`, not `erstes`, `zweites`.
+
+```json
+["idee", "kontakt", "impressum", "datenschutz"]
+```
+
+It is strict: every actual child of that folder must appear exactly once. An ID listed twice, an ID with no matching child, or a child missing from the list throws `ContentValidationError`, naming the `meta.json` file and the offending ID. A folder without a `meta.json` sorts its children by their type's natural key — date first (once a type carries one), then title — not by file system order.
+
+`src/lib/content/navigation.ts` builds the Navigation tree ([glossary](../glossary.md)) from the folder hierarchy plus this order: a document's parent is the folder it sits in, and `''` (the root Seite) is the tree's root. `buildContentGraph`'s result exposes it as `graph.navigation` (the root `NavigationNode`, with nested `children`), plus `getBreadcrumbs(id)`, `getPrevious(id)` and `getNext(id)`, each returning `NavigationLink`s. A link's `title` is the document's Short title when it has one, the title otherwise.
 
 ## `content:check`
 

@@ -3,6 +3,8 @@ import path from 'node:path'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
+import { PreviousNext } from '@/components/navigation/previous-next'
 import { buildContentGraph } from '@/lib/content'
 
 const graph = buildContentGraph(path.join(process.cwd(), 'src/content'))
@@ -39,8 +41,10 @@ export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
 
 	return (
 		<main>
+			<Breadcrumbs items={graph.getBreadcrumbs(id)} />
 			<h1>{seite.title}</h1>
 			<Body />
+			<PreviousNext previous={graph.getPrevious(id)} next={graph.getNext(id)} />
 		</main>
 	)
 }

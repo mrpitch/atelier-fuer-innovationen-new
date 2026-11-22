@@ -9,3 +9,7 @@ export const seiteFrontmatterSchema = z.object({
 })
 
 export type SeiteFrontmatter = z.infer<typeof seiteFrontmatterSchema>
+
+// meta.json holds only an ordered list of child IDs (issue #26) — nothing else,
+// so the schema is the list itself, not a wrapping object.
+export const metaSchema = z.array(z.string().min(1))
