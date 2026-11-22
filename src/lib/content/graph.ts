@@ -1,5 +1,12 @@
-import type { Seite, Site, Viertel, Zentrum } from './loader'
+import { buildAbschnittNavigation, orderAbschnitte } from './abschnitt'
+import { resolveAufsaetze } from './aufsatz'
+import { resolveKapitel } from './kapitel'
+import type { Abschnitt, Aufsatz, Kapitel, Seite, Site, Viertel, Zentrum } from './loader'
 import {
+	loadAbschnittDocuments,
+	loadAbschnittOrder,
+	loadAufsatzDocuments,
+	loadKapitelDocuments,
 	loadMenus,
 	loadMeta,
 	loadSeiten,
@@ -11,7 +18,7 @@ import {
 import type { MenuLink } from './menu'
 import { resolveMenus } from './menu'
 import type { NavigationLink, NavigationNode } from './navigation'
-import { buildNavigation } from './navigation'
+import { buildNavigation, listSitemap } from './navigation'
 import { orderViertel } from './viertel'
 
 // Compiles a Seite's, Viertel's or the Zentrum's MDX body through Next's MDX
@@ -30,6 +37,9 @@ export interface ContentGraph {
 	getSeite(id: string): Seite | undefined
 	getBody(id: string): ReturnType<typeof importBody>
 	readonly navigation: NavigationNode
+	// The Sitemap page and sitemap.xml both read this instead of re-deriving
+	// it: the whole Navigation tree, flattened and published-only (issue #34).
+	readonly sitemap: readonly NavigationLink[]
 	getBreadcrumbs(id: string): readonly NavigationLink[]
 	getPrevious(id: string): NavigationLink | undefined
 	getNext(id: string): NavigationLink | undefined
@@ -44,6 +54,24 @@ export interface ContentGraph {
 	// The Zentrum (glossary): its own type, not a Viertel, exactly one per
 	// site.
 	readonly zentrum: Zentrum
+	// Every Aufsatz (glossary), each resolved to its Viertel (issue #29).
+	readonly aufsaetze: readonly Aufsatz[]
+	getAufsatz(id: string): Aufsatz | undefined
+	// A Viertel's related Aufsätze ("Mehr aus dem Viertel") — derived here
+	// from each Aufsatz's Viertel reference, never listed by hand.
+	getAufsaetzeByViertel(viertelId: string): readonly Aufsatz[]
+	// Every Kapitel of the Leitthema (issue #30), in Kapitel number order
+	// (ADR-0003: "Kapitel n = Viertel n"). A Viertel has at most one.
+	readonly kapitel: readonly Kapitel[]
+	getKapitel(id: string): Kapitel | undefined
+	getKapitelByViertel(viertelId: string): Kapitel | undefined
+	// A Kapitel's Abschnitte, ordered by its own meta.json — never listed by
+	// hand on the Kapitel itself; "N Abschnitte" is this list's length.
+	getAbschnitteByKapitel(kapitelId: string): readonly Abschnitt[]
+	// Previous/next across every Abschnitt, crossing from the last of one
+	// Kapitel to the first of the next in Kapitel number order.
+	getPreviousAbschnitt(id: string): NavigationLink | undefined
+	getNextAbschnitt(id: string): NavigationLink | undefined
 }
 
 // The one public interface for content (ADR-0002): built from loader output,
@@ -55,6 +83,21 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 	const menus = resolveMenus(seiten, loadMenus(contentDir))
 	const viertel = orderViertel(loadViertelOrder(contentDir), loadViertelDocuments(contentDir))
 	const zentrum = loadZentrum(contentDir)
+	const aufsaetze = resolveAufsaetze(loadAufsatzDocuments(contentDir), viertel)
+
+	const kapitel = resolveKapitel(loadKapitelDocuments(contentDir), viertel)
+	const abschnittDocuments = loadAbschnittDocuments(contentDir)
+	const abschnitteByKapitel = new Map(
+		kapitel.map((item) => [
+			item.id,
+			orderAbschnitte(
+				item,
+				loadAbschnittOrder(contentDir, item.id),
+				abschnittDocuments.filter((document) => document.kapitelId === item.id),
+			),
+		]),
+	)
+	const abschnittNavigation = buildAbschnittNavigation(kapitel, abschnitteByKapitel)
 
 	return {
 		seiten,
@@ -63,6 +106,7 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		},
 		getBody: importBody,
 		navigation: navigation.tree,
+		sitemap: listSitemap(navigation.tree, seiten),
 		getBreadcrumbs: navigation.getBreadcrumbs,
 		getPrevious: navigation.getPrevious,
 		getNext: navigation.getNext,
@@ -75,5 +119,24 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 			return viertel.find((item) => item.id === id)
 		},
 		zentrum,
+		aufsaetze,
+		getAufsatz(id) {
+			return aufsaetze.find((aufsatz) => aufsatz.id === id)
+		},
+		getAufsaetzeByViertel(viertelId) {
+			return aufsaetze.filter((aufsatz) => aufsatz.viertelId === viertelId)
+		},
+		kapitel,
+		getKapitel(id) {
+			return kapitel.find((item) => item.id === id)
+		},
+		getKapitelByViertel(viertelId) {
+			return kapitel.find((item) => item.viertelId === viertelId)
+		},
+		getAbschnitteByKapitel(kapitelId) {
+			return abschnitteByKapitel.get(kapitelId) ?? []
+		},
+		getPreviousAbschnitt: abschnittNavigation.getPreviousAbschnitt,
+		getNextAbschnitt: abschnittNavigation.getNextAbschnitt,
 	}
 }

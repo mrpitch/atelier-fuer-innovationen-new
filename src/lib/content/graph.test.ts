@@ -125,6 +125,24 @@ describe('buildContentGraph', () => {
 		})
 	})
 
+	describe('Sitemap', () => {
+		it("defaults a Seite's draft to false", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
+
+			expect(graph.getSeite('')?.draft).toBe(false)
+		})
+
+		it('lists the Navigation tree flattened, in order, leaving out a Draft but keeping its published children', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'))
+
+			expect(graph.sitemap).toEqual([
+				{ id: '', url: '/', title: 'Start' },
+				{ id: 'entwurf/kind', url: '/entwurf/kind', title: 'Kind' },
+				{ id: 'veroeffentlicht', url: '/veroeffentlicht', title: 'Veröffentlicht' },
+			])
+		})
+	})
+
 	describe('site data', () => {
 		it('reads the site name, tagline, base URL and copyright from site.json', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
@@ -238,6 +256,195 @@ describe('buildContentGraph', () => {
 				const validationError = error as ContentValidationError
 				expect(validationError.file).toBe(path.join('stadt', 'viertel-order.json'))
 				expect(validationError.field).toBe('stadt/erste-viertel')
+				expect(validationError.reason).toMatch(/missing/i)
+			}
+		})
+	})
+
+	describe('Aufsatz', () => {
+		it('resolves an Aufsatz to its ID, URL and Viertel reference', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'aufsatz-valid'))
+
+			expect(graph.aufsaetze.map((aufsatz) => aufsatz.id)).toEqual([
+				'bibliothek/aufsaetze/erster-aufsatz',
+				'bibliothek/aufsaetze/zweiter-aufsatz',
+			])
+
+			const erster = graph.getAufsatz('bibliothek/aufsaetze/erster-aufsatz')
+			expect(erster?.url).toBe('/bibliothek/aufsaetze/erster-aufsatz')
+			expect(erster?.title).toBe('Erster Aufsatz')
+			expect(erster?.viertelId).toBe('stadt/erste-viertel')
+		})
+
+		it('computes the reading time from the body word count', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'aufsatz-valid'))
+
+			// erster-aufsatz's body is 201 words; at 200 words/minute that rounds
+			// up to 2 minutes, proving it's computed, not a fixed value.
+			expect(graph.getAufsatz('bibliothek/aufsaetze/erster-aufsatz')?.readingTimeMinutes).toBe(2)
+			// zweiter-aufsatz's body is a few words; reading time floors at 1.
+			expect(graph.getAufsatz('bibliothek/aufsaetze/zweiter-aufsatz')?.readingTimeMinutes).toBe(1)
+		})
+
+		it("derives each Viertel's related Aufsätze from the references, never from the Viertel itself", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'aufsatz-valid'))
+
+			expect(
+				graph.getAufsaetzeByViertel('stadt/erste-viertel').map((aufsatz) => aufsatz.id),
+			).toEqual(['bibliothek/aufsaetze/erster-aufsatz'])
+			expect(
+				graph.getAufsaetzeByViertel('stadt/zweite-viertel').map((aufsatz) => aufsatz.id),
+			).toEqual(['bibliothek/aufsaetze/zweiter-aufsatz'])
+			expect(graph.getViertel('stadt/erste-viertel')).not.toHaveProperty('aufsaetze')
+		})
+
+		it('fails when an Aufsatz references a missing Viertel, naming the file, field and ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'aufsatz-missing-viertel'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(
+					path.join('bibliothek', 'aufsaetze', 'verwaister-aufsatz', 'index.mdx'),
+				)
+				expect(validationError.field).toBe('viertelId')
+				expect(validationError.reason).toContain('stadt/nichtvorhanden')
+			}
+		})
+	})
+
+	describe('Kapitel and Abschnitt', () => {
+		it("derives a Kapitel's number and URL from its Viertel's number", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'leitthema-valid'))
+
+			expect(graph.kapitel.map((kapitel) => kapitel.id)).toEqual([
+				'leitthema/erstes-kapitel',
+				'leitthema/zweites-kapitel',
+			])
+
+			const erstes = graph.getKapitel('leitthema/erstes-kapitel')
+			expect(erstes?.viertelId).toBe('stadt/erste-viertel')
+			expect(erstes?.number).toBe(1)
+			expect(erstes?.url).toBe('/stadt/erste-viertel/kapitel-1')
+
+			const zweites = graph.getKapitelByViertel('stadt/zweite-viertel')
+			expect(zweites?.id).toBe('leitthema/zweites-kapitel')
+			expect(zweites?.number).toBe(2)
+			expect(zweites?.url).toBe('/stadt/zweite-viertel/kapitel-2')
+		})
+
+		it("changes a Kapitel's number when the Viertel order changes", () => {
+			const valid = buildContentGraph(path.join(fixturesDir, 'leitthema-valid'))
+			const reordered = buildContentGraph(path.join(fixturesDir, 'leitthema-reordered-viertel'))
+
+			// erstes-kapitel references stadt/erste-viertel in both fixtures; only
+			// the Viertel order file differs (erste-viertel is 1st in leitthema-valid,
+			// 2nd in leitthema-reordered-viertel).
+			expect(valid.getKapitel('leitthema/erstes-kapitel')?.number).toBe(1)
+			expect(reordered.getKapitel('leitthema/erstes-kapitel')?.number).toBe(2)
+			expect(reordered.getKapitel('leitthema/erstes-kapitel')?.url).toBe(
+				'/stadt/erste-viertel/kapitel-2',
+			)
+		})
+
+		it('fails when a Kapitel references a missing Viertel, naming the file, field and ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'leitthema-missing-viertel'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('leitthema', 'verwaistes-kapitel', 'index.mdx'))
+				expect(validationError.field).toBe('viertelId')
+				expect(validationError.reason).toContain('stadt/nichtvorhanden')
+			}
+		})
+
+		it('fails when a second Kapitel references a Viertel that already has one', () => {
+			expect.assertions(3)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'leitthema-duplicate-viertel'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.field).toBe('viertelId')
+				expect(validationError.reason).toContain('stadt/erste-viertel')
+			}
+		})
+
+		it('numbers an Abschnitt as its Kapitel\'s number and its position, e.g. "1.2"', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'leitthema-valid'))
+
+			const abschnitte = graph.getAbschnitteByKapitel('leitthema/erstes-kapitel')
+			expect(abschnitte.map((abschnitt) => abschnitt.id)).toEqual([
+				'leitthema/erstes-kapitel/erster-abschnitt',
+				'leitthema/erstes-kapitel/zweiter-abschnitt',
+			])
+			expect(abschnitte.map((abschnitt) => abschnitt.number)).toEqual(['1.1', '1.2'])
+			expect(abschnitte.map((abschnitt) => abschnitt.url)).toEqual([
+				'/stadt/erste-viertel/kapitel-1/1',
+				'/stadt/erste-viertel/kapitel-1/2',
+			])
+
+			const zweitesKapitel = graph.getAbschnitteByKapitel('leitthema/zweites-kapitel')
+			expect(zweitesKapitel.map((abschnitt) => abschnitt.number)).toEqual(['2.1', '2.2'])
+		})
+
+		it('derives the Abschnitt count from the resolved list, never from a written field', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'leitthema-valid'))
+
+			expect(graph.getAbschnitteByKapitel('leitthema/erstes-kapitel')).toHaveLength(2)
+			expect(graph.getKapitel('leitthema/erstes-kapitel')).not.toHaveProperty('abschnitte')
+		})
+
+		it('crosses from the last Abschnitt of one Kapitel to the first of the next, in Kapitel number order', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'leitthema-valid'))
+
+			expect(graph.getNextAbschnitt('leitthema/erstes-kapitel/zweiter-abschnitt')).toEqual({
+				id: 'leitthema/zweites-kapitel/erster-abschnitt',
+				url: '/stadt/zweite-viertel/kapitel-2/1',
+				title: 'Erster Abschnitt',
+			})
+			expect(graph.getPreviousAbschnitt('leitthema/zweites-kapitel/erster-abschnitt')).toEqual({
+				id: 'leitthema/erstes-kapitel/zweiter-abschnitt',
+				url: '/stadt/erste-viertel/kapitel-1/2',
+				title: 'Zweiter Abschnitt',
+			})
+
+			expect(
+				graph.getPreviousAbschnitt('leitthema/erstes-kapitel/erster-abschnitt'),
+			).toBeUndefined()
+			expect(graph.getNextAbschnitt('leitthema/zweites-kapitel/zweiter-abschnitt')).toBeUndefined()
+		})
+
+		it("fails when a Kapitel's Abschnitt order lists an unknown ID, naming the file and the ID", () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'leitthema-abschnitt-order-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('leitthema', 'erstes-kapitel', 'meta.json'))
+				expect(validationError.field).toBe('leitthema/erstes-kapitel/nichtvorhanden')
+				expect(validationError.reason).toMatch(/no matching/i)
+			}
+		})
+
+		it("fails when a Kapitel's Abschnitt order omits an actual child, naming the file and the ID", () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'leitthema-abschnitt-order-missing-child'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('leitthema', 'erstes-kapitel', 'meta.json'))
+				expect(validationError.field).toBe('leitthema/erstes-kapitel/zweiter-abschnitt')
 				expect(validationError.reason).toMatch(/missing/i)
 			}
 		})

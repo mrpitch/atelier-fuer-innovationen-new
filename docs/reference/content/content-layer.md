@@ -2,7 +2,7 @@
 type: reference
 title: Content layer
 description: Content types, document IDs, frontmatter validation, the content:check script and content quality tooling.
-tags: [content, mdx, zod, validation, content-check, eslint, cspell, lychee]
+tags: [content, mdx, zod, validation, content-check, eslint, cspell, lychee, sitemap, seo]
 status: stable
 last_reviewed: 2026-11-22
 authoritative: true
@@ -14,21 +14,38 @@ The loader and content graph live in `src/lib/content/`, with `index.ts` as thei
 
 ## Content types
 
-A content type is decided by where a file sits under `src/content`, not by a field in its frontmatter. **Seite** ([glossary](../glossary.md)) is a plain standalone page, such as Start, Idee, Kontakt, Impressum or Datenschutz. **Viertel** and **Zentrum** (issue #28) are the Stadt area's own types, located by a rule of their own: a document directly inside `src/content/stadt/<slug>/` is the Zentrum when `slug` is `zentrum`, a Viertel otherwise; `src/content/stadt/index.mdx` itself (no further segment) is a Seite, the Stadt area's landing page.
+A content type is decided by where a file sits under `src/content`, not by a field in its frontmatter. **Seite** ([glossary](../glossary.md)) is a plain standalone page, such as Start, Idee, Kontakt, Impressum or Datenschutz. **Viertel** and **Zentrum** (issue #28) are the Stadt area's own types, located by a rule of their own: a document directly inside `src/content/stadt/<slug>/` is the Zentrum when `slug` is `zentrum`, a Viertel otherwise; `src/content/stadt/index.mdx` itself (no further segment) is a Seite, the Stadt area's landing page. **Aufsatz** (issue #29) is the Bibliothek area's own type, by the same kind of rule: a document directly inside `src/content/bibliothek/aufsaetze/<slug>/`. **Kapitel** and **Abschnitt** (issue #30) belong to the Leitthema, not to the Viertel they're set in: a Kapitel sits directly inside `src/content/leitthema/<slug>/`, and an Abschnitt one level deeper, inside its Kapitel's own folder.
 
-| Type    | Frontmatter fields                                                                 | Schema                                                     |
-| ------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Seite   | `title`, `description`, `shortTitle` (optional)                                    | `seiteFrontmatterSchema` in `src/lib/content/schemas.ts`   |
-| Viertel | `title`, `description`, `shortTitle` (optional), `leitsatz`, `steckbrief` (object) | `viertelFrontmatterSchema` in `src/lib/content/schemas.ts` |
-| Zentrum | `title`, `description`, `shortTitle` (optional)                                    | `zentrumFrontmatterSchema` in `src/lib/content/schemas.ts` |
+| Type      | Frontmatter fields                                                                   | Schema                                                       |
+| --------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| Seite     | `title`, `description`, `shortTitle` (optional), `draft` (optional, default `false`) | `seiteFrontmatterSchema` in `src/lib/content/schemas.ts`     |
+| Viertel   | `title`, `description`, `shortTitle` (optional), `leitsatz`, `steckbrief` (object)   | `viertelFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Zentrum   | `title`, `description`, `shortTitle` (optional)                                      | `zentrumFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Aufsatz   | `title`, `description`, `shortTitle` (optional), `viertelId` (reference)             | `aufsatzFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Kapitel   | `title`, `description`, `shortTitle` (optional), `viertelId` (reference)             | `kapitelFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Abschnitt | `title`, `description`, `shortTitle` (optional)                                      | `abschnittFrontmatterSchema` in `src/lib/content/schemas.ts` |
 
 A Viertel's Steckbrief (glossary) is a nested frontmatter object: `prozessansatz`, `bauform`, `prozessdokument`, `imStadtzentrum`.
 
 As further Wissensstadt content types arrive, each gets its own schema in `schemas.ts` and its own location rule in `src/lib/content/loader.ts`.
 
+### References
+
+A frontmatter field can hold another document's ID instead of a value of its own — a reference (issue #29). Aufsatz's `viertelId` is the first one: it names the Viertel the Aufsatz belongs to. The field is validated as a non-empty string in `schemas.ts` like any other string field — a Zod schema can't see the rest of the content graph to check the ID exists — so the actual check happens once every document is loaded, via `resolveReference` in `src/lib/content/references.ts`. That function is the one generic resolution mechanism for every reference field: given the referring file, the field name, the ID and the target collection it points into, it returns the matching document or throws `ContentValidationError` naming the file, the field and the missing ID. A later reference field reuses this same function against its own target collection — it needs no resolution code of its own, only a call site. A reference field's frontmatter key ends in `Id` (`viertelId`, not `viertel`) so its value — a document ID, not prose — is skipped by the spell check the same way `id`/`slug` keys already are.
+
+Aufsatz's reading time (`readingTimeMinutes`) is computed from its body's word count by `src/lib/content/reading-time.ts`, shown via the dictionary key `aufsatz.readingTime` ("ca. {n} Min."). A Viertel's related Aufsätze (`graph.getAufsaetzeByViertel(id)`, "Mehr aus dem Viertel") are derived the same way: filtered from the already-resolved Aufsätze by their `viertelId`, never listed by hand in the Viertel's own frontmatter or body.
+
 ### Viertel numbers
 
 A Viertel's number (glossary: fixed, 01–08) comes from its 1-based position in `src/content/stadt/viertel-order.json`, a bare JSON array of Viertel IDs in display order — never from frontmatter, so a `number` key in a Viertel's frontmatter is parsed and silently dropped. This is a separate mechanism from `meta.json`, not a reuse of it: `meta.json` strictly orders a folder's actual children for Navigation, and Viertel/Zentrum aren't part of that Seite-only tree, so a `meta.json` under `stadt/` would have no Seite children to validate against and would always fail. `loadViertelOrder` (`loader.ts`) reads the file; `orderViertel` (`viertel.ts`, pure, like `navigation.ts`) does the same strict reconciliation `meta.json` does — every listed ID must match an actual Viertel, every actual Viertel must be listed exactly once — and assigns `.number`. `buildContentGraph`'s result exposes the ordered list as `graph.viertel` and a lookup as `graph.getViertel(id)`; the single Zentrum is `graph.zentrum`.
+
+### Kapitel and Abschnitt numbers
+
+A Kapitel's number is its referenced Viertel's number (issue #30, [ADR-0003](../../adr/adr-0003-urls-from-content-graph-rules.md)): "Kapitel n = Viertel n" by construction, never written in frontmatter. `resolveKapitel` (`kapitel.ts`, pure, like `viertel.ts`) resolves the `viertelId` reference via `resolveReference` and derives the number and URL (`/stadt/{viertel}/kapitel-{n}`) from the resolved Viertel. A Viertel has at most one Kapitel; a second one referencing the same Viertel throws `ContentValidationError` naming the file, `viertelId` and the Viertel that already has one.
+
+An Abschnitt's position comes from its Kapitel's own `meta.json` — a bare JSON array of Abschnitt IDs, the same shape as the generic `meta.json` above, but read directly for one Kapitel by `loadAbschnittOrder` (`loader.ts`) rather than through the generic `listMetaFiles`/`loadMeta` scan: that scan excludes a Kapitel folder's `meta.json`, since it orders Abschnitte, not Seite children, and would otherwise fail `buildNavigation`'s strict Seite-only validation. `orderAbschnitte` (`abschnitt.ts`, pure) does the same strict reconciliation as `orderViertel` and assigns each Abschnitt's position, number (`"{kapitelNumber}.{position}"`, e.g. "4.3"), URL (`/stadt/{viertel}/kapitel-{n}/{m}`) and reading time (`reading-time.ts`, the same mechanism Aufsatz uses).
+
+`buildContentGraph`'s result exposes the Kapitel list as `graph.kapitel` (in Kapitel number order) with `graph.getKapitel(id)` and `graph.getKapitelByViertel(viertelId)` lookups, and a Kapitel's Abschnitte as `graph.getAbschnitteByKapitel(kapitelId)` — never listed by hand on the Kapitel itself, so "N Abschnitte" is always this list's length. Previous/next across Abschnitte (`graph.getPreviousAbschnitt(id)`/`getNextAbschnitt(id)`) crosses from the last Abschnitt of one Kapitel to the first of the next, in Kapitel number order — its own navigation, built by `buildAbschnittNavigation` (`abschnitt.ts`), separate from the Seite-only Navigation tree above since Kapitel/Abschnitt aren't Seite.
 
 ### Illustrations
 
@@ -82,6 +99,20 @@ It is strict: every actual child of that folder must appear exactly once. An ID 
 `src/content/site.json` holds the site-wide facts that would otherwise be restated in several places: `name`, `tagline`, `baseUrl` and `copyright`, validated by `siteSchema` in `schemas.ts`. `buildContentGraph`'s result exposes it as `graph.site`; the header, footer and the root layout's metadata all read it from there instead of hardcoding it. A validation failure throws `ContentValidationError` the same way frontmatter does, with `file` set to `site.json`.
 
 `baseUrl` is a placeholder (`https://xenia.example.com`) until a real production domain is decided; it feeds `metadataBase` in `src/app/layout.tsx`, which resolves the per-page canonical link in `src/app/[[...slug]]/page.tsx`.
+
+## Sitemap
+
+`graph.sitemap` (`src/lib/content/graph.ts`, built by `listSitemap` in `navigation.ts`) is the whole Navigation tree flattened into one list, in Navigation order, leaving out a Draft's own entry — its published children, if any, still appear. The Sitemap page and `sitemap.xml` both read this one list instead of re-deriving it (issue #34).
+
+A **Draft** (glossary) is a Seite with `draft: true` in its frontmatter (`seiteFrontmatterSchema` in `schemas.ts`, default `false`): written and checked but not yet published.
+
+`src/content/sitemap/index.mdx` is a plain Seite like any other, whose body is a single `<SitemapList />` — the one MDX component the provider (`src/mdx-components.tsx`) currently registers. The component (`src/components/navigation/sitemap-list.tsx`) reads the content graph itself, unlike Breadcrumbs and PreviousNext, because it sits inside the Sitemap Seite's own MDX body rather than being handed items by `page.tsx`. `src/content/menus/footer.json` links to it like any other Seite, by ID.
+
+`src/app/sitemap.ts` follows Next's `sitemap.ts` file convention to produce `sitemap.xml` in the build output: every `graph.sitemap` entry resolved to an absolute URL against `graph.site.baseUrl`. It exports `dynamic = 'force-static'` because a static export can't revalidate a Route Handler at runtime ([Static export](../react/static-export.md)).
+
+## Canonical URL and Open Graph tags
+
+`src/app/[[...slug]]/page.tsx`'s `generateMetadata` sets a page's canonical URL (`alternates.canonical`) and Open Graph tags (`openGraph.title`, `.description`, `.url`, `.siteName`) from the Seite and `graph.site` — never written per page. Both resolve to an absolute URL via `metadataBase` (`src/app/layout.tsx`, set from `graph.site.baseUrl`).
 
 ## Menus
 
