@@ -52,8 +52,6 @@ One theme is active per build. Kartei is the active theme; its source is DESIGN.
 | Variant                       | `dark:` matches descendants of `.dark`                                                                       |
 | Tokens                        | `.dark` in `variables-kartei.css` redefines every colour token                                               |
 
-Components use tokens, so most need no `dark:` classes at all.
-
 ## Tokens every theme defines
 
 | Group   | Tokens                                                                                                                                                                                                                |

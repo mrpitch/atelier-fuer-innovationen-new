@@ -1,7 +1,7 @@
 ---
 type: reference
 title: Tailwind conventions
-description: How to write Tailwind CSS v4 classes here, covering tokens, class order, variants and where custom CSS may go.
+description: How to write Tailwind CSS v4 classes here, covering class order, variants and where custom CSS may go.
 tags: [css, tailwind, conventions, styling]
 status: stable
 last_reviewed: 2026-11-21
@@ -14,19 +14,16 @@ Tailwind CSS v4. The theme is configured in CSS (`src/lib/styles/theme.css`); th
 
 ## Classes
 
-| Rule                   | Detail                                                                                                                                                                                                                          |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tokens, not raw values | Colours, radii and fonts come from the theme: `bg-card`, `text-muted-foreground`, `rounded-lg`, `font-heading`. No palette colours (`text-zinc-600`) or arbitrary colours (`bg-[#00676b]`): [Design tokens](./design-tokens.md) |
-| Spacing scale          | Use the 4px scale (`gap-6`, `px-2.5`). Arbitrary values (`p-[13px]`) only for a measured one-off, such as the 416 × 340px Stadtplan tile                                                                                        |
-| Order                  | `prettier-plugin-tailwindcss` sorts classes in `className`, `cn()` and `cva()` on `pnpm format` and in the pre-commit hook. Don't order them by hand                                                                            |
+| Rule  | Detail                                                                                                                                               |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Order | `prettier-plugin-tailwindcss` sorts classes in `className`, `cn()` and `cva()` on `pnpm format` and in the pre-commit hook. Don't order them by hand |
 
 ## Variants
 
-- `dark:` is class-based (`next-themes`), but tokens already switch with the theme. Reach for `dark:` only where a token can't express the difference.
 - State: prefer `aria-*` and `data-*` variants over JavaScript-toggled classes. Base UI marks state with attributes, and `shadcn/tailwind.css` adds matching variants: `data-open:`, `data-closed:`, `data-checked:`, `data-disabled:`, `data-active:` and more. Enter and exit transitions use `data-starting-style:` and `data-ending-style:`.
-- Parent and sibling state: `group-*` and `peer-*`, named when nested (`group/button`).
+- Parent and sibling state: `group-*` and `peer-*`.
 - Motion: `motion-safe:` for anything that animates.
-- Responsive: mobile first. Unprefixed classes are the mobile layout; `md:` and `lg:` add to it. Use container queries (`@container`, `@md:`) when a component's layout depends on its parent, not the viewport.
+- Responsive: use container queries (`@container`, `@md:`) when a component's layout depends on its parent, not the viewport.
 
 ## Custom CSS
 
