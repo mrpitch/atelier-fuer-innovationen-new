@@ -36,6 +36,10 @@ re-run `docs index` after adding or moving files.
 
 - [Folder structure](reference/global/folder-structure.md)
 
+### I18n
+
+- [Dictionary](reference/i18n/dictionary.md)
+
 ### React
 
 - [React component conventions](reference/react/react-component-conventions.md)

@@ -2,6 +2,10 @@
 // YAML, or a schema issue with no path of its own.
 export const FRONTMATTER_FIELD = '(frontmatter)'
 
+// The field name when a meta.json problem isn't tied to one listed ID: invalid
+// JSON, or a schema issue with no path of its own.
+export const META_FIELD = '(meta)'
+
 export class ContentValidationError extends Error {
 	readonly file: string
 	readonly field: string
