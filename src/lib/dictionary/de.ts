@@ -14,7 +14,11 @@ export const de = {
 	'viertel.steckbrief.prozessdokument': 'Prozessdokument',
 	'viertel.steckbrief.imStadtzentrum': 'Im Stadtzentrum',
 	'viertel.aufsaetzeHeading': 'Mehr aus dem Viertel',
+	'viertel.kapitelHeading': 'Kapitel des Leitthemas',
 	'aufsatz.readingTime': 'ca. {n} Min.',
+	'kapitel.number': 'Kapitel {n}',
+	'kapitel.abschnitteCount': '{n} Abschnitte',
+	'abschnitt.readingTime': 'ca. {n} Min.',
 } as const
 
 export type DictionaryKey = keyof typeof de
