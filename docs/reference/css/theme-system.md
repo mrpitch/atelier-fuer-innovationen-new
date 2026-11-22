@@ -4,7 +4,7 @@ title: Theme system
 description: How the Kartei theme reaches Tailwind and shadcn components, the files in src/lib/styles, dark mode through next-themes, and what changes when another theme becomes active.
 tags: [css, theming, tailwind, next-themes, dark-mode, design-tokens]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 

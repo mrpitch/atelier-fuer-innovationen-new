@@ -4,7 +4,7 @@ title: Design tokens
 description: The Kartei colour, radius, shadow and spacing tokens, the DESIGN.md colour each one implements, and the rules for using them in components.
 tags: [css, design-tokens, oklch, colors, radius, shadows, kartei]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 

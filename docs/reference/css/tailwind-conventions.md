@@ -1,10 +1,10 @@
 ---
 type: reference
 title: Tailwind conventions
-description: How to write Tailwind CSS v4 classes here, covering class order, variants and where custom CSS may go.
+description: How to write Tailwind CSS v4 classes here, covering class order, complete class names, variants and where custom CSS may go.
 tags: [css, tailwind, conventions, styling]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
@@ -14,9 +14,18 @@ Tailwind CSS v4. The theme is configured in CSS (`src/lib/styles/theme.css`); th
 
 ## Classes
 
-| Rule  | Detail                                                                                                                                               |
-| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Order | `prettier-plugin-tailwindcss` sorts classes in `className`, `cn()` and `cva()` on `pnpm format` and in the pre-commit hook. Don't order them by hand |
+| Rule        | Detail                                                                                                                                                                                                                                                                                                                  |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Order       | `prettier-plugin-tailwindcss` sorts classes in `className`, `cn()` and `cva()` on `pnpm format` and in the pre-commit hook. Don't order them by hand                                                                                                                                                                    |
+| Class names | Write complete class names, wherever you write them. Tailwind finds classes by scanning source text, so a class built from a variable never reaches the CSS: `bg-viertel-${slug}`, `'bg-viertel-' + slug`. Map values to full names instead. Lint catches only template literals inside `className`, `cn()` and `cva()` |
+
+```tsx
+// A lookup with complete class names, not a template string.
+const viertelTint = {
+	kontexte: 'bg-viertel-kontexte',
+	maerkte: 'bg-viertel-maerkte',
+} as const
+```
 
 ## Variants
 
