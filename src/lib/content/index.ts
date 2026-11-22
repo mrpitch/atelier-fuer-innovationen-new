@@ -1,4 +1,6 @@
 export { ContentValidationError } from './errors'
+export type { SplitDocument } from './frontmatter'
+export { splitDocument } from './frontmatter'
 export type { ContentGraph } from './graph'
 export { buildContentGraph } from './graph'
 export type { Seite, Site } from './loader'

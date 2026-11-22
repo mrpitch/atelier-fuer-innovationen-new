@@ -18,6 +18,10 @@ const config = {
 	// A function, so content:check runs once per commit against the real content directory,
 	// rather than once per staged file.
 	'{src/content/**,src/lib/content/**,**/meta.json}': () => 'pnpm content:check',
+	// Docs frontmatter contract and markdown lint (#45). Two functions, not file args: markdownlint-cli2
+	// unions its own config's globs with any path it's given, so passing just the staged files wouldn't
+	// narrow its scope anyway, and docs:check always validates the whole docs/ tree, like content:check.
+	'{docs/**/*.md,README.md,AGENTS.md,CLAUDE.md}': [() => 'pnpm docs:lint', () => 'pnpm docs:check'],
 	'!(*.ts|*.tsx|*.mts|*.cts|*.mdx)': 'prettier --write --ignore-unknown',
 }
 
