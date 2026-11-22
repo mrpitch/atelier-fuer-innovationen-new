@@ -63,6 +63,8 @@ The same error carries a `meta.json` problem (below): `file` is the `meta.json` 
 
 `buildContentGraph(contentDir)` (`src/lib/content/graph.ts`) is the one public interface for content: it runs the loader over `contentDir` and returns a `ContentGraph` with a `seiten` list, a `getSeite(id)` lookup, and the Navigation reads below. Taking `contentDir` as a parameter, rather than hardcoding `src/content`, is what lets tests point it at a fixture directory ([Testing conventions](../testing/testing-conventions.md)).
 
+`graph.getBody(id)` compiles a Seite's, Viertel's or the Zentrum's MDX body through Next's MDX pipeline and returns its component (issue #55): pages render a body through this instead of importing `@/content` themselves. Unlike the rest of the graph, it always imports from the real `src/content` through the `@/content` alias — a bundler-resolved path a fixture directory can't stand in for — so it isn't exercised by `buildContentGraph`'s fixture-backed tests. `id === ''` (the root Seite) gets its own literal import: the general `@/content/${id}/index.mdx` pattern can't resolve it, because the resulting path would have no folder segment between `content` and `index.mdx` (issue #25).
+
 ## Order and Navigation
 
 A folder can hold a `meta.json` that lists its children's IDs in order and nothing else — the file is a bare JSON array of strings, validated by `metaSchema` in `schemas.ts`. The listed IDs are full document IDs (above, "Document IDs"), not names relative to the folder: a `meta.json` inside `src/content/eltern/` lists its children as `eltern/erstes`, `eltern/zweites`, not `erstes`, `zweites`.
@@ -98,6 +100,17 @@ A content entry's label is never written in the Menu file: the content graph res
 `scripts/content-check.mts` builds the content graph from a content directory — the real `src/content` by default, or a directory passed as its one argument — and exits non-zero on the first `ContentValidationError`, printing the file, field and reason. `pnpm content:check` runs it against the real content directory; `pnpm check` runs `content:check` after the test suite.
 
 The script runs under plain Node, not a bundler, so it can't use path aliases like `@/lib/content`. It imports the content graph by relative path instead, with `scripts/ts-extension-loader.mjs` registered as a module hook: Node's native TypeScript support needs a file extension on every relative import, while the content graph's own files stay extensionless like the rest of the codebase. The hook only retries a failed relative resolution with `.ts` appended; it has no effect on the bundler that builds the actual site.
+
+## Content-graph boundaries
+
+`eslint.config.mjs` guards the rule "only `src/lib/content/` reads content" ([About the architecture](../../explanation/about-architecture.md), [ADR-0003](../../adr/adr-0003-urls-from-content-graph-rules.md)) at lint time instead of leaving it to review alone (issue #55). Outside `src/lib/content/`, under `src/`:
+
+- `fs`, `node:fs` and their `/promises` variants fail (`restrictions/content-fs-imports`): a file read belongs in `loader.ts`, exposed through the graph.
+- An import of `@/content` or anything under it, static or dynamic — including a dynamic import keyed by a template literal — fails (`restrictions/content-module-imports`, `restrictions/content-dynamic-imports`): ask `@/lib/content` instead. `graph.getBody(id)` (above) is the one place this import happens.
+- A deep import of a file inside `src/lib/content/`, static or dynamic, fails (`restrictions/content-graph-deep-imports`, `restrictions/content-graph-deep-dynamic-imports`): import `@/lib/content` itself, never a file inside it ([Folder structure](../global/folder-structure.md)).
+- A string or template literal starting with an ADR-0003 URL prefix (`/stadt/`, `/rundgaenge/`, `/themen/`, `/bibliothek/`), and any literal internal path in an `href` (`/` included), fail (`restrictions/content-url-literals`): a link asks the graph for its URL instead of a component building one by hand. A route's own literal type (e.g. `PageProps<'/stadt/[viertel]'>`, which Next generates from the file path) is exempt — it isn't a URL a caller wrote.
+
+The first, second and fourth bullets' restrictions turn off inside `src/lib/content/` itself, the one place they don't apply. The deep-import pair in the third bullet stays on even there: nothing in the module legitimately deep-imports itself, so unlike the others it has no file-based override to accidentally disable another check if it ever needed one — each gets its own rule name for exactly that reason (`eslint.config.mjs`'s own top-of-file comment). `eslint.config.test.ts` at the repo root exercises every restriction, in and out of the module, through ESLint's own API rather than fixture files `pnpm lint` would otherwise have to ignore.
 
 ## MDX lint
 

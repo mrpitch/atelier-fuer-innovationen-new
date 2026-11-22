@@ -14,9 +14,21 @@ import type { NavigationLink, NavigationNode } from './navigation'
 import { buildNavigation } from './navigation'
 import { orderViertel } from './viertel'
 
+// Compiles a Seite's, Viertel's or the Zentrum's MDX body through Next's MDX
+// pipeline (ADR-0002) — the one place in the module that imports `@/content`
+// dynamically, so pages never do (issue #55). `id === ''` needs its own
+// literal import: `@/content//index.mdx` has no matching file, so the
+// general pattern below can't resolve the root Seite (issue #25).
+async function importBody(id: string) {
+	return id === ''
+		? (await import('@/content/index.mdx')).default
+		: (await import(`@/content/${id}/index.mdx`)).default
+}
+
 export interface ContentGraph {
 	readonly seiten: readonly Seite[]
 	getSeite(id: string): Seite | undefined
+	getBody(id: string): ReturnType<typeof importBody>
 	readonly navigation: NavigationNode
 	getBreadcrumbs(id: string): readonly NavigationLink[]
 	getPrevious(id: string): NavigationLink | undefined
@@ -49,6 +61,7 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		getSeite(id) {
 			return seiten.find((seite) => seite.id === id)
 		},
+		getBody: importBody,
 		navigation: navigation.tree,
 		getBreadcrumbs: navigation.getBreadcrumbs,
 		getPrevious: navigation.getPrevious,

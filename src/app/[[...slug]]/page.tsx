@@ -18,10 +18,6 @@ function idFromSlug(slug: string[] | undefined): string {
 	return (slug ?? []).join('/')
 }
 
-function importSeiteBody(id: string) {
-	return id === '' ? import('@/content/index.mdx') : import(`@/content/${id}/index.mdx`)
-}
-
 export function generateStaticParams() {
 	return graph.seiten.map((seite) => ({
 		slug: seite.id === '' ? [] : seite.id.split('/'),
@@ -46,7 +42,7 @@ export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
 	const seite = graph.getSeite(id)
 	if (!seite) notFound()
 
-	const { default: Body } = await importSeiteBody(id)
+	const Body = await graph.getBody(id)
 
 	return (
 		<main>

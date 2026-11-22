@@ -16,10 +16,6 @@ function idFromViertelSlug(slug: string): string {
 	return `stadt/${slug}`
 }
 
-function importViertelBody(id: string) {
-	return import(`@/content/${id}/index.mdx`)
-}
-
 export function generateStaticParams() {
 	return graph.viertel.map((viertel) => ({ viertel: viertel.id.split('/').at(-1)! }))
 }
@@ -44,7 +40,7 @@ export default async function ViertelPage({ params }: PageProps<'/stadt/[viertel
 	const viertel = graph.getViertel(id)
 	if (!viertel) notFound()
 
-	const { default: Body } = await importViertelBody(id)
+	const Body = await graph.getBody(id)
 
 	return (
 		<main>
