@@ -37,3 +37,59 @@ export const menuEntrySchema = z.union([menuContentEntrySchema, menuExternalEntr
 export type MenuEntry = z.infer<typeof menuEntrySchema>
 
 export const menuSchema = z.array(menuEntrySchema)
+
+// A Viertel's short profile (glossary: Steckbrief). Structured fields, not
+// prose, so the Viertel page can render each one under its own label
+// (issue #28).
+export const viertelSteckbriefSchema = z.object({
+	prozessansatz: z.string().min(1),
+	bauform: z.string().min(1),
+	prozessdokument: z.string().min(1),
+	imStadtzentrum: z.string().min(1),
+})
+
+export type ViertelSteckbrief = z.infer<typeof viertelSteckbriefSchema>
+
+// A Viertel's number comes from its position in the Viertel order file
+// (loader.ts), never from frontmatter — there is deliberately no `number`
+// field here, so one in a document's frontmatter is parsed and dropped.
+export const viertelFrontmatterSchema = z.object({
+	title: z.string().min(1),
+	description: z.string().min(1),
+	shortTitle: z.string().min(1).optional(),
+	leitsatz: z.string().min(1),
+	steckbrief: viertelSteckbriefSchema,
+})
+
+export type ViertelFrontmatter = z.infer<typeof viertelFrontmatterSchema>
+
+// The Zentrum isn't a Viertel (glossary) and has no Leitsatz, Steckbrief or
+// number — its frontmatter is the same shape as a Seite's.
+export const zentrumFrontmatterSchema = z.object({
+	title: z.string().min(1),
+	description: z.string().min(1),
+	shortTitle: z.string().min(1).optional(),
+})
+
+export type ZentrumFrontmatter = z.infer<typeof zentrumFrontmatterSchema>
+
+// The Viertel order file (loader.ts) holds only an ordered list of Viertel
+// IDs — the same shape as meta.json, but its own schema since it is a
+// separate mechanism (issue #28): meta.json orders a folder's actual
+// children for Navigation, while this file numbers the Viertel only, and
+// never includes the Zentrum.
+export const viertelOrderSchema = z.array(z.string().min(1))
+
+// An Aufsatz (glossary) belongs to one Viertel, named by reference (issue
+// #29): `viertelId` holds another document's ID, checked against the actual
+// Viertel by `references.ts`, not here — a schema can't see the rest of the
+// graph. The `...Id` suffix also keeps the value out of the spell check
+// (cspell.json's frontmatter-identifier pattern).
+export const aufsatzFrontmatterSchema = z.object({
+	title: z.string().min(1),
+	description: z.string().min(1),
+	shortTitle: z.string().min(1).optional(),
+	viertelId: z.string().min(1),
+})
+
+export type AufsatzFrontmatter = z.infer<typeof aufsatzFrontmatterSchema>

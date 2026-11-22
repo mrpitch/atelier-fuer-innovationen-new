@@ -187,4 +187,131 @@ describe('buildContentGraph', () => {
 			}
 		})
 	})
+
+	describe('Viertel and Zentrum', () => {
+		it('numbers the Viertel by their position in the Viertel order file, ignoring any frontmatter number', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			expect(graph.viertel.map((viertel) => viertel.id)).toEqual([
+				'stadt/erste-viertel',
+				'stadt/zweite-viertel',
+			])
+			expect(graph.viertel.map((viertel) => viertel.number)).toEqual([1, 2])
+			// erste-viertel's frontmatter sets `number: 99`; its real number still
+			// comes from its position (1), proving frontmatter can't set it.
+			expect(graph.getViertel('stadt/erste-viertel')?.number).toBe(1)
+		})
+
+		it('reads the Leitsatz and Steckbrief from structured frontmatter fields', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			const viertel = graph.getViertel('stadt/erste-viertel')
+			expect(viertel?.leitsatz).toBe('Platzhalter-Leitsatz.')
+			expect(viertel?.steckbrief).toEqual({
+				prozessansatz: 'Platzhalter-Prozessansatz.',
+				bauform: 'Platzhalter-Bauform.',
+				prozessdokument: 'Platzhalter-Prozessdokument.',
+				imStadtzentrum: 'Platzhalter.',
+			})
+		})
+
+		it('loads the Zentrum as its own type, not a Viertel and with no number', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			expect(graph.zentrum.id).toBe('stadt/zentrum')
+			expect(graph.zentrum.url).toBe('/stadt/zentrum')
+			expect(graph.zentrum.title).toBe('Zentrum')
+			expect(graph.zentrum).not.toHaveProperty('number')
+		})
+
+		it('still loads the Stadt landing Seite itself as a plain Seite', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			const stadt = graph.getSeite('stadt')
+			expect(stadt?.url).toBe('/stadt')
+			expect(stadt?.shortTitle).toBe('Stadtplan')
+		})
+
+		it('fails when the Viertel order file lists an unknown ID, naming the file and the ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'stadt-order-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('stadt', 'viertel-order.json'))
+				expect(validationError.field).toBe('stadt/nichtvorhanden')
+				expect(validationError.reason).toMatch(/no matching/i)
+			}
+		})
+
+		it('fails when the Viertel order file omits an actual Viertel, naming the file and the ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'stadt-order-missing-child'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('stadt', 'viertel-order.json'))
+				expect(validationError.field).toBe('stadt/erste-viertel')
+				expect(validationError.reason).toMatch(/missing/i)
+			}
+		})
+	})
+
+	describe('Aufsatz', () => {
+		it('resolves an Aufsatz to its ID, URL and Viertel reference', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'aufsatz-valid'))
+
+			expect(graph.aufsaetze.map((aufsatz) => aufsatz.id)).toEqual([
+				'bibliothek/aufsaetze/erster-aufsatz',
+				'bibliothek/aufsaetze/zweiter-aufsatz',
+			])
+
+			const erster = graph.getAufsatz('bibliothek/aufsaetze/erster-aufsatz')
+			expect(erster?.url).toBe('/bibliothek/aufsaetze/erster-aufsatz')
+			expect(erster?.title).toBe('Erster Aufsatz')
+			expect(erster?.viertelId).toBe('stadt/erste-viertel')
+		})
+
+		it('computes the reading time from the body word count', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'aufsatz-valid'))
+
+			// erster-aufsatz's body is 201 words; at 200 words/minute that rounds
+			// up to 2 minutes, proving it's computed, not a fixed value.
+			expect(graph.getAufsatz('bibliothek/aufsaetze/erster-aufsatz')?.readingTimeMinutes).toBe(2)
+			// zweiter-aufsatz's body is a few words; reading time floors at 1.
+			expect(graph.getAufsatz('bibliothek/aufsaetze/zweiter-aufsatz')?.readingTimeMinutes).toBe(1)
+		})
+
+		it("derives each Viertel's related Aufsätze from the references, never from the Viertel itself", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'aufsatz-valid'))
+
+			expect(
+				graph.getAufsaetzeByViertel('stadt/erste-viertel').map((aufsatz) => aufsatz.id),
+			).toEqual(['bibliothek/aufsaetze/erster-aufsatz'])
+			expect(
+				graph.getAufsaetzeByViertel('stadt/zweite-viertel').map((aufsatz) => aufsatz.id),
+			).toEqual(['bibliothek/aufsaetze/zweiter-aufsatz'])
+			expect(graph.getViertel('stadt/erste-viertel')).not.toHaveProperty('aufsaetze')
+		})
+
+		it('fails when an Aufsatz references a missing Viertel, naming the file, field and ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'aufsatz-missing-viertel'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(
+					path.join('bibliothek', 'aufsaetze', 'verwaister-aufsatz', 'index.mdx'),
+				)
+				expect(validationError.field).toBe('viertelId')
+				expect(validationError.reason).toContain('stadt/nichtvorhanden')
+			}
+		})
+	})
 })

@@ -5,7 +5,12 @@ import { notFound } from 'next/navigation'
 
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
+import { ViertelListe } from '@/components/viertel/viertel-liste'
 import { buildContentGraph } from '@/lib/content'
+
+// The Stadt area's landing Seite (issue #28): the one Seite ID that also
+// lists the Viertel and Zentrum, derived from the content graph.
+const STADT_SEITE_ID = 'stadt'
 
 const graph = buildContentGraph(path.join(process.cwd(), 'src/content'))
 
@@ -54,6 +59,7 @@ export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
 			<Breadcrumbs items={graph.getBreadcrumbs(id)} />
 			<h1>{seite.title}</h1>
 			<Body />
+			{id === STADT_SEITE_ID && <ViertelListe viertel={graph.viertel} zentrum={graph.zentrum} />}
 			<PreviousNext previous={graph.getPrevious(id)} next={graph.getNext(id)} />
 		</main>
 	)

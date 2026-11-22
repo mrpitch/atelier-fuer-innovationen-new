@@ -7,6 +7,15 @@ export const de = {
 	'layout.headerMenu': 'Hauptnavigation',
 	'layout.footerMenu': 'Fußzeilen-Navigation',
 	'navigation.sitemap': 'Sitemap',
+	'stadt.navigation': 'Viertel und Zentrum der Wissensstadt',
+	'stadt.zentrumHeading': 'Zentrum',
+	'stadt.viertelHeading': 'Die acht Viertel',
+	'viertel.steckbrief.prozessansatz': 'Prozessansatz',
+	'viertel.steckbrief.bauform': 'Bauform',
+	'viertel.steckbrief.prozessdokument': 'Prozessdokument',
+	'viertel.steckbrief.imStadtzentrum': 'Im Stadtzentrum',
+	'viertel.aufsaetzeHeading': 'Mehr aus dem Viertel',
+	'aufsatz.readingTime': 'ca. {n} Min.',
 } as const
 
 export type DictionaryKey = keyof typeof de

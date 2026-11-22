@@ -14,13 +14,32 @@ The loader and content graph live in `src/lib/content/`, with `index.ts` as thei
 
 ## Content types
 
-A content type is decided by where a file sits under `src/content`, not by a field in its frontmatter. The first and currently only type is **Seite** ([glossary](../glossary.md)): a plain standalone page, such as Start, Idee, Kontakt, Impressum or Datenschutz.
+A content type is decided by where a file sits under `src/content`, not by a field in its frontmatter. **Seite** ([glossary](../glossary.md)) is a plain standalone page, such as Start, Idee, Kontakt, Impressum or Datenschutz. **Viertel** and **Zentrum** (issue #28) are the Stadt area's own types, located by a rule of their own: a document directly inside `src/content/stadt/<slug>/` is the Zentrum when `slug` is `zentrum`, a Viertel otherwise; `src/content/stadt/index.mdx` itself (no further segment) is a Seite, the Stadt area's landing page. **Aufsatz** (issue #29) is the Bibliothek area's own type, by the same kind of rule: a document directly inside `src/content/bibliothek/aufsaetze/<slug>/`.
 
-| Type  | Frontmatter fields                                                                   | Schema                                                   |
-| ----- | ------------------------------------------------------------------------------------ | -------------------------------------------------------- |
-| Seite | `title`, `description`, `shortTitle` (optional), `draft` (optional, default `false`) | `seiteFrontmatterSchema` in `src/lib/content/schemas.ts` |
+| Type    | Frontmatter fields                                                                   | Schema                                                     |
+| ------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| Seite   | `title`, `description`, `shortTitle` (optional), `draft` (optional, default `false`) | `seiteFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Viertel | `title`, `description`, `shortTitle` (optional), `leitsatz`, `steckbrief` (object)   | `viertelFrontmatterSchema` in `src/lib/content/schemas.ts` |
+| Zentrum | `title`, `description`, `shortTitle` (optional)                                      | `zentrumFrontmatterSchema` in `src/lib/content/schemas.ts` |
+| Aufsatz | `title`, `description`, `shortTitle` (optional), `viertelId` (reference)             | `aufsatzFrontmatterSchema` in `src/lib/content/schemas.ts` |
 
-As the Wissensstadt content types arrive, each gets its own schema in `schemas.ts` and its own location rule in `src/lib/content/loader.ts`.
+A Viertel's Steckbrief (glossary) is a nested frontmatter object: `prozessansatz`, `bauform`, `prozessdokument`, `imStadtzentrum`.
+
+As further Wissensstadt content types arrive, each gets its own schema in `schemas.ts` and its own location rule in `src/lib/content/loader.ts`.
+
+### References
+
+A frontmatter field can hold another document's ID instead of a value of its own — a reference (issue #29). Aufsatz's `viertelId` is the first one: it names the Viertel the Aufsatz belongs to. The field is validated as a non-empty string in `schemas.ts` like any other string field — a Zod schema can't see the rest of the content graph to check the ID exists — so the actual check happens once every document is loaded, via `resolveReference` in `src/lib/content/references.ts`. That function is the one generic resolution mechanism for every reference field: given the referring file, the field name, the ID and the target collection it points into, it returns the matching document or throws `ContentValidationError` naming the file, the field and the missing ID. A later reference field reuses this same function against its own target collection — it needs no resolution code of its own, only a call site. A reference field's frontmatter key ends in `Id` (`viertelId`, not `viertel`) so its value — a document ID, not prose — is skipped by the spell check the same way `id`/`slug` keys already are.
+
+Aufsatz's reading time (`readingTimeMinutes`) is computed from its body's word count by `src/lib/content/reading-time.ts`, shown via the dictionary key `aufsatz.readingTime` ("ca. {n} Min."). A Viertel's related Aufsätze (`graph.getAufsaetzeByViertel(id)`, "Mehr aus dem Viertel") are derived the same way: filtered from the already-resolved Aufsätze by their `viertelId`, never listed by hand in the Viertel's own frontmatter or body.
+
+### Viertel numbers
+
+A Viertel's number (glossary: fixed, 01–08) comes from its 1-based position in `src/content/stadt/viertel-order.json`, a bare JSON array of Viertel IDs in display order — never from frontmatter, so a `number` key in a Viertel's frontmatter is parsed and silently dropped. This is a separate mechanism from `meta.json`, not a reuse of it: `meta.json` strictly orders a folder's actual children for Navigation, and Viertel/Zentrum aren't part of that Seite-only tree, so a `meta.json` under `stadt/` would have no Seite children to validate against and would always fail. `loadViertelOrder` (`loader.ts`) reads the file; `orderViertel` (`viertel.ts`, pure, like `navigation.ts`) does the same strict reconciliation `meta.json` does — every listed ID must match an actual Viertel, every actual Viertel must be listed exactly once — and assigns `.number`. `buildContentGraph`'s result exposes the ordered list as `graph.viertel` and a lookup as `graph.getViertel(id)`; the single Zentrum is `graph.zentrum`.
+
+### Illustrations
+
+Each Viertel and the Zentrum has an illustration, looked up by the owning document's ID — content never names an illustration file. `src/components/viertel/illustration.tsx` holds the registry (the same lookup-by-key pattern as the [icon registry](../components/icon-registry.md)), currently mapping every ID to one shared placeholder until the real illustrations (PRODUCT.md, Evidence on Hand) are built.
 
 ## Document IDs
 
