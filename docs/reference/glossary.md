@@ -4,7 +4,7 @@ title: Glossary
 description: Canonical definitions for domain terms — the shared vocabulary used by the codebase, docs, and AI agents.
 tags: [glossary, domain, language]
 status: stable
-last_reviewed: 2026-11-20
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
@@ -31,6 +31,10 @@ _Avoid_: page (for the Wissensstadt types), Artikel
 **Draft**
 A document that is written and checked but not yet published.
 _Avoid_: Entwurf, unpublished, hidden
+
+**Sitemap**
+A generated page and `sitemap.xml` file that list every published document in Navigation order, derived from the content graph. Distinct from Navigation, which is the hierarchy itself.
+_Avoid_: site map
 
 ## The Wissensstadt
 
