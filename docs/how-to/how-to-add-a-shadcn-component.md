@@ -41,7 +41,7 @@ Prerequisite for Pro Blocks: `SHADCNDESIGN_LICENSE_KEY` in `.env` ([shadcn setup
    pnpm exec eslint --fix src/components
    ```
 
-5. Check the Kartei rules on what arrived: flat page surfaces, token colours only, no `font-semibold` on `font-heading` ([Design tokens](../reference/css/design-tokens.md)).
+5. Check the Kartei rules on what arrived: flat page surfaces, no `font-semibold` on `font-heading` ([Design tokens](../reference/css/design-tokens.md)).
 
 ## Verify
 
