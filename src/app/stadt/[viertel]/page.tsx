@@ -1,12 +1,14 @@
 import path from 'node:path'
 
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { AufsaetzeListe } from '@/components/aufsatz/aufsaetze-liste'
 import { Illustration } from '@/components/viertel/illustration'
 import { Steckbrief } from '@/components/viertel/steckbrief'
-import { buildContentGraph } from '@/lib/content'
+import { buildContentGraph, shortTitleOrTitle } from '@/lib/content'
+import { t } from '@/lib/dictionary'
 
 const graph = buildContentGraph(path.join(process.cwd(), 'src/content'))
 
@@ -46,6 +48,7 @@ export default async function ViertelPage({ params }: PageProps<'/stadt/[viertel
 	if (!viertel) notFound()
 
 	const { default: Body } = await importViertelBody(id)
+	const kapitel = graph.getKapitelByViertel(viertel.id)
 
 	return (
 		<main>
@@ -53,6 +56,14 @@ export default async function ViertelPage({ params }: PageProps<'/stadt/[viertel
 			<h1>{viertel.title}</h1>
 			<Steckbrief leitsatz={viertel.leitsatz} steckbrief={viertel.steckbrief} />
 			<Body />
+			{kapitel && (
+				<nav aria-label={t('viertel.kapitelHeading')}>
+					<h2>{t('viertel.kapitelHeading')}</h2>
+					<Link href={kapitel.url}>
+						{t('kapitel.number', { n: kapitel.number })}: {shortTitleOrTitle(kapitel)}
+					</Link>
+				</nav>
+			)}
 			<AufsaetzeListe aufsaetze={graph.getAufsaetzeByViertel(viertel.id)} />
 		</main>
 	)

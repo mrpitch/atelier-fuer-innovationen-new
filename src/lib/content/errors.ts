@@ -26,6 +26,13 @@ export const ZENTRUM_FIELD = '(zentrum)'
 // instead names that ID directly, the same way meta.json does (issue #28).
 export const VIERTEL_ORDER_FIELD = '(viertel-order)'
 
+// The field name when a Kapitel's own Abschnitt order file (its meta.json,
+// issue #30) isn't tied to one listed ID: the file is missing, invalid JSON,
+// or a schema issue with no path of its own. A listed ID with no matching
+// Abschnitt, or an Abschnitt missing from the list, instead names that ID
+// directly, the same way the Viertel order file does.
+export const ABSCHNITT_ORDER_FIELD = '(abschnitt-order)'
+
 export class ContentValidationError extends Error {
 	readonly file: string
 	readonly field: string

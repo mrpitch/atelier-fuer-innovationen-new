@@ -1,7 +1,12 @@
+import { buildAbschnittNavigation, orderAbschnitte } from './abschnitt'
 import { resolveAufsaetze } from './aufsatz'
-import type { Aufsatz, Seite, Site, Viertel, Zentrum } from './loader'
+import { resolveKapitel } from './kapitel'
+import type { Abschnitt, Aufsatz, Kapitel, Seite, Site, Viertel, Zentrum } from './loader'
 import {
+	loadAbschnittDocuments,
+	loadAbschnittOrder,
 	loadAufsatzDocuments,
+	loadKapitelDocuments,
 	loadMenus,
 	loadMeta,
 	loadSeiten,
@@ -43,6 +48,18 @@ export interface ContentGraph {
 	// A Viertel's related Aufsätze ("Mehr aus dem Viertel") — derived here
 	// from each Aufsatz's Viertel reference, never listed by hand.
 	getAufsaetzeByViertel(viertelId: string): readonly Aufsatz[]
+	// Every Kapitel of the Leitthema (issue #30), in Kapitel number order
+	// (ADR-0003: "Kapitel n = Viertel n"). A Viertel has at most one.
+	readonly kapitel: readonly Kapitel[]
+	getKapitel(id: string): Kapitel | undefined
+	getKapitelByViertel(viertelId: string): Kapitel | undefined
+	// A Kapitel's Abschnitte, ordered by its own meta.json — never listed by
+	// hand on the Kapitel itself; "N Abschnitte" is this list's length.
+	getAbschnitteByKapitel(kapitelId: string): readonly Abschnitt[]
+	// Previous/next across every Abschnitt, crossing from the last of one
+	// Kapitel to the first of the next in Kapitel number order.
+	getPreviousAbschnitt(id: string): NavigationLink | undefined
+	getNextAbschnitt(id: string): NavigationLink | undefined
 }
 
 // The one public interface for content (ADR-0002): built from loader output,
@@ -55,6 +72,20 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 	const viertel = orderViertel(loadViertelOrder(contentDir), loadViertelDocuments(contentDir))
 	const zentrum = loadZentrum(contentDir)
 	const aufsaetze = resolveAufsaetze(loadAufsatzDocuments(contentDir), viertel)
+
+	const kapitel = resolveKapitel(loadKapitelDocuments(contentDir), viertel)
+	const abschnittDocuments = loadAbschnittDocuments(contentDir)
+	const abschnitteByKapitel = new Map(
+		kapitel.map((item) => [
+			item.id,
+			orderAbschnitte(
+				item,
+				loadAbschnittOrder(contentDir, item.id),
+				abschnittDocuments.filter((document) => document.kapitelId === item.id),
+			),
+		]),
+	)
+	const abschnittNavigation = buildAbschnittNavigation(kapitel, abschnitteByKapitel)
 
 	return {
 		seiten,
@@ -82,5 +113,17 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		getAufsaetzeByViertel(viertelId) {
 			return aufsaetze.filter((aufsatz) => aufsatz.viertelId === viertelId)
 		},
+		kapitel,
+		getKapitel(id) {
+			return kapitel.find((item) => item.id === id)
+		},
+		getKapitelByViertel(viertelId) {
+			return kapitel.find((item) => item.viertelId === viertelId)
+		},
+		getAbschnitteByKapitel(kapitelId) {
+			return abschnitteByKapitel.get(kapitelId) ?? []
+		},
+		getPreviousAbschnitt: abschnittNavigation.getPreviousAbschnitt,
+		getNextAbschnitt: abschnittNavigation.getNextAbschnitt,
 	}
 }

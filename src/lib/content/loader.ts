@@ -4,6 +4,7 @@ import path from 'node:path'
 import type { z } from 'zod'
 
 import {
+	ABSCHNITT_ORDER_FIELD,
 	ContentValidationError,
 	FRONTMATTER_FIELD,
 	MENU_FIELD,
@@ -15,7 +16,9 @@ import {
 import { splitDocument } from './frontmatter'
 import type { MenuEntry, Site, ViertelSteckbrief } from './schemas'
 import {
+	abschnittFrontmatterSchema,
 	aufsatzFrontmatterSchema,
+	kapitelFrontmatterSchema,
 	menuSchema,
 	metaSchema,
 	seiteFrontmatterSchema,
@@ -110,6 +113,22 @@ function isAufsatzPath(relativePath: string): boolean {
 	return AUFSATZ_CHILD_PATTERN.test(relativeDir(relativePath))
 }
 
+// Location rule for Kapitel and Abschnitt (issue #30, ADR-0003): a Kapitel
+// belongs to the Leitthema, not to the Viertel it's set in, so it sits
+// directly inside src/content/leitthema/<slug>/ — its files, not the Viertel
+// folder's. An Abschnitt sits one level deeper, inside its Kapitel's own
+// folder.
+const KAPITEL_CHILD_PATTERN = /^leitthema\/[^/]+$/
+const ABSCHNITT_CHILD_PATTERN = /^leitthema\/[^/]+\/[^/]+$/
+
+function isKapitelPath(relativePath: string): boolean {
+	return KAPITEL_CHILD_PATTERN.test(relativeDir(relativePath))
+}
+
+function isAbschnittPath(relativePath: string): boolean {
+	return ABSCHNITT_CHILD_PATTERN.test(relativeDir(relativePath))
+}
+
 // One frontmatter validator for every content type: only the schema differs
 // between Seite, Viertel and Zentrum.
 function validateFrontmatter<T>(schema: z.ZodType<T>, file: string, data: unknown): T {
@@ -152,10 +171,17 @@ export interface Meta {
 
 function listMetaFiles(contentDir: string): string[] {
 	const entries = fs.readdirSync(contentDir, { recursive: true, withFileTypes: true })
-	return entries
-		.filter((entry) => entry.isFile() && entry.name === META_FILE_NAME)
-		.map((entry) => path.relative(contentDir, path.join(entry.parentPath, entry.name)))
-		.sort()
+	return (
+		entries
+			.filter((entry) => entry.isFile() && entry.name === META_FILE_NAME)
+			.map((entry) => path.relative(contentDir, path.join(entry.parentPath, entry.name)))
+			// A Kapitel folder's own meta.json orders its Abschnitte (issue #30,
+			// loadAbschnittOrder below), not Seite children — excluded here the same
+			// way Viertel/Zentrum/Aufsatz documents are excluded from loadSeiten, so
+			// buildNavigation's strict Seite-only validation never sees it.
+			.filter((relativePath) => !KAPITEL_CHILD_PATTERN.test(relativeDir(relativePath)))
+			.sort()
+	)
 }
 
 // meta.json sits beside the index.mdx of the folder it orders, so the folder's
@@ -194,7 +220,11 @@ export function loadMeta(contentDir: string): Map<string, Meta> {
 export function loadSeiten(contentDir: string): Seite[] {
 	return listMdxFiles(contentDir)
 		.filter(
-			(relativePath) => stadtChildSlug(relativePath) === undefined && !isAufsatzPath(relativePath),
+			(relativePath) =>
+				stadtChildSlug(relativePath) === undefined &&
+				!isAufsatzPath(relativePath) &&
+				!isKapitelPath(relativePath) &&
+				!isAbschnittPath(relativePath),
 		)
 		.map((relativePath) => {
 			const absolutePath = path.join(contentDir, relativePath)
@@ -337,6 +367,120 @@ export function loadAufsatzDocuments(contentDir: string): AufsatzDocument[] {
 			const id = deriveId(relativePath)
 			return { id, url: seiteUrl(id), body, file: relativePath, ...data }
 		})
+}
+
+export interface KapitelDocument {
+	readonly id: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly viertelId: string
+	readonly body: string
+	// The source file's path, only for the reference-resolution and
+	// duplicate-Viertel errors (kapitel.ts, references.ts). Dropped once
+	// resolved, the same way AufsatzDocument's does.
+	readonly file: string
+}
+
+// A Kapitel (issue #30) with its Viertel reference resolved and its number
+// and URL derived from that Viertel (kapitel.ts): the one shape pages and
+// the content graph deal with. Unlike Viertel/Aufsatz, its URL depends on the
+// resolved Viertel's slug and number (ADR-0003), so it can't be assigned
+// eagerly here.
+export interface Kapitel {
+	readonly id: string
+	readonly url: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly viertelId: string
+	readonly body: string
+	readonly number: number
+}
+
+// Unresolved Kapitel documents (issue #30): loader.ts only reads and
+// validates frontmatter here, the same split as Viertel and Aufsatz.
+export function loadKapitelDocuments(contentDir: string): KapitelDocument[] {
+	return listMdxFiles(contentDir)
+		.filter(isKapitelPath)
+		.map((relativePath) => {
+			const absolutePath = path.join(contentDir, relativePath)
+			const raw = fs.readFileSync(absolutePath, 'utf8')
+			const { frontmatter, body } = splitDocument(relativePath, raw)
+			const data = validateFrontmatter(kapitelFrontmatterSchema, relativePath, frontmatter)
+			const id = deriveId(relativePath)
+			return { id, body, file: relativePath, ...data }
+		})
+}
+
+export interface AbschnittDocument {
+	readonly id: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly body: string
+	// The Kapitel this Abschnitt sits in, derived from its own ID (dropping
+	// the last segment) rather than a frontmatter reference — an Abschnitt
+	// belongs to its Kapitel by folder location, the same way a Viertel
+	// belongs to the Stadt area by location rather than by field.
+	readonly kapitelId: string
+}
+
+// An Abschnitt (issue #30) with its position, number, URL and reading time
+// derived from its Kapitel (abschnitt.ts): the one shape pages and the
+// content graph deal with. Like Kapitel, its URL and number depend on
+// already-resolved data, so it can't be assigned eagerly here.
+export interface Abschnitt {
+	readonly id: string
+	readonly url: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly body: string
+	readonly kapitelId: string
+	readonly position: number
+	readonly number: string
+	readonly readingTimeMinutes: number
+}
+
+// Unresolved Abschnitt documents (issue #30): loader.ts only reads and
+// validates frontmatter here, the same split as Kapitel.
+export function loadAbschnittDocuments(contentDir: string): AbschnittDocument[] {
+	return listMdxFiles(contentDir)
+		.filter(isAbschnittPath)
+		.map((relativePath) => {
+			const absolutePath = path.join(contentDir, relativePath)
+			const raw = fs.readFileSync(absolutePath, 'utf8')
+			const { frontmatter, body } = splitDocument(relativePath, raw)
+			const data = validateFrontmatter(abschnittFrontmatterSchema, relativePath, frontmatter)
+			const id = deriveId(relativePath)
+			const kapitelId = id.split('/').slice(0, -1).join('/')
+			return { id, kapitelId, body, ...data }
+		})
+}
+
+// A Kapitel's own Abschnitt order (issue #30): its own meta.json, read
+// directly by this one Kapitel ID rather than through the generic
+// listMetaFiles/loadMeta scan above (which is excluded from this path and
+// stays Seite-only for Navigation). Required, the same way the Viertel order
+// file is: an explicit order is the source of an Abschnitt's position, not a
+// natural-key fallback.
+export function loadAbschnittOrder(contentDir: string, kapitelId: string): Meta {
+	const file = path.join(kapitelId, META_FILE_NAME)
+	const absolutePath = path.join(contentDir, file)
+	if (!fs.existsSync(absolutePath)) {
+		throw new ContentValidationError(file, ABSCHNITT_ORDER_FIELD, 'file not found')
+	}
+
+	const data = readJsonFile(file, absolutePath, ABSCHNITT_ORDER_FIELD)
+
+	const parsed = metaSchema.safeParse(data)
+	if (!parsed.success) {
+		const issue = parsed.error.issues[0]
+		throw new ContentValidationError(file, ABSCHNITT_ORDER_FIELD, issue.message)
+	}
+
+	return { file, order: parsed.data }
 }
 
 const SITE_FILE_NAME = 'site.json'

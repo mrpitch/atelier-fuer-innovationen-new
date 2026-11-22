@@ -93,3 +93,26 @@ export const aufsatzFrontmatterSchema = z.object({
 })
 
 export type AufsatzFrontmatter = z.infer<typeof aufsatzFrontmatterSchema>
+
+// A Kapitel (glossary) belongs to one Viertel, by reference (issue #30), the
+// same reference shape as Aufsatz's viertelId. Its number and URL come from
+// that Viertel (kapitel.ts), never from frontmatter.
+export const kapitelFrontmatterSchema = z.object({
+	title: z.string().min(1),
+	description: z.string().min(1),
+	shortTitle: z.string().min(1).optional(),
+	viertelId: z.string().min(1),
+})
+
+export type KapitelFrontmatter = z.infer<typeof kapitelFrontmatterSchema>
+
+// An Abschnitt (glossary) belongs to one Kapitel by its folder location, not
+// by reference. Its position, number and URL come from the Kapitel's own
+// meta.json order (abschnitt.ts), never from frontmatter.
+export const abschnittFrontmatterSchema = z.object({
+	title: z.string().min(1),
+	description: z.string().min(1),
+	shortTitle: z.string().min(1).optional(),
+})
+
+export type AbschnittFrontmatter = z.infer<typeof abschnittFrontmatterSchema>
