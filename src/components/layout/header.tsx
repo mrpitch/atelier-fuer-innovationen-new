@@ -7,13 +7,14 @@ import { t } from '@/lib/dictionary'
 
 interface HeaderProps extends React.ComponentProps<'header'> {
 	site: Site
+	homeUrl: string
 	menu: readonly MenuLink[]
 }
 
-function Header({ site, menu, ...props }: HeaderProps) {
+function Header({ site, homeUrl, menu, ...props }: HeaderProps) {
 	return (
 		<header data-slot="header" {...props}>
-			<Link href="/">{siteWordmark(site)}</Link>
+			<Link href={homeUrl}>{siteWordmark(site)}</Link>
 			<nav data-slot="header-menu" aria-label={t('layout.headerMenu')}>
 				<ul>
 					{menu.map((item) => (

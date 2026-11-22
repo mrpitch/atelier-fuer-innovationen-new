@@ -17,10 +17,6 @@ function idFromSlug(slug: string): string {
 	return `${AUFSATZ_ID_PREFIX}/${slug}`
 }
 
-function importAufsatzBody(id: string) {
-	return import(`@/content/${id}/index.mdx`)
-}
-
 export function generateStaticParams() {
 	return graph.aufsaetze.map((aufsatz) => ({ slug: aufsatz.id.split('/').at(-1)! }))
 }
@@ -45,7 +41,7 @@ export default async function AufsatzPage({ params }: PageProps<'/bibliothek/auf
 	const aufsatz = graph.getAufsatz(id)
 	if (!aufsatz) notFound()
 
-	const { default: Body } = await importAufsatzBody(id)
+	const Body = await graph.getBody(id)
 
 	return (
 		<main>

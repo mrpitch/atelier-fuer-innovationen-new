@@ -4,7 +4,7 @@ title: Folder structure
 description: Where code lives under src/ (app, components, lib, content), how files are named, and when a concern in src/lib gets its own domain folder.
 tags: [architecture, folder-structure, conventions, components, lib]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
@@ -70,6 +70,6 @@ A concern gets a domain folder once it needs at least two of these:
 | `content/`    | The content layer of epic #23: loader, frontmatter schemas per content type, the content graph |
 | `dictionary/` | The German UI dictionary (issue #26): lookup by key, interpolation                             |
 
-A domain folder has an `index.ts` as its public API. Consumers import from `@/lib/<domain>`, never from a file inside it.
+A domain folder has an `index.ts` as its public API. Consumers import from `@/lib/<domain>`.
 
 `src/lib/utils/cn.ts` re-exports `cn` from the `cn` package for registry items that import it through `aliases.utils`. Project code imports `cn` from `'cn'`, as the shadcn primitives do.

@@ -24,8 +24,29 @@ const restrictions = {
 		'use-client-route-syntax': builtinRules.get('no-restricted-syntax'),
 		'static-export-config-syntax': builtinRules.get('no-restricted-syntax'),
 		'content-mdx-import-export': builtinRules.get('no-restricted-syntax'),
+		'content-fs-imports': builtinRules.get('no-restricted-imports'),
+		'content-module-imports': builtinRules.get('no-restricted-imports'),
+		'content-graph-deep-imports': builtinRules.get('no-restricted-imports'),
+		'content-graph-deep-dynamic-imports': builtinRules.get('no-restricted-syntax'),
+		'content-dynamic-imports': builtinRules.get('no-restricted-syntax'),
+		'content-url-literals': builtinRules.get('no-restricted-syntax'),
 	},
 }
+
+// Content-graph boundaries (issue #55): only src/lib/content/ reads content (About the
+// architecture, ADR-0003) — everywhere else in src/ asks the graph instead of touching the file
+// system, src/content or a file inside the module directly. Shared messages, since several
+// selectors below report the same violation.
+const CONTENT_MODULE_MESSAGE =
+	'Only src/lib/content/ reads content, static or dynamic import alike. Import @/lib/content instead. See docs/explanation/about-architecture.md.'
+const CONTENT_FS_MESSAGE =
+	'File system access belongs in src/lib/content/, the one module that reads content. See docs/explanation/about-architecture.md.'
+const CONTENT_DEEP_IMPORT_MESSAGE =
+	'Import from @/lib/content, never a file inside it. See docs/reference/global/folder-structure.md.'
+const CONTENT_URL_MESSAGE =
+	"URLs come from the content graph's per-type rule (ADR-0003), not a hand-built path. Ask @/lib/content for the link instead."
+const CONTENT_HREF_MESSAGE =
+	'href takes a URL from the content graph (ADR-0003), not a hand-built internal path. Ask @/lib/content for the link instead.'
 
 const eslintConfig = defineConfig([
 	...nextVitals,
@@ -146,6 +167,111 @@ const eslintConfig = defineConfig([
 						'`export const dynamicParams = true` is unused here: every dynamic segment exports `generateStaticParams()` from the content graph. Use `export const dynamicParams = false`. See docs/reference/react/static-export.md.',
 				},
 			],
+		},
+	},
+	{
+		// Content-graph boundaries (issue #55): only src/lib/content/ reads content (About the
+		// architecture, ADR-0003). Scoped to src/ (not the repo-wide glob above) because
+		// scripts/, which runs under plain Node outside the bundle, reads files and the content
+		// graph by its own convention (content-layer.md) and isn't part of this boundary.
+		files: ['src/**/*.{js,jsx,mjs,ts,tsx,mts,cts}'],
+		plugins: { restrictions },
+		rules: {
+			'restrictions/content-fs-imports': [
+				'error',
+				{
+					paths: [
+						{ name: 'fs', message: CONTENT_FS_MESSAGE },
+						{ name: 'node:fs', message: CONTENT_FS_MESSAGE },
+						{ name: 'fs/promises', message: CONTENT_FS_MESSAGE },
+						{ name: 'node:fs/promises', message: CONTENT_FS_MESSAGE },
+					],
+				},
+			],
+
+			'restrictions/content-module-imports': [
+				'error',
+				{
+					paths: [{ name: '@/content', message: CONTENT_MODULE_MESSAGE }],
+					patterns: [{ group: ['@/content/*'], message: CONTENT_MODULE_MESSAGE }],
+				},
+			],
+
+			// `no-restricted-imports` only checks static `import`/`require`; the content module's
+			// own MDX-body loading (graph.ts) uses dynamic `import()`, so that needs its own
+			// `no-restricted-syntax` selectors to catch the same `@/content` boundary.
+			'restrictions/content-dynamic-imports': [
+				'error',
+				{
+					selector: 'ImportExpression[source.value=/^@\\/content(\\/|$)/]',
+					message: CONTENT_MODULE_MESSAGE,
+				},
+				{
+					selector:
+						'ImportExpression > TemplateLiteral > TemplateElement:first-child[value.raw=/^@\\/content\\//]',
+					message: CONTENT_MODULE_MESSAGE,
+				},
+			],
+
+			// Folder structure (folder-structure.md): a domain folder's index.ts is its public
+			// API; consumers import `@/lib/content`, never a file inside it. A separate rule name
+			// from the deep *static* import below (not just a second selector on it), even though
+			// both report the same message: nothing inside src/lib/content legitimately needs a
+			// deep import of itself, static or dynamic, so unlike `content-dynamic-imports` this
+			// one has no `src/lib/content/**` override to protect from accidentally disabling.
+			'restrictions/content-graph-deep-dynamic-imports': [
+				'error',
+				{
+					selector: 'ImportExpression[source.value=/^@\\/lib\\/content\\//]',
+					message: CONTENT_DEEP_IMPORT_MESSAGE,
+				},
+			],
+
+			'restrictions/content-graph-deep-imports': [
+				'error',
+				{
+					patterns: [{ group: ['@/lib/content/*'], message: CONTENT_DEEP_IMPORT_MESSAGE }],
+				},
+			],
+
+			// ADR-0003: a string or template literal that starts with a content-graph URL prefix,
+			// and any literal internal path in an `href` (`/` included), are hand-built URLs. The
+			// `:not(TSLiteralType > Literal)` guard excludes a type position such as
+			// `PageProps<'/stadt/[viertel]'>`, which Next generates from the route's file path, not
+			// a literal a caller wrote to link somewhere.
+			'restrictions/content-url-literals': [
+				'error',
+				{
+					selector:
+						'Literal[value=/^\\/(stadt|rundgaenge|themen|bibliothek)\\//]:not(TSLiteralType > Literal)',
+					message: CONTENT_URL_MESSAGE,
+				},
+				{
+					selector:
+						'TemplateElement:first-child[value.raw=/^\\/(stadt|rundgaenge|themen|bibliothek)\\//]',
+					message: CONTENT_URL_MESSAGE,
+				},
+				{
+					selector: 'JSXAttribute[name.name="href"] > Literal[value=/^\\/(?!\\/)/]',
+					message: CONTENT_HREF_MESSAGE,
+				},
+				{
+					selector:
+						'JSXAttribute[name.name="href"] > JSXExpressionContainer > TemplateLiteral > TemplateElement:first-child[value.raw=/^\\/(?!\\/)/]',
+					message: CONTENT_HREF_MESSAGE,
+				},
+			],
+		},
+	},
+	{
+		// The module itself reads content, builds URLs and loads MDX bodies; the restrictions
+		// above guard everywhere else in src/ (issue #55).
+		files: ['src/lib/content/**'],
+		rules: {
+			'restrictions/content-fs-imports': 'off',
+			'restrictions/content-module-imports': 'off',
+			'restrictions/content-dynamic-imports': 'off',
+			'restrictions/content-url-literals': 'off',
 		},
 	},
 	{

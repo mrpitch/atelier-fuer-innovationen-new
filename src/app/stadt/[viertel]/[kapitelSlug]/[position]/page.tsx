@@ -19,10 +19,6 @@ function findAbschnitt(viertelSlug: string, requestedKapitelSlug: string, positi
 	return graph.getAbschnitteByKapitel(kapitel.id).find((item) => String(item.position) === position)
 }
 
-function importAbschnittBody(id: string) {
-	return import(`@/content/${id}/index.mdx`)
-}
-
 export function generateStaticParams() {
 	return graph.kapitel.flatMap((kapitel) =>
 		graph.getAbschnitteByKapitel(kapitel.id).map((abschnitt) => ({
@@ -54,7 +50,7 @@ export default async function AbschnittPage({
 	const abschnitt = findAbschnitt(viertel, requestedKapitelSlug, position)
 	if (!abschnitt) notFound()
 
-	const { default: Body } = await importAbschnittBody(abschnitt.id)
+	const Body = await graph.getBody(abschnitt.id)
 
 	return (
 		<main>

@@ -45,7 +45,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<Header site={graph.site} menu={graph.getMenu('header')} />
+					<Header site={graph.site} homeUrl={graph.navigation.url} menu={graph.getMenu('header')} />
 					{children}
 					<Footer site={graph.site} menu={graph.getMenu('footer')} />
 				</ThemeProvider>

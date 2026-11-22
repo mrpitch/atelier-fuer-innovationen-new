@@ -18,10 +18,6 @@ function findKapitel(viertelSlug: string, requestedKapitelSlug: string) {
 	return kapitel && kapitel.url.split('/').at(-1) === requestedKapitelSlug ? kapitel : undefined
 }
 
-function importKapitelBody(id: string) {
-	return import(`@/content/${id}/index.mdx`)
-}
-
 export function generateStaticParams() {
 	return graph.kapitel.map((kapitel) => ({
 		viertel: kapitel.viertelId.split('/').at(-1)!,
@@ -48,7 +44,7 @@ export default async function KapitelPage({ params }: PageProps<'/stadt/[viertel
 	const kapitel = findKapitel(viertel, requestedKapitelSlug)
 	if (!kapitel) notFound()
 
-	const { default: Body } = await importKapitelBody(kapitel.id)
+	const Body = await graph.getBody(kapitel.id)
 	const abschnitte = graph.getAbschnitteByKapitel(kapitel.id)
 	const abschnitteCount = t('kapitel.abschnitteCount', { n: abschnitte.length })
 

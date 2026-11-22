@@ -14,10 +14,7 @@ export const metadata: Metadata = {
 }
 
 export default async function ZentrumPage() {
-	// A literal import, not a dynamic one keyed by graph.zentrum.id: there is
-	// exactly one Zentrum, tied 1:1 to this route (the same reasoning the
-	// catch-all page uses for the root Seite's own literal import).
-	const { default: Body } = await import('@/content/stadt/zentrum/index.mdx')
+	const Body = await graph.getBody(graph.zentrum.id)
 
 	return (
 		<main>
