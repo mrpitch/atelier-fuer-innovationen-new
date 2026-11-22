@@ -135,6 +135,14 @@ describe('content-graph boundaries', () => {
 		expect(nested).toContain('restrictions/content-url-literals')
 	})
 
+	it('fails an href with a template-literal internal path outside the module', async () => {
+		const ruleIds = await ruleIdsFor(
+			"const id = 'a'\nconst el = <a href={`/galerie/${id}`}>x</a>\nconsole.log(el)\n",
+			'src/app/foo.tsx',
+		)
+		expect(ruleIds).toContain('restrictions/content-url-literals')
+	})
+
 	it('passes an href with an external URL, a "#" anchor, a mailto: link, or a graph-derived value', async () => {
 		const results = await Promise.all(
 			['https://example.com', '#top', 'mailto:a@example.com'].map((href) =>

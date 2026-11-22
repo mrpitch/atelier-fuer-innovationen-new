@@ -255,6 +255,11 @@ const eslintConfig = defineConfig([
 					selector: 'JSXAttribute[name.name="href"] > Literal[value=/^\\/(?!\\/)/]',
 					message: CONTENT_HREF_MESSAGE,
 				},
+				{
+					selector:
+						'JSXAttribute[name.name="href"] > JSXExpressionContainer > TemplateLiteral > TemplateElement:first-child[value.raw=/^\\/(?!\\/)/]',
+					message: CONTENT_HREF_MESSAGE,
+				},
 			],
 		},
 	},
