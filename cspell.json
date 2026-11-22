@@ -33,6 +33,8 @@
 		// Proper nouns (PRODUCT.md).
 		"Xenia",
 		"Xeniapolis",
-		"Volkmann"
+		"Volkmann",
+		// A Themen-Ort's own name (issue #31), not a German dictionary word.
+		"Futursysteme"
 	]
 }

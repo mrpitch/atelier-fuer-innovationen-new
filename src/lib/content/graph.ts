@@ -1,7 +1,7 @@
 import { buildAbschnittNavigation, orderAbschnitte } from './abschnitt'
 import { resolveAufsaetze } from './aufsatz'
 import { resolveKapitel } from './kapitel'
-import type { Abschnitt, Aufsatz, Kapitel, Seite, Site, Viertel, Zentrum } from './loader'
+import type { Abschnitt, Aufsatz, Kapitel, Seite, Site, Thema, Viertel, Zentrum } from './loader'
 import {
 	loadAbschnittDocuments,
 	loadAbschnittOrder,
@@ -11,6 +11,7 @@ import {
 	loadMeta,
 	loadSeiten,
 	loadSite,
+	loadThemaDocuments,
 	loadViertelDocuments,
 	loadViertelOrder,
 	loadZentrum,
@@ -19,6 +20,7 @@ import type { MenuLink } from './menu'
 import { resolveMenus } from './menu'
 import type { NavigationLink, NavigationNode } from './navigation'
 import { buildNavigation, listSitemap } from './navigation'
+import { resolveThemen } from './thema'
 import { orderViertel } from './viertel'
 
 // Compiles a Seite's, Viertel's or the Zentrum's MDX body through Next's MDX
@@ -72,6 +74,16 @@ export interface ContentGraph {
 	// Kapitel to the first of the next in Kapitel number order.
 	getPreviousAbschnitt(id: string): NavigationLink | undefined
 	getNextAbschnitt(id: string): NavigationLink | undefined
+	// The three Themen (issue #31, ADR-0003): the Leitthema and each
+	// Themen-Ort, both documents at src/content/themen/<slug>/. The Leitthema
+	// has no kapitelId and lists every Kapitel on its own landing page; a
+	// Themen-Ort's kapitelId names the one Kapitel it branches off from.
+	readonly themen: readonly Thema[]
+	getThema(id: string): Thema | undefined
+	// A Kapitel's Themen-Ort(e), derived from each Thema's Kapitel reference
+	// — never listed by hand on the Kapitel itself, the same derivation
+	// getAufsaetzeByViertel uses.
+	getThemenByKapitel(kapitelId: string): readonly Thema[]
 }
 
 // The one public interface for content (ADR-0002): built from loader output,
@@ -98,6 +110,7 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		]),
 	)
 	const abschnittNavigation = buildAbschnittNavigation(kapitel, abschnitteByKapitel)
+	const themen = resolveThemen(loadThemaDocuments(contentDir), kapitel)
 
 	return {
 		seiten,
@@ -138,5 +151,12 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		},
 		getPreviousAbschnitt: abschnittNavigation.getPreviousAbschnitt,
 		getNextAbschnitt: abschnittNavigation.getNextAbschnitt,
+		themen,
+		getThema(id) {
+			return themen.find((item) => item.id === id)
+		},
+		getThemenByKapitel(kapitelId) {
+			return themen.filter((item) => item.kapitelId === kapitelId)
+		},
 	}
 }
