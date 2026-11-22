@@ -10,6 +10,7 @@ import {
 	MENU_FIELD,
 	META_FIELD,
 	SITE_FIELD,
+	STATION_ORDER_FIELD,
 	VIERTEL_ORDER_FIELD,
 	ZENTRUM_FIELD,
 } from './errors'
@@ -21,8 +22,10 @@ import {
 	kapitelFrontmatterSchema,
 	menuSchema,
 	metaSchema,
+	rundgangFrontmatterSchema,
 	seiteFrontmatterSchema,
 	siteSchema,
+	stationFrontmatterSchema,
 	viertelFrontmatterSchema,
 	viertelOrderSchema,
 	zentrumFrontmatterSchema,
@@ -129,6 +132,21 @@ function isAbschnittPath(relativePath: string): boolean {
 	return ABSCHNITT_CHILD_PATTERN.test(relativeDir(relativePath))
 }
 
+// Location rule for Rundgang and Station (issue #32, ADR-0003): a Rundgang
+// sits directly inside src/content/rundgaenge/<slug>/, and a Station one
+// level deeper, inside its Rundgang's own folder — the same shape as
+// Kapitel/Abschnitt above.
+const RUNDGANG_CHILD_PATTERN = /^rundgaenge\/[^/]+$/
+const STATION_CHILD_PATTERN = /^rundgaenge\/[^/]+\/[^/]+$/
+
+function isRundgangPath(relativePath: string): boolean {
+	return RUNDGANG_CHILD_PATTERN.test(relativeDir(relativePath))
+}
+
+function isStationPath(relativePath: string): boolean {
+	return STATION_CHILD_PATTERN.test(relativeDir(relativePath))
+}
+
 // One frontmatter validator for every content type: only the schema differs
 // between Seite, Viertel and Zentrum.
 function validateFrontmatter<T>(schema: z.ZodType<T>, file: string, data: unknown): T {
@@ -180,6 +198,10 @@ function listMetaFiles(contentDir: string): string[] {
 			// way Viertel/Zentrum/Aufsatz documents are excluded from loadSeiten, so
 			// buildNavigation's strict Seite-only validation never sees it.
 			.filter((relativePath) => !KAPITEL_CHILD_PATTERN.test(relativeDir(relativePath)))
+			// A Rundgang folder's own meta.json orders its Stationen (issue #32,
+			// loadStationOrder below), not Seite children — excluded for the same
+			// reason as a Kapitel folder's meta.json above.
+			.filter((relativePath) => !RUNDGANG_CHILD_PATTERN.test(relativeDir(relativePath)))
 			.sort()
 	)
 }
@@ -224,7 +246,9 @@ export function loadSeiten(contentDir: string): Seite[] {
 				stadtChildSlug(relativePath) === undefined &&
 				!isAufsatzPath(relativePath) &&
 				!isKapitelPath(relativePath) &&
-				!isAbschnittPath(relativePath),
+				!isAbschnittPath(relativePath) &&
+				!isRundgangPath(relativePath) &&
+				!isStationPath(relativePath),
 		)
 		.map((relativePath) => {
 			const absolutePath = path.join(contentDir, relativePath)
@@ -478,6 +502,116 @@ export function loadAbschnittOrder(contentDir: string, kapitelId: string): Meta 
 	if (!parsed.success) {
 		const issue = parsed.error.issues[0]
 		throw new ContentValidationError(file, ABSCHNITT_ORDER_FIELD, issue.message)
+	}
+
+	return { file, order: parsed.data }
+}
+
+export interface RundgangDocument {
+	readonly id: string
+	readonly url: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly body: string
+}
+
+// A Rundgang (issue #32) with its Stationen count and duration derived
+// (rundgang.ts): the one shape pages and the content graph deal with. Its
+// URL is its folder path (ADR-0003), the same as Viertel/Zentrum/Aufsatz, so
+// it's assigned eagerly below rather than by a per-type URL rule.
+export interface Rundgang extends RundgangDocument {
+	readonly stationenCount: number
+	readonly durationMinutes: number
+}
+
+// Unresolved Rundgang documents (issue #32): loader.ts only reads and
+// validates frontmatter here, the same split as Viertel and Aufsatz.
+export function loadRundgangDocuments(contentDir: string): RundgangDocument[] {
+	return listMdxFiles(contentDir)
+		.filter(isRundgangPath)
+		.map((relativePath) => {
+			const absolutePath = path.join(contentDir, relativePath)
+			const raw = fs.readFileSync(absolutePath, 'utf8')
+			const { frontmatter, body } = splitDocument(relativePath, raw)
+			const data = validateFrontmatter(rundgangFrontmatterSchema, relativePath, frontmatter)
+			const id = deriveId(relativePath)
+			return { id, url: seiteUrl(id), body, ...data }
+		})
+}
+
+export interface StationDocument {
+	readonly id: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	// The Viertel or the Zentrum this Station stands at, by reference
+	// (issue #32), resolved by station.ts against both collections together.
+	readonly ortId: string
+	readonly body: string
+	// The Rundgang this Station sits in, derived from its own ID (dropping
+	// the last segment) rather than a frontmatter reference — a Station
+	// belongs to its Rundgang by folder location, the same way an Abschnitt
+	// belongs to its Kapitel.
+	readonly rundgangId: string
+	// The source file's path, only for the reference-resolution error if
+	// ortId doesn't match an actual Viertel or the Zentrum (station.ts,
+	// references.ts). Dropped once resolved, the same way KapitelDocument's
+	// and AufsatzDocument's own `file` fields are.
+	readonly file: string
+}
+
+// A Station (issue #32) with its Ort reference checked, its number derived
+// from its position in its Rundgang's own meta.json, and its reading time
+// computed (station.ts): the one shape pages and the content graph deal
+// with. Like Abschnitt, its URL and number depend on already-resolved data,
+// so they can't be assigned eagerly here.
+export interface Station {
+	readonly id: string
+	readonly url: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly ortId: string
+	readonly body: string
+	readonly rundgangId: string
+	readonly number: number
+	readonly readingTimeMinutes: number
+}
+
+// Unresolved Station documents (issue #32): loader.ts only reads and
+// validates frontmatter here, the same split as Abschnitt.
+export function loadStationDocuments(contentDir: string): StationDocument[] {
+	return listMdxFiles(contentDir)
+		.filter(isStationPath)
+		.map((relativePath) => {
+			const absolutePath = path.join(contentDir, relativePath)
+			const raw = fs.readFileSync(absolutePath, 'utf8')
+			const { frontmatter, body } = splitDocument(relativePath, raw)
+			const data = validateFrontmatter(stationFrontmatterSchema, relativePath, frontmatter)
+			const id = deriveId(relativePath)
+			const rundgangId = id.split('/').slice(0, -1).join('/')
+			return { id, rundgangId, body, file: relativePath, ...data }
+		})
+}
+
+// A Rundgang's own Station order (issue #32): its own meta.json, read
+// directly by this one Rundgang ID, the same way loadAbschnittOrder reads a
+// Kapitel's own meta.json rather than through the generic listMetaFiles/
+// loadMeta scan above.
+export function loadStationOrder(contentDir: string, rundgangId: string): Meta {
+	const file = path.join(rundgangId, META_FILE_NAME)
+	const absolutePath = path.join(contentDir, file)
+	if (!fs.existsSync(absolutePath)) {
+		throw new ContentValidationError(file, STATION_ORDER_FIELD, 'file not found')
+	}
+
+	const data = readJsonFile(file, absolutePath, STATION_ORDER_FIELD)
+
+	const parsed = metaSchema.safeParse(data)
+	if (!parsed.success) {
+		const issue = parsed.error.issues[0]
+		throw new ContentValidationError(file, STATION_ORDER_FIELD, issue.message)
 	}
 
 	return { file, order: parsed.data }

@@ -449,4 +449,121 @@ describe('buildContentGraph', () => {
 			}
 		})
 	})
+
+	describe('Rundgang and Station', () => {
+		it("numbers a Rundgang's Stationen from 0 when the first stands at the Zentrum", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			const stationen = graph.getStationenByRundgang('rundgaenge/besuch-im-zentrum')
+			expect(stationen.map((station) => station.id)).toEqual([
+				'rundgaenge/besuch-im-zentrum/station-zentrum',
+				'rundgaenge/besuch-im-zentrum/station-eins',
+				'rundgaenge/besuch-im-zentrum/station-zwei',
+			])
+			expect(stationen.map((station) => station.number)).toEqual([0, 1, 2])
+			expect(stationen.map((station) => station.url)).toEqual([
+				'/rundgaenge/besuch-im-zentrum/0',
+				'/rundgaenge/besuch-im-zentrum/1',
+				'/rundgaenge/besuch-im-zentrum/2',
+			])
+		})
+
+		it("numbers a Rundgang's Stationen from 1 when the first stands at a Viertel", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			const stationen = graph.getStationenByRundgang('rundgaenge/ohne-zentrum')
+			expect(stationen.map((station) => station.number)).toEqual([1, 2])
+			expect(stationen.map((station) => station.url)).toEqual([
+				'/rundgaenge/ohne-zentrum/1',
+				'/rundgaenge/ohne-zentrum/2',
+			])
+		})
+
+		it("derives a Rundgang's Stationen count and duration from its Stationen, never from a written field", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			const besuch = graph.getRundgang('rundgaenge/besuch-im-zentrum')
+			// station-zentrum and station-eins are short bodies (1 Min. each);
+			// station-zwei's 201-word body rounds up to 2 Min. — 1 + 1 + 2 = 4,
+			// proving the duration is a real sum, not stationenCount * 1.
+			expect(besuch?.stationenCount).toBe(3)
+			expect(besuch?.durationMinutes).toBe(4)
+			expect(besuch).not.toHaveProperty('stationen')
+		})
+
+		it('derives the Stationen set at a Viertel or the Zentrum from the references, never from the Ort itself', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			expect(graph.getStationenByOrt('stadt/zentrum').map((station) => station.id)).toEqual([
+				'rundgaenge/besuch-im-zentrum/station-zentrum',
+			])
+			expect(graph.getStationenByOrt('stadt/erste-viertel').map((station) => station.id)).toEqual([
+				'rundgaenge/besuch-im-zentrum/station-eins',
+				'rundgaenge/ohne-zentrum/station-a',
+			])
+			expect(graph.getViertel('stadt/erste-viertel')).not.toHaveProperty('stationen')
+		})
+
+		it('keeps previous/next within one Rundgang, never crossing into another', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			expect(graph.getNextStation('rundgaenge/besuch-im-zentrum/station-zentrum')).toEqual({
+				id: 'rundgaenge/besuch-im-zentrum/station-eins',
+				url: '/rundgaenge/besuch-im-zentrum/1',
+				title: 'Erste Station',
+			})
+			expect(
+				graph.getPreviousStation('rundgaenge/besuch-im-zentrum/station-zentrum'),
+			).toBeUndefined()
+			expect(graph.getNextStation('rundgaenge/besuch-im-zentrum/station-zwei')).toBeUndefined()
+
+			// ohne-zentrum's first Station has no previous, even though
+			// besuch-im-zentrum's own Stationen come right before it in the list.
+			expect(graph.getPreviousStation('rundgaenge/ohne-zentrum/station-a')).toBeUndefined()
+		})
+
+		it('fails when a Station references a missing Viertel, naming the file, field and ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgang-missing-ort'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(
+					path.join('rundgaenge', 'verwaister-rundgang', 'verwaiste-station', 'index.mdx'),
+				)
+				expect(validationError.field).toBe('ortId')
+				expect(validationError.reason).toContain('stadt/nichtvorhanden')
+			}
+		})
+
+		it("fails when a Rundgang's Station order lists an unknown ID, naming the file and the ID", () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgang-station-order-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'einziger-rundgang', 'meta.json'))
+				expect(validationError.field).toBe('rundgaenge/einziger-rundgang/nichtvorhanden')
+				expect(validationError.reason).toMatch(/no matching/i)
+			}
+		})
+
+		it("fails when a Rundgang's Station order omits an actual child, naming the file and the ID", () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgang-station-order-missing-child'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'einziger-rundgang', 'meta.json'))
+				expect(validationError.field).toBe('rundgaenge/einziger-rundgang/zweite-station')
+				expect(validationError.reason).toMatch(/missing/i)
+			}
+		})
+	})
 })

@@ -54,6 +54,10 @@ _Avoid_: Profil, fact sheet
 The Stadtplatz at the heart of the Wissensstadt, surrounded by the eight Viertel. It isn't a Viertel.
 _Avoid_: Stadtplatz (as an entity name), Station 0
 
+**Ort**
+A Viertel or the Zentrum together — wherever a Station can stand. Not to be confused with Themen-Ort, a Thema presented as a single place.
+_Avoid_: place, location
+
 **Rundgang**
 A guided walk through the Wissensstadt: an ordered sequence of Stationen with an introduction.
 _Avoid_: tour, Stadtrundgang, Route

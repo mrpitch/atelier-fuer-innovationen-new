@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { AufsaetzeListe } from '@/components/aufsatz/aufsaetze-liste'
+import { StationenListe } from '@/components/rundgang/stationen-liste'
 import { Illustration } from '@/components/viertel/illustration'
 import { Steckbrief } from '@/components/viertel/steckbrief'
 import { buildContentGraph, shortTitleOrTitle } from '@/lib/content'
@@ -61,6 +62,7 @@ export default async function ViertelPage({ params }: PageProps<'/stadt/[viertel
 				</nav>
 			)}
 			<AufsaetzeListe aufsaetze={graph.getAufsaetzeByViertel(viertel.id)} />
+			<StationenListe stationen={graph.getStationenByOrt(viertel.id)} />
 		</main>
 	)
 }

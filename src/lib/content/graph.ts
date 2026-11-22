@@ -1,7 +1,17 @@
 import { buildAbschnittNavigation, orderAbschnitte } from './abschnitt'
 import { resolveAufsaetze } from './aufsatz'
 import { resolveKapitel } from './kapitel'
-import type { Abschnitt, Aufsatz, Kapitel, Seite, Site, Viertel, Zentrum } from './loader'
+import type {
+	Abschnitt,
+	Aufsatz,
+	Kapitel,
+	Rundgang,
+	Seite,
+	Site,
+	Station,
+	Viertel,
+	Zentrum,
+} from './loader'
 import {
 	loadAbschnittDocuments,
 	loadAbschnittOrder,
@@ -9,8 +19,11 @@ import {
 	loadKapitelDocuments,
 	loadMenus,
 	loadMeta,
+	loadRundgangDocuments,
 	loadSeiten,
 	loadSite,
+	loadStationDocuments,
+	loadStationOrder,
 	loadViertelDocuments,
 	loadViertelOrder,
 	loadZentrum,
@@ -19,6 +32,8 @@ import type { MenuLink } from './menu'
 import { resolveMenus } from './menu'
 import type { NavigationLink, NavigationNode } from './navigation'
 import { buildNavigation, listSitemap } from './navigation'
+import { summarizeRundgang } from './rundgang'
+import { buildStationNavigation, orderStationen } from './station'
 import { orderViertel } from './viertel'
 
 // Compiles a Seite's, Viertel's or the Zentrum's MDX body through Next's MDX
@@ -72,6 +87,20 @@ export interface ContentGraph {
 	// Kapitel to the first of the next in Kapitel number order.
 	getPreviousAbschnitt(id: string): NavigationLink | undefined
 	getNextAbschnitt(id: string): NavigationLink | undefined
+	// Every Rundgang (issue #32), each with its Stationen count and duration
+	// derived from its own Stationen — never written by hand.
+	readonly rundgaenge: readonly Rundgang[]
+	getRundgang(id: string): Rundgang | undefined
+	// A Rundgang's Stationen, ordered by its own meta.json; "N Stationen" is
+	// this list's length.
+	getStationenByRundgang(rundgangId: string): readonly Station[]
+	// The Stationen set at a Viertel or the Zentrum — derived here from each
+	// Station's Ort reference, never listed by hand on the Viertel/Zentrum.
+	getStationenByOrt(ortId: string): readonly Station[]
+	// Previous/next within one Rundgang; a Station's neighbours never cross
+	// into another Rundgang.
+	getPreviousStation(id: string): NavigationLink | undefined
+	getNextStation(id: string): NavigationLink | undefined
 }
 
 // The one public interface for content (ADR-0002): built from loader output,
@@ -98,6 +127,27 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		]),
 	)
 	const abschnittNavigation = buildAbschnittNavigation(kapitel, abschnitteByKapitel)
+
+	const rundgangDocuments = loadRundgangDocuments(contentDir)
+	const stationDocuments = loadStationDocuments(contentDir)
+	const orte = [...viertel, zentrum]
+	const stationenByRundgang = new Map(
+		rundgangDocuments.map((document) => [
+			document.id,
+			orderStationen(
+				document,
+				loadStationOrder(contentDir, document.id),
+				stationDocuments.filter((station) => station.rundgangId === document.id),
+				orte,
+				zentrum.id,
+			),
+		]),
+	)
+	const rundgaenge = rundgangDocuments.map((document) =>
+		summarizeRundgang(document, stationenByRundgang.get(document.id) ?? []),
+	)
+	const stationen = [...stationenByRundgang.values()].flat()
+	const stationNavigation = buildStationNavigation(stationenByRundgang)
 
 	return {
 		seiten,
@@ -138,5 +188,17 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		},
 		getPreviousAbschnitt: abschnittNavigation.getPreviousAbschnitt,
 		getNextAbschnitt: abschnittNavigation.getNextAbschnitt,
+		rundgaenge,
+		getRundgang(id) {
+			return rundgaenge.find((item) => item.id === id)
+		},
+		getStationenByRundgang(rundgangId) {
+			return stationenByRundgang.get(rundgangId) ?? []
+		},
+		getStationenByOrt(ortId) {
+			return stationen.filter((station) => station.ortId === ortId)
+		},
+		getPreviousStation: stationNavigation.getPreviousStation,
+		getNextStation: stationNavigation.getNextStation,
 	}
 }

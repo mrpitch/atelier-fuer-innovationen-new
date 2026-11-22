@@ -9,3 +9,9 @@ export function computeReadingTime(body: string): number {
 	const wordCount = body.trim().split(/\s+/).filter(Boolean).length
 	return Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE))
 }
+
+// A Rundgang's duration (issue #32): the sum of its Stationen's reading
+// times, never a value of its own.
+export function sumReadingTime(items: readonly { readonly readingTimeMinutes: number }[]): number {
+	return items.reduce((total, item) => total + item.readingTimeMinutes, 0)
+}
