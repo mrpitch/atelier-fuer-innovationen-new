@@ -14,17 +14,24 @@ The loader and content graph live in `src/lib/content/`, with `index.ts` as thei
 
 ## Content types
 
-A content type is decided by where a file sits under `src/content`, not by a field in its frontmatter. **Seite** ([glossary](../glossary.md)) is a plain standalone page, such as Start, Idee, Kontakt, Impressum or Datenschutz. **Viertel** and **Zentrum** (issue #28) are the Stadt area's own types, located by a rule of their own: a document directly inside `src/content/stadt/<slug>/` is the Zentrum when `slug` is `zentrum`, a Viertel otherwise; `src/content/stadt/index.mdx` itself (no further segment) is a Seite, the Stadt area's landing page.
+A content type is decided by where a file sits under `src/content`, not by a field in its frontmatter. **Seite** ([glossary](../glossary.md)) is a plain standalone page, such as Start, Idee, Kontakt, Impressum or Datenschutz. **Viertel** and **Zentrum** (issue #28) are the Stadt area's own types, located by a rule of their own: a document directly inside `src/content/stadt/<slug>/` is the Zentrum when `slug` is `zentrum`, a Viertel otherwise; `src/content/stadt/index.mdx` itself (no further segment) is a Seite, the Stadt area's landing page. **Aufsatz** (issue #29) is the Bibliothek area's own type, by the same kind of rule: a document directly inside `src/content/bibliothek/aufsaetze/<slug>/`.
 
 | Type    | Frontmatter fields                                                                 | Schema                                                     |
 | ------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | Seite   | `title`, `description`, `shortTitle` (optional)                                    | `seiteFrontmatterSchema` in `src/lib/content/schemas.ts`   |
 | Viertel | `title`, `description`, `shortTitle` (optional), `leitsatz`, `steckbrief` (object) | `viertelFrontmatterSchema` in `src/lib/content/schemas.ts` |
 | Zentrum | `title`, `description`, `shortTitle` (optional)                                    | `zentrumFrontmatterSchema` in `src/lib/content/schemas.ts` |
+| Aufsatz | `title`, `description`, `shortTitle` (optional), `viertelId` (reference)           | `aufsatzFrontmatterSchema` in `src/lib/content/schemas.ts` |
 
 A Viertel's Steckbrief (glossary) is a nested frontmatter object: `prozessansatz`, `bauform`, `prozessdokument`, `imStadtzentrum`.
 
 As further Wissensstadt content types arrive, each gets its own schema in `schemas.ts` and its own location rule in `src/lib/content/loader.ts`.
+
+### References
+
+A frontmatter field can hold another document's ID instead of a value of its own — a reference (issue #29). Aufsatz's `viertelId` is the first one: it names the Viertel the Aufsatz belongs to. The field is validated as a non-empty string in `schemas.ts` like any other string field — a Zod schema can't see the rest of the content graph to check the ID exists — so the actual check happens once every document is loaded, via `resolveReference` in `src/lib/content/references.ts`. That function is the one generic resolution mechanism for every reference field: given the referring file, the field name, the ID and the target collection it points into, it returns the matching document or throws `ContentValidationError` naming the file, the field and the missing ID. A later reference field reuses this same function against its own target collection — it needs no resolution code of its own, only a call site. A reference field's frontmatter key ends in `Id` (`viertelId`, not `viertel`) so its value — a document ID, not prose — is skipped by the spell check the same way `id`/`slug` keys already are.
+
+Aufsatz's reading time (`readingTimeMinutes`) is computed from its body's word count by `src/lib/content/reading-time.ts`, shown via the dictionary key `aufsatz.readingTime` ("ca. {n} Min."). A Viertel's related Aufsätze (`graph.getAufsaetzeByViertel(id)`, "Mehr aus dem Viertel") are derived the same way: filtered from the already-resolved Aufsätze by their `viertelId`, never listed by hand in the Viertel's own frontmatter or body.
 
 ### Viertel numbers
 

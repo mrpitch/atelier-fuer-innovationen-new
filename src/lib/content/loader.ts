@@ -15,6 +15,7 @@ import {
 import { splitDocument } from './frontmatter'
 import type { MenuEntry, Site, ViertelSteckbrief } from './schemas'
 import {
+	aufsatzFrontmatterSchema,
 	menuSchema,
 	metaSchema,
 	seiteFrontmatterSchema,
@@ -71,6 +72,12 @@ function seiteUrl(id: string): string {
 	return id === '' ? '/' : `/${id}`
 }
 
+// A relative path's directory, POSIX-separated regardless of platform — every
+// location rule below tests this against its own pattern.
+function relativeDir(relativePath: string): string {
+	return path.dirname(relativePath).split(path.sep).join('/')
+}
+
 // Location rule (content-layer.md) for the Stadt area (ADR-0003): a document
 // directly inside src/content/stadt/<slug>/ is the Zentrum if slug is
 // "zentrum", a Viertel otherwise. stadt/index.mdx itself (no further
@@ -80,8 +87,7 @@ const ZENTRUM_SLUG = 'zentrum'
 const STADT_CHILD_PATTERN = /^stadt\/([^/]+)$/
 
 function stadtChildSlug(relativePath: string): string | undefined {
-	const dir = path.dirname(relativePath).split(path.sep).join('/')
-	return STADT_CHILD_PATTERN.exec(dir)?.[1]
+	return STADT_CHILD_PATTERN.exec(relativeDir(relativePath))?.[1]
 }
 
 function isViertelPath(relativePath: string): boolean {
@@ -91,6 +97,16 @@ function isViertelPath(relativePath: string): boolean {
 
 function isZentrumPath(relativePath: string): boolean {
 	return stadtChildSlug(relativePath) === ZENTRUM_SLUG
+}
+
+// Location rule for Aufsatz (issue #29, ADR-0003): a document directly
+// inside src/content/bibliothek/aufsaetze/<slug>/ — its own rule, the same
+// shape as the Stadt area's, since a content type is decided by where its
+// file sits, never by a frontmatter field.
+const AUFSATZ_CHILD_PATTERN = /^bibliothek\/aufsaetze\/[^/]+$/
+
+function isAufsatzPath(relativePath: string): boolean {
+	return AUFSATZ_CHILD_PATTERN.test(relativeDir(relativePath))
 }
 
 // One frontmatter validator for every content type: only the schema differs
@@ -176,7 +192,9 @@ export function loadMeta(contentDir: string): Map<string, Meta> {
 // type below, not as a Seite.
 export function loadSeiten(contentDir: string): Seite[] {
 	return listMdxFiles(contentDir)
-		.filter((relativePath) => stadtChildSlug(relativePath) === undefined)
+		.filter(
+			(relativePath) => stadtChildSlug(relativePath) === undefined && !isAufsatzPath(relativePath),
+		)
 		.map((relativePath) => {
 			const absolutePath = path.join(contentDir, relativePath)
 			const raw = fs.readFileSync(absolutePath, 'utf8')
@@ -275,6 +293,49 @@ export function loadZentrum(contentDir: string): Zentrum {
 	const data = validateFrontmatter(zentrumFrontmatterSchema, relativePath, frontmatter)
 	const id = deriveId(relativePath)
 	return { id, url: seiteUrl(id), body, ...data }
+}
+
+export interface AufsatzDocument {
+	readonly id: string
+	readonly url: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly viertelId: string
+	readonly body: string
+	// The source file's path, only for the reference-resolution error if
+	// viertelId doesn't match an actual Viertel (aufsatz.ts, references.ts).
+	// Dropped once resolved; an Aufsatz doesn't expose its own file.
+	readonly file: string
+}
+
+// An Aufsatz (issue #29) with its Viertel reference resolved and its reading
+// time computed (aufsatz.ts): the one shape pages and the content graph
+// deal with, the same split loadViertelDocuments/orderViertel make.
+export interface Aufsatz {
+	readonly id: string
+	readonly url: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly viertelId: string
+	readonly body: string
+	readonly readingTimeMinutes: number
+}
+
+// Unresolved Aufsatz documents (issue #29): loader.ts only reads and
+// validates frontmatter here, the same split as Viertel.
+export function loadAufsatzDocuments(contentDir: string): AufsatzDocument[] {
+	return listMdxFiles(contentDir)
+		.filter(isAufsatzPath)
+		.map((relativePath) => {
+			const absolutePath = path.join(contentDir, relativePath)
+			const raw = fs.readFileSync(absolutePath, 'utf8')
+			const { frontmatter, body } = splitDocument(relativePath, raw)
+			const data = validateFrontmatter(aufsatzFrontmatterSchema, relativePath, frontmatter)
+			const id = deriveId(relativePath)
+			return { id, url: seiteUrl(id), body, file: relativePath, ...data }
+		})
 }
 
 const SITE_FILE_NAME = 'site.json'
