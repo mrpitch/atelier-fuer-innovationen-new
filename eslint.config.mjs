@@ -42,6 +42,9 @@ const restrictions = {
 		'dynamic-params-syntax': builtinRules.get('no-restricted-syntax'),
 		'use-client-route-syntax': builtinRules.get('no-restricted-syntax'),
 		'static-export-config-syntax': builtinRules.get('no-restricted-syntax'),
+		'ui-layer-imports': builtinRules.get('no-restricted-imports'),
+		'pro-blocks-layer-imports': builtinRules.get('no-restricted-imports'),
+		'app-imports': builtinRules.get('no-restricted-imports'),
 		'palette-color-classes': noRestrictedClasses,
 		'arbitrary-color-classes': noRestrictedClasses,
 		'arbitrary-radius-classes': noRestrictedClasses,
@@ -374,6 +377,21 @@ const eslintConfig = defineConfig([
 				},
 			],
 
+			// Design-system layers (about-architecture.md): src/app/ is the top of the layering,
+			// consumed by nothing else.
+			'restrictions/app-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							regex: '^@/app(?:/|$)',
+							message:
+								"Nothing imports from src/app/: it's the top of the design-system layers, consumed by nothing else. See docs/explanation/about-architecture.md.",
+						},
+					],
+				},
+			],
+
 			'restrictions/cn-package-imports': [
 				'error',
 				{
@@ -497,6 +515,44 @@ const eslintConfig = defineConfig([
 	{
 		files: ['src/components/pro-blocks/**/*.{ts,tsx}'],
 		rules: { 'restrictions/cn-alias-imports': 'off' },
+	},
+	{
+		// Design-system layers (about-architecture.md): a shadcn primitive only knows the
+		// Tailwind theme, not a Pro Block or a feature folder built on top of it.
+		files: ['src/components/ui/**/*.{ts,tsx}'],
+		rules: {
+			'restrictions/ui-layer-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							regex: '^@/components/(?!(?:ui|utils)(?:/|$))',
+							message:
+								'A shadcn primitive only knows the Tailwind theme, not a Pro Block or a feature folder built on top of it. See docs/explanation/about-architecture.md.',
+						},
+					],
+				},
+			],
+		},
+	},
+	{
+		// Design-system layers (about-architecture.md): a Pro Block knows ui/ but not the feature
+		// folder built from it.
+		files: ['src/components/pro-blocks/**/*.{ts,tsx}'],
+		rules: {
+			'restrictions/pro-blocks-layer-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							regex: '^@/components/(?!(?:ui|pro-blocks|utils)(?:/|$))',
+							message:
+								'A Pro Block knows ui/ but not the feature folder built from it. See docs/explanation/about-architecture.md.',
+						},
+					],
+				},
+			],
+		},
 	},
 	{
 		// Project code: everywhere in src/ except the installed shadcn primitives and Pro Blocks,

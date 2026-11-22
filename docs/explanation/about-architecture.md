@@ -52,6 +52,14 @@ Each layer only knows the one above it. A primitive reads `bg-primary`, not Petr
 
 The style choice follows DESIGN.md: `base-nova` installs 32px buttons and inputs and 24px small buttons, the control sizes the Kartei screens use. Its primitives come from Base UI, so composition goes through Base UI's `render` prop.
 
+A layer violation fails `pnpm lint` and the pre-commit hook, on its own `restrictions/*` rule in `eslint.config.mjs`:
+
+| Import                                                       | Rule                                    |
+| ------------------------------------------------------------ | --------------------------------------- |
+| `components/ui/` importing `pro-blocks/` or a feature folder | `restrictions/ui-layer-imports`         |
+| `components/pro-blocks/` importing a feature folder          | `restrictions/pro-blocks-layer-imports` |
+| anything importing `src/app/`                                | `restrictions/app-imports`              |
+
 ## Where to go next
 
 - [Folder structure](../reference/global/folder-structure.md)
