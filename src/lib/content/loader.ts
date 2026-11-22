@@ -26,6 +26,7 @@ import {
 	seiteFrontmatterSchema,
 	siteSchema,
 	stationFrontmatterSchema,
+	themaFrontmatterSchema,
 	viertelFrontmatterSchema,
 	viertelOrderSchema,
 	zentrumFrontmatterSchema,
@@ -147,6 +148,18 @@ function isStationPath(relativePath: string): boolean {
 	return STATION_CHILD_PATTERN.test(relativeDir(relativePath))
 }
 
+// Location rule for Thema and Themen-Ort (issue #31, ADR-0003): both kinds
+// sit directly inside src/content/themen/<slug>/, at the same level — a
+// Themen-Ort doesn't move into the Kapitel it branches off from, the way an
+// Abschnitt moves into its Kapitel. Which kind a document is comes from
+// whether its frontmatter carries a Kapitel reference (schemas.ts), not from
+// a further location rule.
+const THEMA_CHILD_PATTERN = /^themen\/[^/]+$/
+
+function isThemaPath(relativePath: string): boolean {
+	return THEMA_CHILD_PATTERN.test(relativeDir(relativePath))
+}
+
 // One frontmatter validator for every content type: only the schema differs
 // between Seite, Viertel and Zentrum.
 function validateFrontmatter<T>(schema: z.ZodType<T>, file: string, data: unknown): T {
@@ -248,7 +261,8 @@ export function loadSeiten(contentDir: string): Seite[] {
 				!isKapitelPath(relativePath) &&
 				!isAbschnittPath(relativePath) &&
 				!isRundgangPath(relativePath) &&
-				!isStationPath(relativePath),
+				!isStationPath(relativePath) &&
+				!isThemaPath(relativePath),
 		)
 		.map((relativePath) => {
 			const absolutePath = path.join(contentDir, relativePath)
@@ -617,6 +631,47 @@ export function loadStationOrder(contentDir: string, rundgangId: string): Meta {
 	return { file, order: parsed.data }
 }
 
+export interface ThemaDocument {
+	readonly id: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly kapitelId?: string
+	readonly body: string
+	// The source file's path, only for the reference-resolution error if
+	// kapitelId doesn't match an actual Kapitel (thema.ts, references.ts).
+	// Dropped once resolved, the same way AufsatzDocument's does.
+	readonly file: string
+}
+
+// A Thema (issue #31) with its Kapitel reference resolved, if it has one, and
+// its URL derived from its own slug (thema.ts): the one shape pages and the
+// content graph deal with. The Leitthema has no `kapitelId`; a Themen-Ort's
+// names the one Kapitel it branches off from.
+export interface Thema {
+	readonly id: string
+	readonly url: string
+	readonly title: string
+	readonly description: string
+	readonly shortTitle?: string
+	readonly kapitelId?: string
+	readonly body: string
+}
+
+// Unresolved Thema documents (issue #31): loader.ts only reads and validates
+// frontmatter here, the same split as Aufsatz and Kapitel.
+export function loadThemaDocuments(contentDir: string): ThemaDocument[] {
+	return listMdxFiles(contentDir)
+		.filter(isThemaPath)
+		.map((relativePath) => {
+			const absolutePath = path.join(contentDir, relativePath)
+			const raw = fs.readFileSync(absolutePath, 'utf8')
+			const { frontmatter, body } = splitDocument(relativePath, raw)
+			const data = validateFrontmatter(themaFrontmatterSchema, relativePath, frontmatter)
+			const id = deriveId(relativePath)
+			return { id, body, file: relativePath, ...data }
+		})
+}
 const SITE_FILE_NAME = 'site.json'
 
 // Site-wide facts (issue #27): one data file at the content directory's root.

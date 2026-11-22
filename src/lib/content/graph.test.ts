@@ -566,4 +566,46 @@ describe('buildContentGraph', () => {
 			}
 		})
 	})
+
+	describe('Thema', () => {
+		it('resolves the Leitthema and a Themen-Ort to their ID and URL', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-valid'))
+
+			expect(graph.themen.map((thema) => thema.id)).toEqual([
+				'themen/ein-themen-ort',
+				'themen/eine-welt-fuer-morgen',
+			])
+
+			const leitthema = graph.getThema('themen/eine-welt-fuer-morgen')
+			expect(leitthema?.url).toBe('/themen/eine-welt-fuer-morgen')
+			expect(leitthema?.kapitelId).toBeUndefined()
+
+			const themenOrt = graph.getThema('themen/ein-themen-ort')
+			expect(themenOrt?.url).toBe('/themen/ein-themen-ort')
+			expect(themenOrt?.kapitelId).toBe('leitthema/erstes-kapitel')
+		})
+
+		it("derives a Kapitel's Themen-Ort from the reference, never restated on the Kapitel itself", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-valid'))
+
+			expect(graph.getThemenByKapitel('leitthema/erstes-kapitel').map((thema) => thema.id)).toEqual(
+				['themen/ein-themen-ort'],
+			)
+			expect(graph.getKapitel('leitthema/erstes-kapitel')).not.toHaveProperty('themen')
+		})
+
+		it('fails when a Themen-Ort references a missing Kapitel, naming the file, field and ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'thema-missing-kapitel'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('themen', 'verwaister-themen-ort', 'index.mdx'))
+				expect(validationError.field).toBe('kapitelId')
+				expect(validationError.reason).toContain('leitthema/nichtvorhanden')
+			}
+		})
+	})
 })

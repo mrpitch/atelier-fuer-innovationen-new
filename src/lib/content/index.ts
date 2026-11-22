@@ -17,6 +17,7 @@ export type {
 	Seite,
 	Site,
 	Station,
+	Thema,
 	Viertel,
 	ViertelSteckbrief,
 	Zentrum,

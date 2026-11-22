@@ -19,6 +19,7 @@ export const de = {
 	'aufsatz.readingTime': 'ca. {n} Min.',
 	'kapitel.number': 'Kapitel {n}',
 	'kapitel.abschnitteCount': '{n} Abschnitte',
+	'kapitel.themenOrtHeading': 'Themen-Ort',
 	'abschnitt.readingTime': 'ca. {n} Min.',
 	'rundgaenge.navigation': 'Die Rundgänge der Wissensstadt',
 	'rundgang.stationenCount': '{n} Stationen',
@@ -26,6 +27,8 @@ export const de = {
 	'station.number': 'Station {n}',
 	'station.readingTime': 'ca. {n} Min.',
 	'ort.stationenHeading': 'Stationen an diesem Ort',
+	'themen.navigation': 'Die drei Themen',
+	'thema.kapitelHeading': 'Kapitel',
 } as const
 
 export type DictionaryKey = keyof typeof de
