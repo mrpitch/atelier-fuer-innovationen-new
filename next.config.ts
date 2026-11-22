@@ -1,3 +1,4 @@
+import createMDX from '@next/mdx'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
@@ -14,4 +15,14 @@ const nextConfig: NextConfig = {
 	},
 }
 
-export default nextConfig
+const withMDX = createMDX({
+	options: {
+		// Turbopack can't take plugin functions, only package names (ADR-0002).
+		// remark-mdx-frontmatter strips the YAML remark-frontmatter parses, so the
+		// compiled MDX module doesn't choke on it; our own loader parses the same
+		// frontmatter separately for validation.
+		remarkPlugins: ['remark-frontmatter', 'remark-mdx-frontmatter'],
+	},
+})
+
+export default withMDX(nextConfig)

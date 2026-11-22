@@ -1,0 +1,48 @@
+import path from 'node:path'
+
+import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+
+import { buildContentGraph } from '@/lib/content'
+
+const graph = buildContentGraph(path.join(process.cwd(), 'src/content'))
+
+function idFromSlug(slug: string[] | undefined): string {
+	return (slug ?? []).join('/')
+}
+
+function importSeiteBody(id: string) {
+	return id === '' ? import('@/content/index.mdx') : import(`@/content/${id}/index.mdx`)
+}
+
+export function generateStaticParams() {
+	return graph.seiten.map((seite) => ({
+		slug: seite.id === '' ? [] : seite.id.split('/'),
+	}))
+}
+
+export async function generateMetadata({ params }: PageProps<'/[[...slug]]'>): Promise<Metadata> {
+	const { slug } = await params
+	const seite = graph.getSeite(idFromSlug(slug))
+	if (!seite) notFound()
+
+	return { title: seite.title, description: seite.description }
+}
+
+export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
+	const { slug } = await params
+	const id = idFromSlug(slug)
+	const seite = graph.getSeite(id)
+	if (!seite) notFound()
+
+	const { default: Body } = await importSeiteBody(id)
+
+	return (
+		<main>
+			<h1>{seite.title}</h1>
+			<Body />
+		</main>
+	)
+}
+
+export const dynamicParams = false

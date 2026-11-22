@@ -32,3 +32,7 @@ docs/index.md
 
 # Synthesis output of the CDK subproject from #4
 cdk/cdk.out
+
+# Prettier's MDX parser predates MDX 3 and mangles JSX and multi-line
+# comments; content is MDX (ADR-0002), so every .mdx file is exempt.
+*.mdx
