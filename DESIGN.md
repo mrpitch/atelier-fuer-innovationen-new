@@ -319,7 +319,17 @@ Flat paper. Surfaces and controls sit at rest with no shadow: the kit's `shadow/
 - **Cards, dialogs and the Gangart box:** 8px. The Thema-Karte is drawn with 12px (see Open Deviations).
 - **Badges:** pills.
 - **Stadtplan tiles and Rundgang cards:** square-cornered, so the grid reads as one continuous map rather than a set of cards.
-- **Illustrations:** each sits on a full circle of Petrolschleier with a thin horizon line at its base. Line art is Graphit in a single stroke weight; surfaces are painted Karteikarte, Petrol and Schieferblau. Sizes: 420px in a page hero, 128px on a tile, 44 × 64px as a station stop.
+- **Illustrations:** each sits on a full circle of Petrolschleier (184px in the 240px component) with a thin horizon line and a flat shadow at its base. Line art is Graphit at 2px with round caps and joins (3–4px only for load-bearing parts); surfaces are painted Karteikarte, Petrol and Schieferblau. Sizes: 420px in a page hero, 128px on a tile, 44 × 64px as a station stop. The Figma page `Illustrationen` holds the catalogue and the reasoning.
+
+### Named Rules
+
+**The One Object Rule.** Each Viertel, Thema and the Stadtplatz is one object that could stand in a city, chosen because it tells the place's focus at a glance. Viertel are objects seen from the front, the Zentrum is the only piece of architecture, Themen are abstract sculptures, Rundgänge are floor plans seen from above. One place, one object, one statement.
+
+**The One Line Rule.** Contours are one weight of Graphit. No gradients, no cast shadows, no hatching. A drawing that no longer reads as a silhouette at 64px has too much detail.
+
+**The Key Part Rule.** Surfaces are mostly Karteikarte. Petrol paints the one part that carries the statement (the signpost arrow, the globe, the tree trunk). Schieferblau is the second accent and exists only here. Koralle never appears in an illustration.
+
+**The Dashed Way Rule.** Movement is a dashed line (4px dash, 6px gap): a path, a flight line, an orbit, a Rundgang route. A filled dot marks a start or a position.
 
 ## Components
 
