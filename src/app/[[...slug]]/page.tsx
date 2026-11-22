@@ -28,7 +28,11 @@ export async function generateMetadata({ params }: PageProps<'/[[...slug]]'>): P
 	const seite = graph.getSeite(idFromSlug(slug))
 	if (!seite) notFound()
 
-	return { title: seite.title, description: seite.description }
+	return {
+		title: seite.title,
+		description: seite.description,
+		alternates: { canonical: seite.url },
+	}
 }
 
 export default async function Page({ params }: PageProps<'/[[...slug]]'>) {

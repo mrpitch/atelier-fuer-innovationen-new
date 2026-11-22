@@ -124,4 +124,49 @@ describe('buildContentGraph', () => {
 			}
 		})
 	})
+
+	describe('site data', () => {
+		it('reads the site name, tagline, base URL and copyright from site.json', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
+
+			expect(graph.site).toEqual({
+				name: 'Testname',
+				tagline: 'Test-Tagline',
+				baseUrl: 'https://example.com',
+				copyright: '© Test',
+			})
+		})
+	})
+
+	describe('Menus', () => {
+		it("resolves a content entry's label from the target's Short title, falling back to its title, and keeps an external entry's own label", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'menu-valid'))
+
+			expect(graph.getMenu('header')).toEqual([
+				{ url: '/mit-kurztitel', label: 'Kurz' },
+				{ url: '/ohne-kurztitel', label: 'Testseite ohne Kurztitel' },
+				{ url: 'https://extern.example.com', label: 'Extern' },
+			])
+		})
+
+		it('returns an empty list for a Menu with no file', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'menu-valid'))
+
+			expect(graph.getMenu('footer')).toEqual([])
+		})
+
+		it('fails when a Menu lists an unknown ID, naming the Menu file and the ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'menu-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('menus', 'header.json'))
+				expect(validationError.field).toBe('nichtvorhanden')
+				expect(validationError.reason).toMatch(/unknown|no matching/i)
+			}
+		})
+	})
 })
