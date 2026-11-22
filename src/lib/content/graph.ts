@@ -22,12 +22,14 @@ import {
 	loadMeta,
 	loadRundgangDocuments,
 	loadSeiten,
+	loadSeiteTranslation,
 	loadSite,
 	loadStationDocuments,
 	loadStationOrder,
 	loadThemaDocuments,
 	loadViertelDocuments,
 	loadViertelOrder,
+	loadViertelTranslation,
 	loadZentrum,
 } from './loader'
 import type { MenuLink } from './menu'
@@ -37,7 +39,34 @@ import { buildNavigation, listSitemap } from './navigation'
 import { summarizeRundgang } from './rundgang'
 import { buildStationNavigation, orderStationen } from './station'
 import { resolveThemen } from './thema'
+import { localizeSeite, localizeViertel } from './translation'
 import { orderViertel } from './viertel'
+
+// Every configured locale's resolved documents, keyed by locale then by
+// document ID (issue #36) — buildContentGraph's one shared pattern for
+// translating any document list, so Seite and Viertel don't each write their
+// own lookup map.
+function localizeAll<T extends { readonly id: string }>(
+	locales: readonly string[],
+	documents: readonly T[],
+	localize: (document: T, locale: string) => T,
+): ReadonlyMap<string, ReadonlyMap<string, T>> {
+	return new Map(
+		locales.map((locale) => [
+			locale,
+			new Map(documents.map((document) => [document.id, localize(document, locale)])),
+		]),
+	)
+}
+
+// resolveUrl's one lookup shape, shared between the German list and each
+// configured locale's own localized list (issue #36).
+function findByUrl<T extends { readonly url: string }>(
+	documents: readonly T[],
+	url: string,
+): T | undefined {
+	return documents.find((document) => document.url === url)
+}
 
 // Compiles a Seite's, Viertel's or the Zentrum's MDX body through Next's MDX
 // pipeline (ADR-0002) — the one place in the module that imports `@/content`
@@ -52,8 +81,27 @@ async function importBody(id: string) {
 
 export interface ContentGraph {
 	readonly seiten: readonly Seite[]
-	getSeite(id: string): Seite | undefined
+	// Without `locale`, the German document. With a configured locale
+	// (issue #36, below), that locale's translated view: translatable fields
+	// from its translation file when one sets them, the German document's
+	// otherwise, and a `/<locale>`-prefixed URL (ADR-0001) — undefined for an
+	// unconfigured locale, the same as an unknown `id`.
+	getSeite(id: string, locale?: string): Seite | undefined
 	getBody(id: string): ReturnType<typeof importBody>
+	// The extra locales configured for translation (issue #36, ADR-0001):
+	// empty by default, since no extra locale ships — buildContentGraph's
+	// caller passes a non-empty list only to exercise this plumbing (real
+	// callers never do, so prefixed routes only exist once a locale is
+	// configured here).
+	readonly locales: readonly string[]
+	// Every Seite translated into `locale`, the source for a prefixed route
+	// per Seite once a locale is configured — empty for an unconfigured one.
+	getLocalizedSeiten(locale: string): readonly Seite[]
+	// Resolves a URL (the catch-all route's own joined `slug` param) back to
+	// the Seite it names and, for a locale's own prefixed URL, that locale —
+	// the one place a URL is parsed instead of built, so a route asks the
+	// graph rather than parsing a locale prefix by hand (ADR-0001, ADR-0003).
+	resolveUrl(url: string): { readonly seite: Seite; readonly locale?: string } | undefined
 	readonly navigation: NavigationNode
 	// The Sitemap page and sitemap.xml both read this instead of re-deriving
 	// it: every content type's published documents, flattened into one list
@@ -69,7 +117,10 @@ export interface ContentGraph {
 	// The 8 Viertel (glossary), ordered and numbered by the Viertel order
 	// file (loader.ts, viertel.ts).
 	readonly viertel: readonly Viertel[]
-	getViertel(id: string): Viertel | undefined
+	// Without `locale`, the German document; with a configured locale, that
+	// locale's translated view (issue #36) — the same rule getSeite's own
+	// `locale` parameter follows, above.
+	getViertel(id: string, locale?: string): Viertel | undefined
 	// The Zentrum (glossary): its own type, not a Viertel, exactly one per
 	// site.
 	readonly zentrum: Zentrum
@@ -119,12 +170,25 @@ export interface ContentGraph {
 
 // The one public interface for content (ADR-0002): built from loader output,
 // and able to load any content directory so tests can point it at fixtures.
-export function buildContentGraph(contentDir: string): ContentGraph {
+// `locales` (issue #36, ADR-0001) is the extra locales configured for
+// translation beyond German, the default: empty for every real caller, so
+// production never attempts a translation lookup at all; a test passes a
+// non-empty list to exercise this plumbing with a test-only locale.
+export function buildContentGraph(
+	contentDir: string,
+	locales: readonly string[] = [],
+): ContentGraph {
 	const seiten = loadSeiten(contentDir)
+	const seitenByLocale = localizeAll(locales, seiten, (seite, locale) =>
+		localizeSeite(seite, locale, loadSeiteTranslation(contentDir, seite.id, locale)),
+	)
 	const navigation = buildNavigation(seiten, loadMeta(contentDir))
 	const site = loadSite(contentDir)
 	const menus = resolveMenus(seiten, loadMenus(contentDir))
 	const viertel = orderViertel(loadViertelOrder(contentDir), loadViertelDocuments(contentDir))
+	const viertelByLocale = localizeAll(locales, viertel, (item, locale) =>
+		localizeViertel(item, locale, loadViertelTranslation(contentDir, item.id, locale)),
+	)
 	const zentrum = loadZentrum(contentDir)
 	const aufsaetze = resolveAufsaetze(loadAufsatzDocuments(contentDir), viertel)
 
@@ -166,10 +230,26 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 
 	return {
 		seiten,
-		getSeite(id) {
+		getSeite(id, locale) {
+			if (locale !== undefined) return seitenByLocale.get(locale)?.get(id)
 			return seiten.find((seite) => seite.id === id)
 		},
 		getBody: importBody,
+		locales,
+		getLocalizedSeiten(locale) {
+			return [...(seitenByLocale.get(locale)?.values() ?? [])]
+		},
+		resolveUrl(url) {
+			const german = findByUrl(seiten, url)
+			if (german) return { seite: german }
+
+			for (const locale of locales) {
+				const localized = findByUrl([...(seitenByLocale.get(locale)?.values() ?? [])], url)
+				if (localized) return { seite: localized, locale }
+			}
+
+			return undefined
+		},
 		navigation: navigation.tree,
 		sitemap: listSitemap({
 			tree: navigation.tree,
@@ -191,7 +271,8 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 			return menus.get(name) ?? []
 		},
 		viertel,
-		getViertel(id) {
+		getViertel(id, locale) {
+			if (locale !== undefined) return viertelByLocale.get(locale)?.get(id)
 			return viertel.find((item) => item.id === id)
 		},
 		zentrum,
