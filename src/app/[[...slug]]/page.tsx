@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
+import { RundgaengeListe } from '@/components/rundgang/rundgaenge-liste'
 import { ThemenListe } from '@/components/thema/themen-liste'
 import { ViertelListe } from '@/components/viertel/viertel-liste'
 import { buildContentGraph } from '@/lib/content'
@@ -13,6 +14,9 @@ import { buildContentGraph } from '@/lib/content'
 // lists the Viertel and Zentrum, derived from the content graph.
 const STADT_SEITE_ID = 'stadt'
 
+// The Rundgänge area's landing Seite (issue #32): the one Seite ID that also
+// lists every Rundgang, the same pattern as the Stadt area above.
+const RUNDGAENGE_SEITE_ID = 'rundgaenge'
 // The Themen area's landing Seite (issue #31): the one Seite ID that also
 // lists the three Themen, derived from the content graph.
 const THEMEN_SEITE_ID = 'themen'
@@ -61,6 +65,7 @@ export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
 			<h1>{seite.title}</h1>
 			<Body />
 			{id === STADT_SEITE_ID && <ViertelListe viertel={graph.viertel} zentrum={graph.zentrum} />}
+			{id === RUNDGAENGE_SEITE_ID && <RundgaengeListe rundgaenge={graph.rundgaenge} />}
 			{id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
 			<PreviousNext previous={graph.getPrevious(id)} next={graph.getNext(id)} />
 		</main>

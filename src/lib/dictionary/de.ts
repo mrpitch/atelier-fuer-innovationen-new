@@ -21,6 +21,12 @@ export const de = {
 	'kapitel.abschnitteCount': '{n} Abschnitte',
 	'kapitel.themenOrtHeading': 'Themen-Ort',
 	'abschnitt.readingTime': 'ca. {n} Min.',
+	'rundgaenge.navigation': 'Die Rundgänge der Wissensstadt',
+	'rundgang.stationenCount': '{n} Stationen',
+	'rundgang.duration': 'ca. {n} Min.',
+	'station.number': 'Station {n}',
+	'station.readingTime': 'ca. {n} Min.',
+	'ort.stationenHeading': 'Stationen an diesem Ort',
 	'themen.navigation': 'Die drei Themen',
 	'thema.kapitelHeading': 'Kapitel',
 } as const

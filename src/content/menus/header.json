@@ -1,1 +1,7 @@
-[{ "id": "stadt" }, { "id": "idee" }, { "id": "themen" }, { "id": "kontakt" }]
+[
+	{ "id": "stadt" },
+	{ "id": "rundgaenge" },
+	{ "id": "idee" },
+	{ "id": "themen" },
+	{ "id": "kontakt" }
+]
