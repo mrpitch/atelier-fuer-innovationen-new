@@ -18,6 +18,8 @@ commands:
   test: pnpm test
   build: pnpm build
   check: pnpm check
+  docsCheck: pnpm docs:check
+  docsIndex: pnpm docs:index
 
 git:
   trunk: main

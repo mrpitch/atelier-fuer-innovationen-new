@@ -34,6 +34,7 @@ re-run `docs index` after adding or moving files.
 
 ### Global
 
+- [Docs tooling](reference/global/docs-tooling.md)
 - [Folder structure](reference/global/folder-structure.md)
 
 ### I18n

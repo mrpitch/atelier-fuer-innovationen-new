@@ -13,7 +13,10 @@
 		"format:check": "prettier --check .",
 		"test": "vitest run",
 		"content:check": "node scripts/content-check.mts",
-		"check": "pnpm format:check && pnpm lint && pnpm spellcheck && pnpm typecheck && pnpm test && pnpm content:check",
+		"docs:check": "node scripts/docs-check.mts",
+		"docs:lint": "markdownlint-cli2",
+		"docs:index": "npx tsx \"$HOME/.claude/skills/docs/scripts/generate-index.ts\" docs",
+		"check": "pnpm format:check && pnpm lint && pnpm spellcheck && pnpm typecheck && pnpm test && pnpm content:check && pnpm docs:check && pnpm docs:lint",
 		"prepare": "husky",
 		"afk": "~/Dev/home/tools/sandcastle/bin/sandcastle-run",
 		"sandcastle:build": "DOCKER_BUILDKIT=1 docker build --build-arg AGENT_UID=$(id -u) --build-arg AGENT_GID=$(id -g) -t sandcastle:atelier-fuer-innovationen-new -f .sandcastle/Dockerfile ."
