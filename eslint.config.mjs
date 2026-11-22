@@ -177,9 +177,9 @@ const eslintConfig = defineConfig([
 		// same blueprint, so they're in scope too.
 		files: ['src/**/*.{ts,tsx}'],
 		rules: {
-			// Component blueprint: React 19 passes `ref` as a prop.
-			'func-style': ['error', 'declaration', { allowArrowFunctions: false }],
+			'func-style': ['error', 'declaration'],
 
+			// Component blueprint: React 19 passes `ref` as a prop.
 			'restrictions/legacy-ref-api': [
 				'error',
 				{
@@ -231,7 +231,7 @@ const eslintConfig = defineConfig([
 				'error',
 				{
 					selector:
-						'TSTypeReference > TSQualifiedName[right.name=/HTMLAttributes$/], TSTypeReference > Identifier[name=/HTMLAttributes$/]',
+						'TSTypeReference > TSQualifiedName[right.name=/HTMLAttributes$/], TSTypeReference > Identifier[name=/HTMLAttributes$/], TSInterfaceHeritage > MemberExpression[property.name=/HTMLAttributes$/], TSInterfaceHeritage > Identifier[name=/HTMLAttributes$/]',
 					message:
 						"Derive props from React.ComponentProps<'element'> or the primitive's own props type instead of a *HTMLAttributes type. See docs/reference/components/component-blueprint.md.",
 				},
@@ -240,7 +240,7 @@ const eslintConfig = defineConfig([
 			'restrictions/default-exports': [
 				'error',
 				{
-					selector: 'ExportDefaultDeclaration',
+					selector: 'ExportDefaultDeclaration, ExportSpecifier[exported.name="default"]',
 					message:
 						'Named exports only here; default exports are reserved for Next.js route files (page, layout, not-found, …). See docs/reference/global/folder-structure.md.',
 				},
@@ -295,7 +295,7 @@ const eslintConfig = defineConfig([
 				{
 					patterns: [
 						{
-							regex: '(^|/)globals\\.css$',
+							regex: '(?<!\\.module)\\.css$',
 							message:
 								'Only the root layout imports global CSS. See docs/reference/css/theme-system.md.',
 						},
@@ -306,12 +306,8 @@ const eslintConfig = defineConfig([
 			'restrictions/template-literal-classnames': [
 				'error',
 				{
-					selector: "JSXAttribute[name.name='className'] TemplateLiteral",
-					message: noTemplateLiteralClassNamesMessage,
-				},
-				{
 					selector:
-						"CallExpression[callee.name='cn'] TemplateLiteral, CallExpression[callee.name='cva'] TemplateLiteral",
+						"JSXAttribute[name.name='className'] TemplateLiteral, CallExpression[callee.name='cn'] TemplateLiteral, CallExpression[callee.name='cva'] TemplateLiteral",
 					message: noTemplateLiteralClassNamesMessage,
 				},
 			],
@@ -322,7 +318,7 @@ const eslintConfig = defineConfig([
 					selector:
 						"JSXOpeningElement[name.name='html'] JSXAttribute[name.name='className'] MemberExpression[property.name='variable']",
 					message:
-						'next/font variable classes go on <body>, never <html>: on <html> the class would compete with the next/font class at equal specificity, and only the order of the CSS chunks would decide which wins. See docs/reference/css/font-system.md.',
+						'next/font variable classes go on <body>, never <html>: theme.css maps --font-sans: var(--font-sans) and Tailwind also writes that self-reference to :root, so on <html> it would compete with the next/font class at equal specificity and only the order of the CSS chunks would decide which wins. On <body> the class always wins. See docs/reference/css/font-system.md.',
 				},
 			],
 		},
@@ -330,7 +326,7 @@ const eslintConfig = defineConfig([
 	{
 		// Next.js file conventions: https://nextjs.org/docs/app/api-reference/file-conventions.
 		files: [
-			'src/app/**/{page,layout,template,loading,error,global-error,not-found,default,route,sitemap,robots,manifest,opengraph-image,twitter-image,icon,apple-icon}.{ts,tsx}',
+			'src/app/**/{page,layout,template,loading,error,global-error,not-found,global-not-found,forbidden,unauthorized,default,route,sitemap,robots,manifest,opengraph-image,twitter-image,icon,apple-icon}.{ts,tsx}',
 		],
 		rules: { 'restrictions/default-exports': 'off' },
 	},
@@ -345,6 +341,17 @@ const eslintConfig = defineConfig([
 					selector: 'ExportNamedDeclaration[declaration]',
 					message:
 						'Export from one list at the bottom of the file instead: export { Name }. See docs/reference/components/component-blueprint.md.',
+				},
+				{
+					selector:
+						'ExportNamedDeclaration:not([declaration]):not([source]) ~ ExportNamedDeclaration:not([source])',
+					message:
+						'Export from one list at the bottom of the file: merge this into the existing export { … } list. See docs/reference/components/component-blueprint.md.',
+				},
+				{
+					selector: 'ExportNamedDeclaration:not([declaration]) ~ :not(ExportNamedDeclaration)',
+					message:
+						'The export { … } list goes at the bottom of the file, after every declaration. See docs/reference/components/component-blueprint.md.',
 				},
 			],
 		},
@@ -386,12 +393,6 @@ const eslintConfig = defineConfig([
 			// this rule for the line is how that measurement gets written down.
 			'restrictions/unmeasured-memoization': [
 				'error',
-				{
-					selector:
-						"ImportDeclaration[source.value='react'] ImportSpecifier[imported.name=/^(useMemo|useCallback|memo)$/]",
-					message:
-						'useMemo, useCallback and memo are only for a measured performance problem. Disable this rule for the line with a comment stating what was measured. See docs/reference/react/react-component-conventions.md.',
-				},
 				{
 					selector:
 						"CallExpression[callee.name=/^(useMemo|useCallback|memo)$/], MemberExpression[object.name='React'][property.name=/^(useMemo|useCallback|memo)$/]",
@@ -454,7 +455,7 @@ const eslintConfig = defineConfig([
 				},
 				{
 					selector:
-						'ExportSpecifier[exported.name=/^[A-Z]/] ~ ExportSpecifier[exported.name=/^[A-Z]/]',
+						'ExportNamedDeclaration[exportKind="value"] > ExportSpecifier[exportKind="value"][exported.name=/^[A-Z]/] ~ ExportSpecifier[exportKind="value"][exported.name=/^[A-Z]/]',
 					message:
 						'One exported component per file here. Split the extra component into its own file. See docs/reference/global/folder-structure.md.',
 				},

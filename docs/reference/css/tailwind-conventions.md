@@ -1,7 +1,7 @@
 ---
 type: reference
 title: Tailwind conventions
-description: How to write Tailwind CSS v4 classes here, covering tokens, class order, variants, cn() merging and where custom CSS may go.
+description: How to write Tailwind CSS v4 classes here, covering tokens, class order, variants and where custom CSS may go.
 tags: [css, tailwind, conventions, styling]
 status: stable
 last_reviewed: 2026-11-21

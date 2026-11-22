@@ -26,7 +26,7 @@ src/
     └── <domain>/        a concern with internals of its own, such as content/ for the content graph
 ```
 
-## Files and exports
+## Files
 
 | Rule                 | Detail                                                                                            |
 | -------------------- | ------------------------------------------------------------------------------------------------- |
