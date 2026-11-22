@@ -94,9 +94,15 @@ export function listSitemap(
 	return walk(tree)
 }
 
+// A Draft (glossary, issue #33) stays a structurally real child for
+// meta.json's own reconciliation below — it is still an actual file on disk —
+// but every exposed Navigation view hides it when `isVisible` says so. Its
+// own children, if any, reparent to its nearest visible ancestor, the same
+// rule `listSitemap` uses for its flat list.
 export function buildNavigation(
 	seiten: readonly Seite[],
 	metaByFolder: ReadonlyMap<string, Meta>,
+	isVisible: (seite: Seite) => boolean = () => true,
 ): Navigation {
 	const byId = new Map(seiten.map((seite) => [seite.id, seite]))
 
@@ -125,15 +131,23 @@ export function buildNavigation(
 		throw new Error('buildNavigation: no Seite with id "" to use as the Navigation tree root')
 	}
 
-	function buildNode(seite: Seite): NavigationNode {
+	// A hidden child's own children reparent to its nearest visible ancestor
+	// instead of disappearing with it.
+	function visibleDescendants(seite: Seite): NavigationNode[] {
 		const children = orderedChildrenByParent.get(seite.id) ?? []
-		return { ...toLink(seite), children: children.map(buildNode) }
+		return children.flatMap((child) =>
+			isVisible(child) ? [buildNode(child)] : visibleDescendants(child),
+		)
+	}
+
+	function buildNode(seite: Seite): NavigationNode {
+		return { ...toLink(seite), children: visibleDescendants(seite) }
 	}
 
 	function siblingsAndIndex(id: string): { siblings: Seite[]; index: number } | undefined {
 		const parent = parentId(id)
 		if (parent === undefined) return undefined
-		const siblings = orderedChildrenByParent.get(parent) ?? []
+		const siblings = (orderedChildrenByParent.get(parent) ?? []).filter(isVisible)
 		const index = siblings.findIndex((sibling) => sibling.id === id)
 		return index === -1 ? undefined : { siblings, index }
 	}
@@ -147,7 +161,7 @@ export function buildNavigation(
 			while (current !== undefined) {
 				const seite = byId.get(current)
 				if (!seite) break
-				trail.unshift(toLink(seite))
+				if (isVisible(seite)) trail.unshift(toLink(seite))
 				current = parentId(current)
 			}
 			return trail

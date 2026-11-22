@@ -77,6 +77,13 @@ function seiteUrl(id: string): string {
 	return id === '' ? '/' : `/${id}`
 }
 
+// A Seite's own file, from its ID (issue #33): used only to name the Draft in
+// a reference error, the same way loadZentrum names a missing file by
+// location rule rather than by a stored path.
+export function seiteFile(id: string): string {
+	return id === '' ? 'index.mdx' : path.join(id, 'index.mdx')
+}
+
 // A relative path's directory, POSIX-separated regardless of platform — every
 // location rule below tests this against its own pattern.
 function relativeDir(relativePath: string): string {

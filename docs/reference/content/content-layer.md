@@ -107,11 +107,22 @@ It is strict: every actual child of that folder must appear exactly once. An ID 
 
 `baseUrl` is a placeholder (`https://xenia.example.com`) until a real production domain is decided; it feeds `metadataBase` in `src/app/layout.tsx`, which resolves the per-page canonical link in `src/app/[[...slug]]/page.tsx`.
 
+## Drafts
+
+A **Draft** (glossary) is a Seite with `draft: true` in its frontmatter (`seiteFrontmatterSchema` in `schemas.ts`, default `false`): written and checked but not yet published (issue #33).
+
+`buildContentGraph(contentDir, options)` takes an optional `development` flag (default `false`). Next assigns `NODE_ENV` `'development'` only for `next dev`, `'production'` for every other command including `next build` — `layout.tsx` and `[[...slug]]/page.tsx` pass `{ development: process.env.NODE_ENV === 'development' }` for exactly that split; every other caller, `content:check` included, defaults to the strict behaviour below:
+
+- `graph.seiten`/`graph.getSeite(id)` leave a Draft out, so `generateStaticParams` in `[[...slug]]/page.tsx` never builds it a page, and visiting its URL 404s (`dynamicParams = false`).
+- `graph.navigation`, `getBreadcrumbs`, `getPrevious` and `getNext` leave a Draft's own node out; its children, if any, reparent to its nearest visible ancestor instead of disappearing with it — the same rule the Sitemap uses, below. `buildNavigation` (`navigation.ts`) takes this as an `isVisible` predicate, defaulting to always-visible for any caller that doesn't pass one.
+- A Menu entry referencing a Draft fails instead of resolving (`menu.ts`'s `resolveEntry`), naming the Menu file and the Draft's own file (`loader.ts`'s `seiteFile(id)`) — the same way an entry with no matching Seite at all fails, just with its own reason text.
+- A Draft is still fully validated regardless of `development`: frontmatter parsing (below) never looks at `draft` before validating the rest of a document's frontmatter, and `meta.json`'s reconciliation (below) is checked against the full, Draft-included set of a folder's actual children — a Draft is still a real file on disk, so an author can still order it inside a `meta.json` ahead of publishing it.
+
+`next dev` is the one place a Draft renders like any other Seite: reachable by URL, listed in Navigation and Menus, with working breadcrumbs and previous/next links.
+
 ## Sitemap
 
-`graph.sitemap` (`src/lib/content/graph.ts`, built by `listSitemap` in `navigation.ts`) is the whole Navigation tree flattened into one list, in Navigation order, leaving out a Draft's own entry — its published children, if any, still appear. The Sitemap page and `sitemap.xml` both read this one list instead of re-deriving it (issue #34).
-
-A **Draft** (glossary) is a Seite with `draft: true` in its frontmatter (`seiteFrontmatterSchema` in `schemas.ts`, default `false`): written and checked but not yet published.
+`graph.sitemap` (`src/lib/content/graph.ts`, built by `listSitemap` in `navigation.ts`) is the whole Navigation tree flattened into one list, in Navigation order, leaving out a Draft's own entry — its published children, if any, still appear. Unlike `graph.navigation` above, this exclusion isn't `development`-aware: the Sitemap page and `sitemap.xml` are always a published-only view, in or out of `next dev` (issue #34). Both read this one list instead of re-deriving it.
 
 `src/content/sitemap/index.mdx` is a plain Seite like any other, whose body is a single `<SitemapList />` — the one MDX component the provider (`src/mdx-components.tsx`) currently registers. The component (`src/components/navigation/sitemap-list.tsx`) reads the content graph itself, unlike Breadcrumbs and PreviousNext, because it sits inside the Sitemap Seite's own MDX body rather than being handed items by `page.tsx`. `src/content/menus/footer.json` links to it like any other Seite, by ID.
 

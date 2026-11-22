@@ -17,7 +17,11 @@ const STADT_SEITE_ID = 'stadt'
 // lists the three Themen, derived from the content graph.
 const THEMEN_SEITE_ID = 'themen'
 
-const graph = buildContentGraph(path.join(process.cwd(), 'src/content'))
+// `next dev` is the one caller that previews a Draft (issue #33); every other
+// command, `next build` included, sees the published-only graph.
+const graph = buildContentGraph(path.join(process.cwd(), 'src/content'), {
+	development: process.env.NODE_ENV === 'development',
+})
 
 function idFromSlug(slug: string[] | undefined): string {
 	return (slug ?? []).join('/')

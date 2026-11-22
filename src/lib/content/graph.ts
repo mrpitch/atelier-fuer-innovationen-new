@@ -86,13 +86,34 @@ export interface ContentGraph {
 	getThemenByKapitel(kapitelId: string): readonly Thema[]
 }
 
+export interface ContentGraphOptions {
+	// Next assigns NODE_ENV 'development' only for `next dev`, 'production'
+	// for every other command (`next build` included) — the exact dev/build
+	// split issue #33 wants: in dev a Draft (glossary) renders like any other
+	// Seite, including in Navigation and Menus; by default (every other
+	// caller, content:check included) it's hidden from both, has no page, and
+	// a Menu entry referencing it fails instead of resolving.
+	readonly development?: boolean
+}
+
 // The one public interface for content (ADR-0002): built from loader output,
 // and able to load any content directory so tests can point it at fixtures.
-export function buildContentGraph(contentDir: string): ContentGraph {
-	const seiten = loadSeiten(contentDir)
-	const navigation = buildNavigation(seiten, loadMeta(contentDir))
+export function buildContentGraph(
+	contentDir: string,
+	options: ContentGraphOptions = {},
+): ContentGraph {
+	const { development = false } = options
+
+	// The full set, Draft included, is what meta.json and a Menu file are
+	// reconciled against — a Draft is still a real file on disk, so hiding it
+	// from the exposed graph below is `isVisible`'s job, not loadSeiten's.
+	const allSeiten = loadSeiten(contentDir)
+	const isVisible = (seite: Seite) => development || !seite.draft
+	const seiten = allSeiten.filter(isVisible)
+
+	const navigation = buildNavigation(allSeiten, loadMeta(contentDir), isVisible)
 	const site = loadSite(contentDir)
-	const menus = resolveMenus(seiten, loadMenus(contentDir))
+	const menus = resolveMenus(allSeiten, loadMenus(contentDir), development)
 	const viertel = orderViertel(loadViertelOrder(contentDir), loadViertelDocuments(contentDir))
 	const zentrum = loadZentrum(contentDir)
 	const aufsaetze = resolveAufsaetze(loadAufsatzDocuments(contentDir), viertel)
@@ -119,7 +140,7 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		},
 		getBody: importBody,
 		navigation: navigation.tree,
-		sitemap: listSitemap(navigation.tree, seiten),
+		sitemap: listSitemap(navigation.tree, allSeiten),
 		getBreadcrumbs: navigation.getBreadcrumbs,
 		getPrevious: navigation.getPrevious,
 		getNext: navigation.getNext,
