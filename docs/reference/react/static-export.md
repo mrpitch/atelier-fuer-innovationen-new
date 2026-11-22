@@ -23,7 +23,7 @@ A Server Component may read files, because the build has a file system. The resu
 
 ## Rejected by lint
 
-Each of these fails `pnpm lint` and the pre-commit hook, on its own `restrictions/*` rule in `eslint.config.mjs`. The other two restriction rules, `restrictions/icon-registry-imports` and `restrictions/base-ui-imports`, are documented the same way in `docs/reference/components/icon-registry.md` and `docs/reference/components/component-blueprint.md`:
+Each of these fails `pnpm lint` and the pre-commit hook, on its own `restrictions/*` rule in `eslint.config.mjs`:
 
 | Feature                                                  | Rule                                       | Use instead                                                                            |
 | -------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------- |
