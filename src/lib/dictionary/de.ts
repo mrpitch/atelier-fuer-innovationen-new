@@ -6,6 +6,7 @@ export const de = {
 	'navigation.next': 'Nächste Seite',
 	'layout.headerMenu': 'Hauptnavigation',
 	'layout.footerMenu': 'Fußzeilen-Navigation',
+	'navigation.sitemap': 'Sitemap',
 } as const
 
 export type DictionaryKey = keyof typeof de

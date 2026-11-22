@@ -6,6 +6,9 @@ export const seiteFrontmatterSchema = z.object({
 	title: z.string().min(1),
 	description: z.string().min(1),
 	shortTitle: z.string().min(1).optional(),
+	// A Draft (glossary) is written and checked but not yet published: left
+	// out of the Sitemap and sitemap.xml, issue #34.
+	draft: z.boolean().default(false),
 })
 
 export type SeiteFrontmatter = z.infer<typeof seiteFrontmatterSchema>

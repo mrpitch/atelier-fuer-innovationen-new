@@ -76,6 +76,24 @@ function orderChildren(meta: Meta | undefined, children: readonly Seite[]): Seit
 	return ordered
 }
 
+// The Sitemap (glossary: Sitemap): a flat, published-only view of the whole
+// Navigation tree, in Navigation order (issue #34). A Draft's own entry is
+// left out; its published children, if any, still appear.
+export function listSitemap(
+	tree: NavigationNode,
+	seiten: readonly Seite[],
+): readonly NavigationLink[] {
+	const draftIds = new Set(seiten.filter((seite) => seite.draft).map((seite) => seite.id))
+
+	function walk(node: NavigationNode): NavigationLink[] {
+		const { children, ...link } = node
+		const descendants = children.flatMap(walk)
+		return draftIds.has(link.id) ? descendants : [link, ...descendants]
+	}
+
+	return walk(tree)
+}
+
 export function buildNavigation(
 	seiten: readonly Seite[],
 	metaByFolder: ReadonlyMap<string, Meta>,

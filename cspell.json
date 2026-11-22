@@ -28,6 +28,8 @@
 		"Kapitel",
 		"Abschnitt",
 		"Aufsatz",
+		"Draft",
+		"draft",
 		// Proper nouns (PRODUCT.md).
 		"Xenia",
 		"Xeniapolis",

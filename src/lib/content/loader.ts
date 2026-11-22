@@ -25,6 +25,7 @@ export interface Seite {
 	readonly title: string
 	readonly description: string
 	readonly shortTitle?: string
+	readonly draft: boolean
 	readonly body: string
 }
 

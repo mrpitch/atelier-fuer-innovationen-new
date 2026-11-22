@@ -125,6 +125,24 @@ describe('buildContentGraph', () => {
 		})
 	})
 
+	describe('Sitemap', () => {
+		it("defaults a Seite's draft to false", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
+
+			expect(graph.getSeite('')?.draft).toBe(false)
+		})
+
+		it('lists the Navigation tree flattened, in order, leaving out a Draft but keeping its published children', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'))
+
+			expect(graph.sitemap).toEqual([
+				{ id: '', url: '/', title: 'Start' },
+				{ id: 'entwurf/kind', url: '/entwurf/kind', title: 'Kind' },
+				{ id: 'veroeffentlicht', url: '/veroeffentlicht', title: 'Veröffentlicht' },
+			])
+		})
+	})
+
 	describe('site data', () => {
 		it('reads the site name, tagline, base URL and copyright from site.json', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))

@@ -3,12 +3,15 @@ import { loadMenus, loadMeta, loadSeiten, loadSite } from './loader'
 import type { MenuLink } from './menu'
 import { resolveMenus } from './menu'
 import type { NavigationLink, NavigationNode } from './navigation'
-import { buildNavigation } from './navigation'
+import { buildNavigation, listSitemap } from './navigation'
 
 export interface ContentGraph {
 	readonly seiten: readonly Seite[]
 	getSeite(id: string): Seite | undefined
 	readonly navigation: NavigationNode
+	// The Sitemap page and sitemap.xml both read this instead of re-deriving
+	// it: the whole Navigation tree, flattened and published-only (issue #34).
+	readonly sitemap: readonly NavigationLink[]
 	getBreadcrumbs(id: string): readonly NavigationLink[]
 	getPrevious(id: string): NavigationLink | undefined
 	getNext(id: string): NavigationLink | undefined
@@ -32,6 +35,7 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 			return seiten.find((seite) => seite.id === id)
 		},
 		navigation: navigation.tree,
+		sitemap: listSitemap(navigation.tree, seiten),
 		getBreadcrumbs: navigation.getBreadcrumbs,
 		getPrevious: navigation.getPrevious,
 		getNext: navigation.getNext,
