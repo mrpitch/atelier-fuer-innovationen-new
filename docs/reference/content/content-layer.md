@@ -68,6 +68,22 @@ A Thema's URL (issue #31, [ADR-0003](../../adr/adr-0003-urls-from-content-graph-
 
 Each Viertel and the Zentrum has an illustration, looked up by the owning document's ID — content never names an illustration file. `src/components/viertel/illustration.tsx` holds the registry (the same lookup-by-key pattern as the [icon registry](../components/icon-registry.md)), currently mapping every ID to one shared placeholder until the real illustrations (PRODUCT.md, Evidence on Hand) are built.
 
+### Components in a body
+
+A body uses a fixed, registered component set instead of its own imports (above, "MDX lint"): `src/mdx-components.tsx` is the provider, the same file Next's own `useMDXComponents` convention calls for every body. A component that references other content by ID, like `ViertelTeaser` (issue #35, `src/components/viertel/viertel-teaser.tsx`, taking a Viertel's `id`), reads the content graph itself the same way `SitemapList` does (above, "Sitemap") — it isn't handed data by `page.tsx`, since a page doesn't know in advance which IDs a body's components reference.
+
+Every such ID is checked the same way a frontmatter reference field is: `src/lib/content/body.ts` extracts every `<ViertelTeaser id="...">` in a body (a plain tag/attribute scan, since a body has no imports to resolve against) and calls `resolveReference` against the resolved Viertel list — reusing the one generic resolution mechanism (above, "References"), not a new per-component check. `buildContentGraph` runs this over every content type's body, not just Seite's, since a Viertel teaser can appear in any of them. An unknown ID throws `ContentValidationError` naming the body's own file (`src/lib/content/loader.ts`'s `documentFile`, the inverse of a document's ID) and `ViertelTeaser.id`.
+
+### Body images
+
+An image sits next to its MDX file and is referenced with markdown's own syntax, `![alt](path)`, relative to that file — never an absolute path, since content has no notion of where a page's URL ends up living (a Kapitel's URL, for instance, isn't its folder path at all, above). `src/lib/content/body.ts`'s `resolveBodyAssetPath(id, path)` is the one join that turns a body image's relative path into a path under the content directory — a document's ID is its folder path (below, "Document IDs"), so no extra lookup is needed. `buildContentGraph` checks every such path exists on disk (`loader.ts`'s `validateBodyImages`), throwing `ContentValidationError` naming the file and the path if it doesn't, and exposes every validated one as `graph.bodyImages` — a flat list of paths under the content directory, deduplicated.
+
+The static export has no server to read `src/content` from at request time, so `pnpm content:images` (`scripts/content-images.mts`) copies every `graph.bodyImages` entry into `public/` at the same relative path before `next build` runs (`pnpm build` chains it first) — Next's own static export then copies `public/` into `out/` verbatim, the same way it always does, so no new serving code is needed. `public/` is therefore entirely generated from `src/content` (`.gitignore`), never hand-authored.
+
+Rendering resolves a body image's `src` the same way: `src/components/content/body-image.tsx`'s `bodyImageComponents(id)` returns a local `img` override, passed to the compiled body as `<Body components={bodyImageComponents(id)} />` (`src/app/[[...slug]]/page.tsx`) — the documented way to pass per-page data into a compiled MDX component, since it merges with and overrides the global set from `mdx-components.tsx`. The override calls `resolveBodyAssetPath` with the page's own document ID, so it resolves to exactly the path `content-images.mts` copied the file to. It renders a plain `<img>`, not `next/image`: a body image has no known dimensions and the site is already unoptimized (`images: { unoptimized: true }`, [Static export](../react/static-export.md)), so `next/image`'s own optimization has nothing to add.
+
+Only Seite bodies render today (`page.tsx` is the only route calling `graph.getBody`), so this is currently where a Viertel teaser or a body image actually appears in the build output, even though `buildContentGraph` validates every content type's body.
+
 ## Document IDs
 
 A document's ID is the path under `src/content`, without extension or locale suffix:

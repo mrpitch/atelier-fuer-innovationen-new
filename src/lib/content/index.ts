@@ -4,6 +4,7 @@
 // import itself — no package to install (About the architecture).
 import 'server-only'
 
+export { isRelativeImagePath, resolveBodyAssetPath } from './body'
 export { ContentValidationError } from './errors'
 export type { SplitDocument } from './frontmatter'
 export { splitDocument } from './frontmatter'

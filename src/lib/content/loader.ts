@@ -3,8 +3,10 @@ import path from 'node:path'
 
 import type { z } from 'zod'
 
+import { extractRelativeImages, resolveBodyAssetPath } from './body'
 import {
 	ABSCHNITT_ORDER_FIELD,
+	BODY_IMAGE_FIELD,
 	ContentValidationError,
 	FRONTMATTER_FIELD,
 	MENU_FIELD,
@@ -78,6 +80,13 @@ function deriveId(relativePath: string): string {
 
 function seiteUrl(id: string): string {
 	return id === '' ? '/' : `/${id}`
+}
+
+// The content file a document's ID derives from — the inverse of deriveId,
+// for the error messages a body-level check (below) throws, since by the
+// time it runs the original relativePath is out of scope.
+export function documentFile(id: string): string {
+	return id === '' ? 'index.mdx' : path.join(id, 'index.mdx')
 }
 
 // A relative path's directory, POSIX-separated regardless of platform — every
@@ -737,4 +746,25 @@ export function loadMenus(contentDir: string): ReadonlyMap<string, RawMenu> {
 	}
 
 	return result
+}
+
+// Every relative image a body references (issue #35) must actually sit next
+// to the document — the one fs check this module adds for the content
+// graph's body validation pass (graph.ts), which calls this once per
+// document once every type is loaded. Returns the resolved paths so
+// buildContentGraph can expose them as graph.bodyImages, content-images.mts's
+// own source of what to copy into the build output.
+export function validateBodyImages(contentDir: string, id: string, body: string): string[] {
+	const file = documentFile(id)
+	return extractRelativeImages(body).map((relativeImagePath) => {
+		const resolved = resolveBodyAssetPath(id, relativeImagePath)
+		if (!fs.existsSync(path.join(contentDir, resolved))) {
+			throw new ContentValidationError(
+				file,
+				BODY_IMAGE_FIELD,
+				`image not found: ${relativeImagePath}`,
+			)
+		}
+		return resolved
+	})
 }

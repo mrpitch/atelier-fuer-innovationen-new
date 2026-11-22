@@ -1,5 +1,6 @@
 import { buildAbschnittNavigation, orderAbschnitte } from './abschnitt'
 import { resolveAufsaetze } from './aufsatz'
+import { validateViertelTeaserReferences } from './body'
 import { resolveKapitel } from './kapitel'
 import type {
 	Abschnitt,
@@ -14,6 +15,7 @@ import type {
 	Zentrum,
 } from './loader'
 import {
+	documentFile,
 	loadAbschnittDocuments,
 	loadAbschnittOrder,
 	loadAufsatzDocuments,
@@ -29,6 +31,7 @@ import {
 	loadViertelDocuments,
 	loadViertelOrder,
 	loadZentrum,
+	validateBodyImages,
 } from './loader'
 import type { MenuLink } from './menu'
 import { resolveMenus } from './menu'
@@ -115,6 +118,11 @@ export interface ContentGraph {
 	// — never listed by hand on the Kapitel itself, the same derivation
 	// getAufsaetzeByViertel uses.
 	getThemenByKapitel(kapitelId: string): readonly Thema[]
+	// Every relative image a body references, resolved to its path under the
+	// content directory (body.ts) — content-images.mts copies each one into
+	// public/ before next build, so the static export can serve it next to
+	// the page that uses it (issue #35).
+	readonly bodyImages: readonly string[]
 }
 
 // The one public interface for content (ADR-0002): built from loader output,
@@ -163,6 +171,30 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 	)
 	const stationen = [...stationenByRundgang.values()].flat()
 	const stationNavigation = buildStationNavigation(stationenByRundgang)
+
+	// Every document with a body, across every content type, checked for
+	// content-referencing components and relative images (issue #35) —
+	// after every type above is loaded, since a Viertel teaser can appear in
+	// any of their bodies, not just a Seite's.
+	const bodyDocuments: ReadonlyArray<{ id: string; body: string }> = [
+		...seiten,
+		...viertel,
+		zentrum,
+		...aufsaetze,
+		...kapitel,
+		...abschnittDocuments,
+		...rundgaenge,
+		...stationDocuments,
+		...themen,
+	]
+	const bodyImages = [
+		...new Set(
+			bodyDocuments.flatMap(({ id, body }) => {
+				validateViertelTeaserReferences(documentFile(id), body, viertel)
+				return validateBodyImages(contentDir, id, body)
+			}),
+		),
+	]
 
 	return {
 		seiten,
@@ -233,5 +265,6 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 		getThemenByKapitel(kapitelId) {
 			return themen.filter((item) => item.kapitelId === kapitelId)
 		},
+		bodyImages,
 	}
 }

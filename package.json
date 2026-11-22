@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build && pnpm sitemap:check",
+		"build": "pnpm content:images && next build && pnpm sitemap:check",
 		"start": "next start",
 		"lint": "eslint --max-warnings 0",
 		"spellcheck": "cspell --no-progress \"src/content/**/*.mdx\"",
@@ -13,6 +13,7 @@
 		"format:check": "prettier --check .",
 		"test": "vitest run",
 		"content:check": "node scripts/content-check.mts",
+		"content:images": "node scripts/content-images.mts",
 		"docs:check": "node scripts/docs-check.mts",
 		"sitemap:check": "node scripts/sitemap-check.mts",
 		"docs:lint": "markdownlint-cli2",

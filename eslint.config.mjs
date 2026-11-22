@@ -279,6 +279,13 @@ const eslintConfig = defineConfig([
 		rules: { 'restrictions/icon-registry-imports': 'off' },
 	},
 	{
+		// Body images (content-layer.md, issue #35): a body image's dimensions
+		// are unknown and optimization is off anyway (static export), so this
+		// is the one place a plain <img> is correct instead of next/image.
+		files: ['src/components/content/body-image.tsx'],
+		rules: { '@next/next/no-img-element': 'off' },
+	},
+	{
 		// Static export (static-export.md): `'use client'` on a route's own page or layout file
 		// turns the whole route into a Client Component. Put it on the smallest component that
 		// needs interaction instead, so the page stays static HTML.
