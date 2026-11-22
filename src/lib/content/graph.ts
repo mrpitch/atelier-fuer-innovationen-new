@@ -1,5 +1,7 @@
-import type { Seite, Site, Viertel, Zentrum } from './loader'
+import { resolveAufsaetze } from './aufsatz'
+import type { Aufsatz, Seite, Site, Viertel, Zentrum } from './loader'
 import {
+	loadAufsatzDocuments,
 	loadMenus,
 	loadMeta,
 	loadSeiten,
@@ -32,6 +34,12 @@ export interface ContentGraph {
 	// The Zentrum (glossary): its own type, not a Viertel, exactly one per
 	// site.
 	readonly zentrum: Zentrum
+	// Every Aufsatz (glossary), each resolved to its Viertel (issue #29).
+	readonly aufsaetze: readonly Aufsatz[]
+	getAufsatz(id: string): Aufsatz | undefined
+	// A Viertel's related Aufsätze ("Mehr aus dem Viertel") — derived here
+	// from each Aufsatz's Viertel reference, never listed by hand.
+	getAufsaetzeByViertel(viertelId: string): readonly Aufsatz[]
 }
 
 // The one public interface for content (ADR-0002): built from loader output,
@@ -43,6 +51,7 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 	const menus = resolveMenus(seiten, loadMenus(contentDir))
 	const viertel = orderViertel(loadViertelOrder(contentDir), loadViertelDocuments(contentDir))
 	const zentrum = loadZentrum(contentDir)
+	const aufsaetze = resolveAufsaetze(loadAufsatzDocuments(contentDir), viertel)
 
 	return {
 		seiten,
@@ -62,5 +71,12 @@ export function buildContentGraph(contentDir: string): ContentGraph {
 			return viertel.find((item) => item.id === id)
 		},
 		zentrum,
+		aufsaetze,
+		getAufsatz(id) {
+			return aufsaetze.find((aufsatz) => aufsatz.id === id)
+		},
+		getAufsaetzeByViertel(viertelId) {
+			return aufsaetze.filter((aufsatz) => aufsatz.viertelId === viertelId)
+		},
 	}
 }

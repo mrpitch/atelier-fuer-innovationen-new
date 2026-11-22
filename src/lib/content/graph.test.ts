@@ -242,4 +242,58 @@ describe('buildContentGraph', () => {
 			}
 		})
 	})
+
+	describe('Aufsatz', () => {
+		it('resolves an Aufsatz to its ID, URL and Viertel reference', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'aufsatz-valid'))
+
+			expect(graph.aufsaetze.map((aufsatz) => aufsatz.id)).toEqual([
+				'bibliothek/aufsaetze/erster-aufsatz',
+				'bibliothek/aufsaetze/zweiter-aufsatz',
+			])
+
+			const erster = graph.getAufsatz('bibliothek/aufsaetze/erster-aufsatz')
+			expect(erster?.url).toBe('/bibliothek/aufsaetze/erster-aufsatz')
+			expect(erster?.title).toBe('Erster Aufsatz')
+			expect(erster?.viertelId).toBe('stadt/erste-viertel')
+		})
+
+		it('computes the reading time from the body word count', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'aufsatz-valid'))
+
+			// erster-aufsatz's body is 201 words; at 200 words/minute that rounds
+			// up to 2 minutes, proving it's computed, not a fixed value.
+			expect(graph.getAufsatz('bibliothek/aufsaetze/erster-aufsatz')?.readingTimeMinutes).toBe(2)
+			// zweiter-aufsatz's body is a few words; reading time floors at 1.
+			expect(graph.getAufsatz('bibliothek/aufsaetze/zweiter-aufsatz')?.readingTimeMinutes).toBe(1)
+		})
+
+		it("derives each Viertel's related Aufsätze from the references, never from the Viertel itself", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'aufsatz-valid'))
+
+			expect(
+				graph.getAufsaetzeByViertel('stadt/erste-viertel').map((aufsatz) => aufsatz.id),
+			).toEqual(['bibliothek/aufsaetze/erster-aufsatz'])
+			expect(
+				graph.getAufsaetzeByViertel('stadt/zweite-viertel').map((aufsatz) => aufsatz.id),
+			).toEqual(['bibliothek/aufsaetze/zweiter-aufsatz'])
+			expect(graph.getViertel('stadt/erste-viertel')).not.toHaveProperty('aufsaetze')
+		})
+
+		it('fails when an Aufsatz references a missing Viertel, naming the file, field and ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'aufsatz-missing-viertel'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(
+					path.join('bibliothek', 'aufsaetze', 'verwaister-aufsatz', 'index.mdx'),
+				)
+				expect(validationError.field).toBe('viertelId')
+				expect(validationError.reason).toContain('stadt/nichtvorhanden')
+			}
+		})
+	})
 })

@@ -3,6 +3,7 @@ import path from 'node:path'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { AufsaetzeListe } from '@/components/aufsatz/aufsaetze-liste'
 import { Illustration } from '@/components/viertel/illustration'
 import { Steckbrief } from '@/components/viertel/steckbrief'
 import { buildContentGraph } from '@/lib/content'
@@ -52,6 +53,7 @@ export default async function ViertelPage({ params }: PageProps<'/stadt/[viertel
 			<h1>{viertel.title}</h1>
 			<Steckbrief leitsatz={viertel.leitsatz} steckbrief={viertel.steckbrief} />
 			<Body />
+			<AufsaetzeListe aufsaetze={graph.getAufsaetzeByViertel(viertel.id)} />
 		</main>
 	)
 }

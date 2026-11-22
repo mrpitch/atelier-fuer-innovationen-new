@@ -13,6 +13,8 @@ export const de = {
 	'viertel.steckbrief.bauform': 'Bauform',
 	'viertel.steckbrief.prozessdokument': 'Prozessdokument',
 	'viertel.steckbrief.imStadtzentrum': 'Im Stadtzentrum',
+	'viertel.aufsaetzeHeading': 'Mehr aus dem Viertel',
+	'aufsatz.readingTime': 'ca. {n} Min.',
 } as const
 
 export type DictionaryKey = keyof typeof de
