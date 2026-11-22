@@ -6,6 +6,7 @@ export const de = {
 	'navigation.next': 'Nächste Seite',
 	'layout.headerMenu': 'Hauptnavigation',
 	'layout.footerMenu': 'Fußzeilen-Navigation',
+	'navigation.sitemap': 'Sitemap',
 	'stadt.navigation': 'Viertel und Zentrum der Wissensstadt',
 	'stadt.zentrumHeading': 'Zentrum',
 	'stadt.viertelHeading': 'Die acht Viertel',

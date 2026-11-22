@@ -2,7 +2,7 @@
 type: reference
 title: Content layer
 description: Content types, document IDs, frontmatter validation, the content:check script and content quality tooling.
-tags: [content, mdx, zod, validation, content-check, eslint, cspell, lychee]
+tags: [content, mdx, zod, validation, content-check, eslint, cspell, lychee, sitemap, seo]
 status: stable
 last_reviewed: 2026-11-22
 authoritative: true
@@ -16,14 +16,14 @@ The loader and content graph live in `src/lib/content/`, with `index.ts` as thei
 
 A content type is decided by where a file sits under `src/content`, not by a field in its frontmatter. **Seite** ([glossary](../glossary.md)) is a plain standalone page, such as Start, Idee, Kontakt, Impressum or Datenschutz. **Viertel** and **Zentrum** (issue #28) are the Stadt area's own types, located by a rule of their own: a document directly inside `src/content/stadt/<slug>/` is the Zentrum when `slug` is `zentrum`, a Viertel otherwise; `src/content/stadt/index.mdx` itself (no further segment) is a Seite, the Stadt area's landing page. **Aufsatz** (issue #29) is the Bibliothek area's own type, by the same kind of rule: a document directly inside `src/content/bibliothek/aufsaetze/<slug>/`. **Kapitel** and **Abschnitt** (issue #30) belong to the Leitthema, not to the Viertel they're set in: a Kapitel sits directly inside `src/content/leitthema/<slug>/`, and an Abschnitt one level deeper, inside its Kapitel's own folder.
 
-| Type      | Frontmatter fields                                                                 | Schema                                                       |
-| --------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Seite     | `title`, `description`, `shortTitle` (optional)                                    | `seiteFrontmatterSchema` in `src/lib/content/schemas.ts`     |
-| Viertel   | `title`, `description`, `shortTitle` (optional), `leitsatz`, `steckbrief` (object) | `viertelFrontmatterSchema` in `src/lib/content/schemas.ts`   |
-| Zentrum   | `title`, `description`, `shortTitle` (optional)                                    | `zentrumFrontmatterSchema` in `src/lib/content/schemas.ts`   |
-| Aufsatz   | `title`, `description`, `shortTitle` (optional), `viertelId` (reference)           | `aufsatzFrontmatterSchema` in `src/lib/content/schemas.ts`   |
-| Kapitel   | `title`, `description`, `shortTitle` (optional), `viertelId` (reference)           | `kapitelFrontmatterSchema` in `src/lib/content/schemas.ts`   |
-| Abschnitt | `title`, `description`, `shortTitle` (optional)                                    | `abschnittFrontmatterSchema` in `src/lib/content/schemas.ts` |
+| Type      | Frontmatter fields                                                                   | Schema                                                       |
+| --------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| Seite     | `title`, `description`, `shortTitle` (optional), `draft` (optional, default `false`) | `seiteFrontmatterSchema` in `src/lib/content/schemas.ts`     |
+| Viertel   | `title`, `description`, `shortTitle` (optional), `leitsatz`, `steckbrief` (object)   | `viertelFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Zentrum   | `title`, `description`, `shortTitle` (optional)                                      | `zentrumFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Aufsatz   | `title`, `description`, `shortTitle` (optional), `viertelId` (reference)             | `aufsatzFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Kapitel   | `title`, `description`, `shortTitle` (optional), `viertelId` (reference)             | `kapitelFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Abschnitt | `title`, `description`, `shortTitle` (optional)                                      | `abschnittFrontmatterSchema` in `src/lib/content/schemas.ts` |
 
 A Viertel's Steckbrief (glossary) is a nested frontmatter object: `prozessansatz`, `bauform`, `prozessdokument`, `imStadtzentrum`.
 
@@ -97,6 +97,20 @@ It is strict: every actual child of that folder must appear exactly once. An ID 
 `src/content/site.json` holds the site-wide facts that would otherwise be restated in several places: `name`, `tagline`, `baseUrl` and `copyright`, validated by `siteSchema` in `schemas.ts`. `buildContentGraph`'s result exposes it as `graph.site`; the header, footer and the root layout's metadata all read it from there instead of hardcoding it. A validation failure throws `ContentValidationError` the same way frontmatter does, with `file` set to `site.json`.
 
 `baseUrl` is a placeholder (`https://xenia.example.com`) until a real production domain is decided; it feeds `metadataBase` in `src/app/layout.tsx`, which resolves the per-page canonical link in `src/app/[[...slug]]/page.tsx`.
+
+## Sitemap
+
+`graph.sitemap` (`src/lib/content/graph.ts`, built by `listSitemap` in `navigation.ts`) is the whole Navigation tree flattened into one list, in Navigation order, leaving out a Draft's own entry — its published children, if any, still appear. The Sitemap page and `sitemap.xml` both read this one list instead of re-deriving it (issue #34).
+
+A **Draft** (glossary) is a Seite with `draft: true` in its frontmatter (`seiteFrontmatterSchema` in `schemas.ts`, default `false`): written and checked but not yet published.
+
+`src/content/sitemap/index.mdx` is a plain Seite like any other, whose body is a single `<SitemapList />` — the one MDX component the provider (`src/mdx-components.tsx`) currently registers. The component (`src/components/navigation/sitemap-list.tsx`) reads the content graph itself, unlike Breadcrumbs and PreviousNext, because it sits inside the Sitemap Seite's own MDX body rather than being handed items by `page.tsx`. `src/content/menus/footer.json` links to it like any other Seite, by ID.
+
+`src/app/sitemap.ts` follows Next's `sitemap.ts` file convention to produce `sitemap.xml` in the build output: every `graph.sitemap` entry resolved to an absolute URL against `graph.site.baseUrl`. It exports `dynamic = 'force-static'` because a static export can't revalidate a Route Handler at runtime ([Static export](../react/static-export.md)).
+
+## Canonical URL and Open Graph tags
+
+`src/app/[[...slug]]/page.tsx`'s `generateMetadata` sets a page's canonical URL (`alternates.canonical`) and Open Graph tags (`openGraph.title`, `.description`, `.url`, `.siteName`) from the Seite and `graph.site` — never written per page. Both resolve to an absolute URL via `metadataBase` (`src/app/layout.tsx`, set from `graph.site.baseUrl`).
 
 ## Menus
 
