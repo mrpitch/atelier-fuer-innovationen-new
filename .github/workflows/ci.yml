@@ -33,3 +33,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm build
+      # Internal links only: --offline skips network requests, so an external site being down
+      # doesn't fail an unrelated PR. --base resolves root-relative hrefs (e.g. "/idee") against
+      # the static export's own directory.
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress --base out 'out/**/*.html'
+          fail: true

@@ -3,6 +3,7 @@ import { builtinRules } from 'eslint/use-at-your-own-risk'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
 import prettier from 'eslint-config-prettier/flat'
+import * as mdx from 'eslint-plugin-mdx'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 
 // Flat config doesn't merge two blocks that configure the same rule for one file: the later
@@ -22,6 +23,7 @@ const restrictions = {
 		'dynamic-params-syntax': builtinRules.get('no-restricted-syntax'),
 		'use-client-route-syntax': builtinRules.get('no-restricted-syntax'),
 		'static-export-config-syntax': builtinRules.get('no-restricted-syntax'),
+		'content-mdx-import-export': builtinRules.get('no-restricted-syntax'),
 	},
 }
 
@@ -180,6 +182,45 @@ const eslintConfig = defineConfig([
 					selector: 'Property[key.name=/^(rewrites|redirects|headers)$/]',
 					message:
 						'`rewrites`, `redirects` and `headers` in next.config.ts are unused here: URLs come from the content graph (ADR-0003), and the host handles redirects. See docs/reference/react/static-export.md.',
+				},
+			],
+		},
+	},
+	// Content layer (content-layer.md): lint .mdx with eslint-plugin-mdx. remark-frontmatter is
+	// wired up via the `remarkConfig` field in package.json, which eslint-mdx's unified-engine
+	// detects automatically — without it, the "---" frontmatter block is misparsed as a heading.
+	{
+		...mdx.flat,
+		files: ['**/*.mdx'],
+		processor: mdx.createRemarkProcessor({ lintCodeBlocks: true }),
+	},
+	{
+		...mdx.flatCodeBlocks,
+		files: ['**/*.mdx/**'],
+	},
+	{
+		files: ['**/*.mdx'],
+		rules: {
+			...mdx.native.rules,
+		},
+	},
+	{
+		// Content layer (content-layer.md): content MDX only uses the registered component set
+		// (passed to the MDX provider), never its own imports or exports.
+		files: ['src/content/**/*.mdx'],
+		plugins: { restrictions },
+		rules: {
+			'restrictions/content-mdx-import-export': [
+				'error',
+				{
+					selector: 'ImportDeclaration',
+					message:
+						'Content MDX has no imports: it can only use the registered component set. See docs/reference/content/content-layer.md.',
+				},
+				{
+					selector: 'ExportNamedDeclaration, ExportDefaultDeclaration, ExportAllDeclaration',
+					message:
+						'Content MDX has no exports: it can only use the registered component set. See docs/reference/content/content-layer.md.',
 				},
 			],
 		},
