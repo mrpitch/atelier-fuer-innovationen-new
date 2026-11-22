@@ -1,5 +1,17 @@
 import { ContentValidationError } from './errors'
-import type { Meta, Seite } from './loader'
+import type {
+	Abschnitt,
+	Aufsatz,
+	Kapitel,
+	Meta,
+	Rundgang,
+	Seite,
+	ShortTitled,
+	Station,
+	Thema,
+	Viertel,
+	Zentrum,
+} from './loader'
 import { shortTitleOrTitle } from './loader'
 
 // The hierarchy of content as it sits in the site (glossary: Navigation).
@@ -22,8 +34,13 @@ export interface Navigation {
 	getNext(id: string): NavigationLink | undefined
 }
 
-function toLink(seite: Seite): NavigationLink {
-	return { id: seite.id, url: seite.url, title: shortTitleOrTitle(seite) }
+// Every content type's resolved shape carries an id, a url and a (Short)
+// title — Seite included — so one function builds a NavigationLink for any
+// of them.
+function toLink(
+	document: { readonly id: string; readonly url: string } & ShortTitled,
+): NavigationLink {
+	return { id: document.id, url: document.url, title: shortTitleOrTitle(document) }
 }
 
 // A document's parent is the folder that contains it; the root ('') has none.
@@ -76,14 +93,41 @@ function orderChildren(meta: Meta | undefined, children: readonly Seite[]): Seit
 	return ordered
 }
 
-// The Sitemap (glossary: Sitemap): a flat, published-only view of the whole
-// Navigation tree, in Navigation order (issue #34). A Draft's own entry is
-// left out; its published children, if any, still appear.
-export function listSitemap(
-	tree: NavigationNode,
-	seiten: readonly Seite[],
-): readonly NavigationLink[] {
-	const draftIds = new Set(seiten.filter((seite) => seite.draft).map((seite) => seite.id))
+// Every content type the Sitemap lists, grouped the way listSitemap below
+// composes them. Seite is the Navigation tree itself (issue #34); every
+// other type has no Seite node of its own to hang off (Bibliothek and
+// Leitthema have no landing Seite in real content today), so each one is its
+// own contiguous block instead of being spliced into the tree.
+export interface SitemapInput {
+	readonly tree: NavigationNode
+	readonly seiten: readonly Seite[]
+	// Stadt (issue #28): the Zentrum, then every Viertel in number order — the
+	// same order the Stadt landing Seite's own Viertel list uses.
+	readonly zentrum: Zentrum
+	readonly viertel: readonly Viertel[]
+	// Bibliothek (issue #29): every Aufsatz, in its own derivation's order.
+	readonly aufsaetze: readonly Aufsatz[]
+	// Leitthema (issue #30): each Kapitel, already in Kapitel number order,
+	// immediately followed by its own Abschnitte.
+	readonly kapitel: readonly Kapitel[]
+	readonly abschnitteByKapitel: ReadonlyMap<string, readonly Abschnitt[]>
+	// Themen (issue #31): the Leitthema and every Themen-Ort, in their own
+	// derivation's order.
+	readonly themen: readonly Thema[]
+	// Rundgänge (issue #32): each Rundgang, immediately followed by its own
+	// Stationen in Station number order.
+	readonly rundgaenge: readonly Rundgang[]
+	readonly stationenByRundgang: ReadonlyMap<string, readonly Station[]>
+}
+
+// The Sitemap (glossary: Sitemap): a flat, published-only list of every
+// content type, each type's own block in the order documented on
+// SitemapInput above (issue #60). A Draft Seite's own entry is left out of
+// the Navigation tree part; its published children, if any, still appear —
+// the other content types carry no Draft concept of their own, so nothing
+// else is filtered.
+export function listSitemap(input: SitemapInput): readonly NavigationLink[] {
+	const draftIds = new Set(input.seiten.filter((seite) => seite.draft).map((seite) => seite.id))
 
 	function walk(node: NavigationNode): NavigationLink[] {
 		const { children, ...link } = node
@@ -91,7 +135,21 @@ export function listSitemap(
 		return draftIds.has(link.id) ? descendants : [link, ...descendants]
 	}
 
-	return walk(tree)
+	return [
+		...walk(input.tree),
+		toLink(input.zentrum),
+		...input.viertel.map(toLink),
+		...input.aufsaetze.map(toLink),
+		...input.kapitel.flatMap((item) => [
+			toLink(item),
+			...(input.abschnitteByKapitel.get(item.id) ?? []).map(toLink),
+		]),
+		...input.themen.map(toLink),
+		...input.rundgaenge.flatMap((item) => [
+			toLink(item),
+			...(input.stationenByRundgang.get(item.id) ?? []).map(toLink),
+		]),
+	]
 }
 
 export function buildNavigation(

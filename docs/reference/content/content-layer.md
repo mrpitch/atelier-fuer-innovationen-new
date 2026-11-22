@@ -119,13 +119,28 @@ It is strict: every actual child of that folder must appear exactly once. An ID 
 
 ## Sitemap
 
-`graph.sitemap` (`src/lib/content/graph.ts`, built by `listSitemap` in `navigation.ts`) is the whole Navigation tree flattened into one list, in Navigation order, leaving out a Draft's own entry — its published children, if any, still appear. The Sitemap page and `sitemap.xml` both read this one list instead of re-deriving it (issue #34).
+`graph.sitemap` (`src/lib/content/graph.ts`, built by `listSitemap` in `navigation.ts`) is a flat, published-only list of every content type's documents. The Sitemap page and `sitemap.xml` both read this one list instead of re-deriving it (issue #34), so a later content type only has to join `listSitemap` once to appear in both (issue #60).
+
+The list is one block per area, each area in its own derivation's order:
+
+| Area              | Types, in list order                                     | Order within the type                            |
+| ----------------- | -------------------------------------------------------- | ------------------------------------------------ |
+| (Navigation tree) | Seite                                                    | Navigation order (above, "Order and Navigation") |
+| Stadt             | Zentrum, then Viertel                                    | Viertel number                                   |
+| Bibliothek        | Aufsatz                                                  | `aufsaetze`'s own order                          |
+| Leitthema         | Kapitel, each immediately followed by its own Abschnitte | Kapitel number, then Abschnitt number            |
+| Themen            | Thema                                                    | `themen`'s own order                             |
+| Rundgänge         | Rundgang, each immediately followed by its own Stationen | `rundgaenge`'s own order, then Station number    |
+
+A Draft's own entry is left out; its published children, if any, still appear. Only Seite carries the Draft concept (below), so every other type's documents are always included.
 
 A **Draft** (glossary) is a Seite with `draft: true` in its frontmatter (`seiteFrontmatterSchema` in `schemas.ts`, default `false`): written and checked but not yet published.
 
 `src/content/sitemap/index.mdx` is a plain Seite like any other, whose body is a single `<SitemapList />` — the one MDX component the provider (`src/mdx-components.tsx`) currently registers. The component (`src/components/navigation/sitemap-list.tsx`) reads the content graph itself, unlike Breadcrumbs and PreviousNext, because it sits inside the Sitemap Seite's own MDX body rather than being handed items by `page.tsx`. `src/content/menus/footer.json` links to it like any other Seite, by ID.
 
 `src/app/sitemap.ts` follows Next's `sitemap.ts` file convention to produce `sitemap.xml` in the build output: every `graph.sitemap` entry resolved to an absolute URL against `graph.site.baseUrl`. It exports `dynamic = 'force-static'` because a static export can't revalidate a Route Handler at runtime ([Static export](../react/static-export.md)).
+
+`pnpm sitemap:check` (`scripts/sitemap-check.mts`) is the backstop for `graph.sitemap` itself falling out of sync with what actually gets built: it walks every `.html` file `next build`'s static export wrote under `out/` and fails, naming the page, if that page's URL isn't in `out/sitemap.xml`. `pnpm build` runs it automatically, so a content type's page route without a matching `listSitemap` entry fails the build rather than shipping a silently incomplete sitemap.
 
 ## Canonical URL and Open Graph tags
 
