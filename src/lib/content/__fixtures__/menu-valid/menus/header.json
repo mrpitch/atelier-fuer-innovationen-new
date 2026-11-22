@@ -1,0 +1,5 @@
+[
+	{ "id": "mit-kurztitel" },
+	{ "id": "ohne-kurztitel" },
+	{ "url": "https://extern.example.com", "label": "Extern" }
+]

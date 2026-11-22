@@ -4,6 +4,8 @@ export const de = {
 	'navigation.youAreHere': 'Sie sind hier',
 	'navigation.previous': 'Vorherige Seite',
 	'navigation.next': 'Nächste Seite',
+	'layout.headerMenu': 'Hauptnavigation',
+	'layout.footerMenu': 'Fußzeilen-Navigation',
 } as const
 
 export type DictionaryKey = keyof typeof de

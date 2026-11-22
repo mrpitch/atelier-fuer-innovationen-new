@@ -6,6 +6,15 @@ export const FRONTMATTER_FIELD = '(frontmatter)'
 // JSON, or a schema issue with no path of its own.
 export const META_FIELD = '(meta)'
 
+// The field name when the site data file's problem isn't tied to one key:
+// invalid JSON, or a schema issue with no path of its own.
+export const SITE_FIELD = '(site)'
+
+// The field name when a Menu file's problem isn't tied to one entry's ID:
+// invalid JSON, or a schema issue with no path of its own. An entry whose ID
+// has no matching Seite instead names that ID directly (issue #27).
+export const MENU_FIELD = '(menu)'
+
 export class ContentValidationError extends Error {
 	readonly file: string
 	readonly field: string

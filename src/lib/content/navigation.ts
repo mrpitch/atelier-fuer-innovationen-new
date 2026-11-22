@@ -1,5 +1,6 @@
 import { ContentValidationError } from './errors'
 import type { Meta, Seite } from './loader'
+import { shortTitleOrTitle } from './loader'
 
 // The hierarchy of content as it sits in the site (glossary: Navigation).
 // Breadcrumbs and previous/next are views of this tree, not written down
@@ -21,14 +22,8 @@ export interface Navigation {
 	getNext(id: string): NavigationLink | undefined
 }
 
-// The glossary's Short title, when a document has one, is what Navigation,
-// breadcrumbs and previous/next show; the title otherwise.
-function navigationTitle(seite: Seite): string {
-	return seite.shortTitle ?? seite.title
-}
-
 function toLink(seite: Seite): NavigationLink {
-	return { id: seite.id, url: seite.url, title: navigationTitle(seite) }
+	return { id: seite.id, url: seite.url, title: shortTitleOrTitle(seite) }
 }
 
 // A document's parent is the folder that contains it; the root ('') has none.

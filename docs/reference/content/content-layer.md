@@ -63,6 +63,24 @@ It is strict: every actual child of that folder must appear exactly once. An ID 
 
 `src/lib/content/navigation.ts` builds the Navigation tree ([glossary](../glossary.md)) from the folder hierarchy plus this order: a document's parent is the folder it sits in, and `''` (the root Seite) is the tree's root. `buildContentGraph`'s result exposes it as `graph.navigation` (the root `NavigationNode`, with nested `children`), plus `getBreadcrumbs(id)`, `getPrevious(id)` and `getNext(id)`, each returning `NavigationLink`s. A link's `title` is the document's Short title when it has one, the title otherwise.
 
+## Site data
+
+`src/content/site.json` holds the site-wide facts that would otherwise be restated in several places: `name`, `tagline`, `baseUrl` and `copyright`, validated by `siteSchema` in `schemas.ts`. `buildContentGraph`'s result exposes it as `graph.site`; the header, footer and the root layout's metadata all read it from there instead of hardcoding it. A validation failure throws `ContentValidationError` the same way frontmatter does, with `file` set to `site.json`.
+
+`baseUrl` is a placeholder (`https://xenia.example.com`) until a real production domain is decided; it feeds `metadataBase` in `src/app/layout.tsx`, which resolves the per-page canonical link in `src/app/[[...slug]]/page.tsx`.
+
+## Menus
+
+A Menu (glossary: Menu) is a hand-curated, ordered list of links such as the header or footer. Each Menu is its own JSON file under `src/content/menus/`, named after the Menu (`header.json`, `footer.json`), validated by `menuSchema` in `schemas.ts`. An entry is either a content reference or an external link:
+
+```json
+[{ "id": "idee" }, { "url": "https://example.com", "label": "Extern" }]
+```
+
+A content entry's label is never written in the Menu file: the content graph resolves it from the target Seite's Short title, falling back to its title — the same rule Navigation uses. An external entry carries its own `label`. `src/lib/content/menu.ts` does this resolution; it stays pure like `navigation.ts`, with the loader's `loadMenus` (`loader.ts`) doing the one filesystem read.
+
+`buildContentGraph`'s result exposes `graph.getMenu(name)`, returning the resolved list of `{ url, label }` links, or an empty list for a Menu with no file. An entry whose ID has no matching Seite throws `ContentValidationError` naming the Menu file (e.g. `menus/header.json`) and the offending ID — the same way an unknown `meta.json` ID does.
+
 ## `content:check`
 
 `scripts/content-check.mts` builds the content graph from a content directory — the real `src/content` by default, or a directory passed as its one argument — and exits non-zero on the first `ContentValidationError`, printing the file, field and reason. `pnpm content:check` runs it against the real content directory; `pnpm check` runs `content:check` after the test suite.

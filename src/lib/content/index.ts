@@ -1,5 +1,7 @@
 export { ContentValidationError } from './errors'
 export type { ContentGraph } from './graph'
 export { buildContentGraph } from './graph'
-export type { Seite } from './loader'
+export type { Seite, Site } from './loader'
+export { siteWordmark } from './loader'
+export type { MenuLink } from './menu'
 export type { NavigationLink, NavigationNode } from './navigation'
