@@ -14,13 +14,25 @@ The loader and content graph live in `src/lib/content/`, with `index.ts` as thei
 
 ## Content types
 
-A content type is decided by where a file sits under `src/content`, not by a field in its frontmatter. The first and currently only type is **Seite** ([glossary](../glossary.md)): a plain standalone page, such as Start, Idee, Kontakt, Impressum or Datenschutz.
+A content type is decided by where a file sits under `src/content`, not by a field in its frontmatter. **Seite** ([glossary](../glossary.md)) is a plain standalone page, such as Start, Idee, Kontakt, Impressum or Datenschutz. **Viertel** and **Zentrum** (issue #28) are the Stadt area's own types, located by a rule of their own: a document directly inside `src/content/stadt/<slug>/` is the Zentrum when `slug` is `zentrum`, a Viertel otherwise; `src/content/stadt/index.mdx` itself (no further segment) is a Seite, the Stadt area's landing page.
 
-| Type  | Frontmatter fields                              | Schema                                                   |
-| ----- | ----------------------------------------------- | -------------------------------------------------------- |
-| Seite | `title`, `description`, `shortTitle` (optional) | `seiteFrontmatterSchema` in `src/lib/content/schemas.ts` |
+| Type    | Frontmatter fields                                                                 | Schema                                                     |
+| ------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Seite   | `title`, `description`, `shortTitle` (optional)                                    | `seiteFrontmatterSchema` in `src/lib/content/schemas.ts`   |
+| Viertel | `title`, `description`, `shortTitle` (optional), `leitsatz`, `steckbrief` (object) | `viertelFrontmatterSchema` in `src/lib/content/schemas.ts` |
+| Zentrum | `title`, `description`, `shortTitle` (optional)                                    | `zentrumFrontmatterSchema` in `src/lib/content/schemas.ts` |
 
-As the Wissensstadt content types arrive, each gets its own schema in `schemas.ts` and its own location rule in `src/lib/content/loader.ts`.
+A Viertel's Steckbrief (glossary) is a nested frontmatter object: `prozessansatz`, `bauform`, `prozessdokument`, `imStadtzentrum`.
+
+As further Wissensstadt content types arrive, each gets its own schema in `schemas.ts` and its own location rule in `src/lib/content/loader.ts`.
+
+### Viertel numbers
+
+A Viertel's number (glossary: fixed, 01–08) comes from its 1-based position in `src/content/stadt/viertel-order.json`, a bare JSON array of Viertel IDs in display order — never from frontmatter, so a `number` key in a Viertel's frontmatter is parsed and silently dropped. This is a separate mechanism from `meta.json`, not a reuse of it: `meta.json` strictly orders a folder's actual children for Navigation, and Viertel/Zentrum aren't part of that Seite-only tree, so a `meta.json` under `stadt/` would have no Seite children to validate against and would always fail. `loadViertelOrder` (`loader.ts`) reads the file; `orderViertel` (`viertel.ts`, pure, like `navigation.ts`) does the same strict reconciliation `meta.json` does — every listed ID must match an actual Viertel, every actual Viertel must be listed exactly once — and assigns `.number`. `buildContentGraph`'s result exposes the ordered list as `graph.viertel` and a lookup as `graph.getViertel(id)`; the single Zentrum is `graph.zentrum`.
+
+### Illustrations
+
+Each Viertel and the Zentrum has an illustration, looked up by the owning document's ID — content never names an illustration file. `src/components/viertel/illustration.tsx` holds the registry (the same lookup-by-key pattern as the [icon registry](../components/icon-registry.md)), currently mapping every ID to one shared placeholder until the real illustrations (PRODUCT.md, Evidence on Hand) are built.
 
 ## Document IDs
 
