@@ -16,7 +16,8 @@ export default function Home() {
 				<div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
 					<h1 className="max-w-xs text-3xl leading-10 font-semibold tracking-tight text-foreground">
 						To get started, edit the{' '}
-						<code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">page.tsx</code> file.
+						<code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.9em]">page.tsx</code>{' '}
+						file.
 					</h1>
 					<p className="max-w-md text-lg leading-8 text-muted-foreground">
 						Looking for a starting point or more instructions? Head over to{' '}
