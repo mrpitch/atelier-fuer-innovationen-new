@@ -139,6 +139,25 @@ describe('buildContentGraph', () => {
 				{ id: '', url: '/', title: 'Start' },
 				{ id: 'entwurf/kind', url: '/entwurf/kind', title: 'Kind' },
 				{ id: 'veroeffentlicht', url: '/veroeffentlicht', title: 'Veröffentlicht' },
+				// The fixture's mandatory Zentrum (#28): no Viertel here, so this is
+				// the whole Stadt block.
+				{ id: 'stadt/zentrum', url: '/stadt/zentrum', title: 'Zentrum' },
+			])
+		})
+
+		it('lists every content type in its own area block, in the order each type documents', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'sitemap-all-types'))
+
+			expect(graph.sitemap.map((item) => item.id)).toEqual([
+				'',
+				'stadt/zentrum',
+				'stadt/ein-viertel',
+				'bibliothek/aufsaetze/ein-aufsatz',
+				'leitthema/ein-kapitel',
+				'leitthema/ein-kapitel/ein-abschnitt',
+				'themen/ein-thema',
+				'rundgaenge/ein-rundgang',
+				'rundgaenge/ein-rundgang/eine-station',
 			])
 		})
 	})
