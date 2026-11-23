@@ -359,7 +359,7 @@ Quiet signage: small, barely rounded, never louder than the heading they serve.
 ### Navigation
 
 - **Desktop header:** the wordmark on the left, then six areas in Schibsted Grotesk 500 14px: Idee, Stadtplan, Rundgänge, Themen, Bibliothek, Chronik. The current area sits on a Pappe pill (36px, 4px corners); the Startseite has none.
-- **Mobile header:** a 64px navbar with the wordmark and a menu button. The open mobile menu isn't drawn yet.
+- **Mobile header:** a 64px navbar with the wordmark and a menu button, below 1024px. The button opens a panel under the navbar with the header Menu stacked full-width, the current area on the same Pappe pill as on desktop. Escape closes it and returns focus to the button. The open state is drawn only in Figma 36622:10621, not in a screen.
 - **Footer:** on Archivstein, with the wordmark and three link columns (Entdecken, Lesen, Projekt, which includes Ideenbox), then Impressum, Datenschutz and Sitemap in a row beside the copyright. Every link is a Button link instance. Kontakt is not in the header or the footer.
 
 ### Viertel-Kachel (signature)
