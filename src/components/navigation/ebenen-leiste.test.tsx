@@ -31,6 +31,7 @@ describe('EbenenLeiste', () => {
 		expect(html).toContain('data-testid="illustration"')
 		expect(html).toContain('Viertel 01 · Erste')
 		expect(html).toContain('Sie sind hier')
+		expect(html.match(/bg-signal/g)).toHaveLength(1)
 		expect(html).toContain('Stadtplan')
 		expect(html).toContain('href="/stadt"')
 		expect(html).toContain('href="/stadt/erste-viertel"')

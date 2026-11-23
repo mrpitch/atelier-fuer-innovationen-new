@@ -72,7 +72,15 @@ function EbenenLeiste({
 							title: shortTitleOrTitle(ort),
 						})}
 					</ItemTitle>
-					<ItemDescription>{t('navigation.youAreHere')}</ItemDescription>
+					<ItemDescription className="flex items-center gap-2">
+						{/* The Signal Rule (DESIGN.md): Koralle is a mark beside the text, never the text or a fill behind it; one per view. */}
+						<span
+							data-slot="sie-sind-hier-mark"
+							aria-hidden="true"
+							className="size-2 shrink-0 rounded-full bg-signal"
+						/>
+						{t('navigation.youAreHere')}
+					</ItemDescription>
 				</ItemContent>
 			</Item>
 			<BreadcrumbTrail breadcrumbs={breadcrumbs} className="lg:flex-1" />
