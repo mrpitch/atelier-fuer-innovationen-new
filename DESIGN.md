@@ -340,7 +340,7 @@ Quiet signage: small, barely rounded, never louder than the heading they serve.
 - **Shape:** 32px tall with 4px corners and 10px side padding. The small size is 24px tall with 2px corners and 8px padding.
 - **Primary:** Petrol with white text, for the action that moves the visitor forward ("Rundgang starten", "Kapitel 3 weiterlesen"). The Startseite uses it in the hero and on each Rundgang card.
 - **Secondary:** Petrolschleier with Tiefpetrol text, for a step that leads somewhere else in the city.
-- **Outline / Ghost / Link:** outline is Archivstein with a Haarlinie border (Kontakt in the header); ghost has no fill ("Wege durch dieses Viertel ↓"); link is plain 12–14px text. An arrow (→, ↓, ←) marks movement.
+- **Outline / Ghost / Link:** outline is Archivstein with a Haarlinie border; ghost has no fill ("Wege durch dieses Viertel ↓"); link is plain 12–14px text. An arrow (→, ↓, ←) marks movement.
 - **Hover / Focus:** not designed yet. When implemented, focus is a 2px Petrol ring.
 
 ### Cards / Containers
@@ -358,9 +358,9 @@ Quiet signage: small, barely rounded, never louder than the heading they serve.
 
 ### Navigation
 
-- **Desktop header:** the wordmark on the left, then six areas in Schibsted Grotesk 500 14px: Idee, Stadtplan, Rundgänge, Themen, Bibliothek, Chronik, with Kontakt as an outline button. The current area sits on a Pappe pill (36px, 4px corners); the Startseite has none.
+- **Desktop header:** the wordmark on the left, then six areas in Schibsted Grotesk 500 14px: Idee, Stadtplan, Rundgänge, Themen, Bibliothek, Chronik. The current area sits on a Pappe pill (36px, 4px corners); the Startseite has none.
 - **Mobile header:** a 64px navbar with the wordmark and a menu button. The open mobile menu isn't drawn yet.
-- **Footer:** on Archivstein, with the wordmark and link columns (Entdecken, Lesen, Projekt, Kontakt).
+- **Footer:** on Archivstein, with the wordmark and three link columns (Entdecken, Lesen, Projekt, which includes Ideenbox), then Impressum, Datenschutz and Sitemap in a row beside the copyright. Every link is a Button link instance. Kontakt is not in the header or the footer.
 
 ### Viertel-Kachel (signature)
 
@@ -405,7 +405,7 @@ Quiet signage: small, barely rounded, never louder than the heading they serve.
 
 Places where the screens break their own system. They're recorded here, not adopted as rules:
 
-- The published kit library (`4EJ76bQptCoMzeCin5ZeOM`) still has `font/family/serif` and `font/family/heading` set to Newsreader in the Kartei mode, so the Figma pages render headings and source text in Newsreader. The code (`src/lib/styles/fonts/kartei.ts`) and the local `Style` collection in the app file say Literata and Instrument Serif. Align the kit and republish, then re-check title sizes and line heights against Instrument Serif, which is narrower than Newsreader.
+- The published kit library (`4EJ76bQptCoMzeCin5ZeOM`) had `font/family/serif` and `font/family/heading` set to Newsreader in the Kartei mode. The kit's `Style` collection now says Literata and Instrument Serif, but the library has to be republished and the app file updated before its pages render them. Then re-check title sizes and line heights against Instrument Serif, which is narrower than Newsreader.
 - On mobile, the Station and Abschnitt titles are set in Schibsted Grotesk ExtraBold 36px instead of the display serif.
 - On mobile, the pull quotes on the Startseite and Thema-Seite are set in Schibsted Grotesk 500 18px, which breaks the Source Text Rule.
 - The Thema-Karte uses a raw 12px corner radius instead of the kit's 8px card radius.
