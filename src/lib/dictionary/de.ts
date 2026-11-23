@@ -5,6 +5,8 @@ export const de = {
 	'navigation.previousLink': 'Vorherige Seite: {title}',
 	'navigation.nextLink': 'Nächste Seite: {title}',
 	'layout.headerMenu': 'Hauptnavigation',
+	'layout.openMenu': 'Menü öffnen',
+	'layout.closeMenu': 'Menü schließen',
 	'layout.footerMenu': 'Fußzeilen-Navigation',
 	'layout.footerLegalMenu': 'Rechtliche Hinweise',
 	'navigation.sitemap': 'Sitemap',

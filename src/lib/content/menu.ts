@@ -29,6 +29,18 @@ export function isGroupedMenu(menu: ResolvedMenu): menu is readonly MenuGroupLin
 	return menu.length > 0 && 'links' in menu[0]
 }
 
+// assertKnownMenuShape (below) already guarantees a Menu named in
+// FLAT_MENU_NAMES/GROUPED_MENU_NAMES resolves to the matching shape; these
+// just restate that guarantee to the type checker at the call site, instead
+// of each caller repeating its own `as` cast and comment.
+export function asFlatMenu(menu: ResolvedMenu): readonly MenuLink[] {
+	return menu as readonly MenuLink[]
+}
+
+export function asGroupedMenu(menu: ResolvedMenu): readonly MenuGroupLink[] {
+	return menu as readonly MenuGroupLink[]
+}
+
 // Every document a Menu entry may name, by ID (issue #23): any content type's
 // published document resolves, with its URL and label. `known` holds the ID of
 // every document that exists, Draft or not; `visible` only those the graph
