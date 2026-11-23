@@ -1,3 +1,4 @@
+import { cn } from 'cn'
 import Link from 'next/link'
 import type * as React from 'react'
 
@@ -13,6 +14,8 @@ import { t } from '@/lib/dictionary'
 interface HeaderMenuProps extends Omit<React.ComponentProps<typeof NavigationMenu>, 'children'> {
 	menu: readonly MenuLink[]
 	currentPath: string
+	// Stack the entries full-width, as in the mobile header's open panel.
+	stacked?: boolean
 }
 
 // The current area (issue #81): the entry whose URL is the current path, or
@@ -30,13 +33,18 @@ function isCurrentMenuLink(url: string, currentPath: string): boolean {
 // instead of reading the router itself, so it stays usable from a Server
 // Component and testable without a router context; HeaderNav is the thin
 // Client Component that supplies the prop.
-function HeaderMenu({ menu, currentPath, ...props }: HeaderMenuProps) {
+function HeaderMenu({ menu, currentPath, stacked, className, ...props }: HeaderMenuProps) {
 	return (
-		<NavigationMenu aria-label={t('layout.headerMenu')} {...props}>
-			<NavigationMenuList>
+		<NavigationMenu
+			aria-label={t('layout.headerMenu')}
+			className={cn(stacked && 'max-w-none', className)}
+			{...props}
+		>
+			<NavigationMenuList className={cn(stacked && 'flex-col items-stretch justify-start')}>
 				{menu.map((item) => (
 					<NavigationMenuItem key={item.url}>
 						<NavigationMenuLink
+							className={cn(stacked && 'w-full')}
 							active={isCurrentMenuLink(item.url, currentPath)}
 							render={<Link href={item.url} />}
 						>

@@ -5,7 +5,9 @@ import {
 	ChevronRight,
 	type LucideIcon,
 	type LucideProps,
+	Menu,
 	MoreHorizontal,
+	X,
 } from 'lucide-react'
 
 // The only file that imports lucide-react: docs/reference/components/icon-registry.md.
@@ -15,7 +17,9 @@ const icons = {
 	arrowLeft: ArrowLeft,
 	arrowRight: ArrowRight,
 	chevronRight: ChevronRight,
+	menu: Menu,
 	moreHorizontal: MoreHorizontal,
+	x: X,
 } satisfies Record<string, LucideIcon>
 
 type IconType = keyof typeof icons
