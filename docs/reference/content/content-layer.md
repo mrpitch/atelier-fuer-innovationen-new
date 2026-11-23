@@ -143,6 +143,7 @@ Each Viertel, the Zentrum, each Thema and each Rundgang has an illustration, loo
 - `src/content/site.json` holds the site-wide facts: `name`, `tagline`, `baseUrl`, `copyright`. Header, footer and metadata read them from `graph.site`. `baseUrl` is a placeholder until the production domain is decided.
 - A Menu is one JSON file under `src/content/menus/` (`header.json`, `footer.json`, `footer-legal.json`): either a flat, ordered list of entries, or an ordered list of Menu groups (glossary: Menu group) — never both in the same file. An entry is a content ID (`{ "id": "idee" }`) or an external link with its own label (`{ "url": "…", "label": "…" }`). A group is a `label` and its own non-empty, ordered list of entries in that same shape. Mixing entries and groups in one Menu file, or a group with no entries, fails validation the same way other Menu problems do.
 - A content entry may name any type. Its label is never written in the Menu: it is the target's Short title, else its title, so renaming a document updates every Menu. An unknown ID fails, naming the Menu file and the ID — the same whether the entry sits flat in the Menu or inside a group.
+- `header` and `footer-legal` must resolve flat; `footer` must resolve grouped (RootLayout's own convention, not something a Menu file states about itself) — a Menu edited into the other shape fails validation the same way, naming the Menu file, rather than only crashing the Next.js build.
 
 ## Sitemap and page metadata
 

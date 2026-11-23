@@ -371,6 +371,19 @@ describe('buildContentGraph', () => {
 				expect(validationError.reason).toContain(path.join('entwurf', 'index.mdx'))
 			}
 		})
+
+		it('fails when header, which must resolve flat, is grouped instead', () => {
+			expect.assertions(3)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'menu-shape-mismatch'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('menus', 'header.json'))
+				expect(validationError.reason).toMatch(/flat/i)
+			}
+		})
 	})
 
 	describe('Viertel and Zentrum', () => {

@@ -1,4 +1,4 @@
-import { ContentValidationError } from './errors'
+import { ContentValidationError, MENU_FIELD } from './errors'
 import type { RawMenu } from './loader'
 import { documentFile } from './locations'
 import { shortTitleOrTitle } from './presentation'
@@ -81,6 +81,25 @@ function resolveItems(
 	return (items as readonly MenuEntry[]).map((entry) => resolveEntry(file, entry, targets))
 }
 
+// RootLayout's own convention (not something the Menu schema can see, since
+// a Menu file alone never states its expected shape): header and
+// footer-legal must resolve flat, footer grouped (glossary: Menu group).
+// Checked here, during graph building, so a Menu file edited into the wrong
+// shape fails `content:check` instead of only crashing the Next.js build.
+const FLAT_MENU_NAMES: ReadonlySet<string> = new Set(['header', 'footer-legal'])
+const GROUPED_MENU_NAMES: ReadonlySet<string> = new Set(['footer'])
+
+function assertKnownMenuShape(name: string, file: string, resolved: ResolvedMenu): void {
+	if (resolved.length === 0) return
+	const grouped = isGroupedMenu(resolved)
+	if (FLAT_MENU_NAMES.has(name) && grouped) {
+		throw new ContentValidationError(file, MENU_FIELD, `menu "${name}" must be flat, not grouped`)
+	}
+	if (GROUPED_MENU_NAMES.has(name) && !grouped) {
+		throw new ContentValidationError(file, MENU_FIELD, `menu "${name}" must be grouped, not flat`)
+	}
+}
+
 export function resolveMenus(
 	rawMenus: ReadonlyMap<string, RawMenu>,
 	targets: MenuTargets,
@@ -88,7 +107,9 @@ export function resolveMenus(
 	const resolved = new Map<string, ResolvedMenu>()
 
 	for (const [name, menu] of rawMenus) {
-		resolved.set(name, resolveItems(menu.file, menu.items, targets))
+		const resolvedMenu = resolveItems(menu.file, menu.items, targets)
+		assertKnownMenuShape(name, menu.file, resolvedMenu)
+		resolved.set(name, resolvedMenu)
 	}
 
 	return resolved
