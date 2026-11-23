@@ -80,7 +80,7 @@ A reference to a missing document fails naming the referring file, the field and
 Order lives in one place per folder: a `meta.json` that is a bare JSON array of child IDs and nothing else, with full IDs (`eltern/erstes`, not `erstes`).
 
 ```json
-["idee", "kontakt", "impressum", "datenschutz"]
+["idee", "impressum", "datenschutz"]
 ```
 
 - **Strict.** When a `meta.json` exists, every child appears exactly once. A duplicate, an unknown ID or an unlisted child fails, naming the `meta.json` and the ID, so order can't drift silently. One reconciliation function handles every order file.
@@ -141,8 +141,8 @@ Each Viertel, the Zentrum, each Thema and each Rundgang has an illustration, loo
 ## Site data and Menus
 
 - `src/content/site.json` holds the site-wide facts: `name`, `tagline`, `baseUrl`, `copyright`. Header, footer and metadata read them from `graph.site`. `baseUrl` is a placeholder until the production domain is decided.
-- A Menu is one JSON file under `src/content/menus/` (`header.json`, `footer.json`): an ordered list of entries, each a content ID (`{ "id": "idee" }`) or an external link with its own label (`{ "url": "…", "label": "…" }`).
-- A content entry may name any type. Its label is never written in the Menu: it is the target's Short title, else its title, so renaming a document updates every Menu. An unknown ID fails, naming the Menu file and the ID.
+- A Menu is one JSON file under `src/content/menus/` (`header.json`, `footer.json`, `footer-legal.json`): either a flat, ordered list of entries, or an ordered list of Menu groups (glossary: Menu group) — never both in the same file. An entry is a content ID (`{ "id": "idee" }`) or an external link with its own label (`{ "url": "…", "label": "…" }`). A group is a `label` and its own non-empty, ordered list of entries in that same shape. Mixing entries and groups in one Menu file, or a group with no entries, fails validation the same way other Menu problems do.
+- A content entry may name any type. Its label is never written in the Menu: it is the target's Short title, else its title, so renaming a document updates every Menu. An unknown ID fails, naming the Menu file and the ID — the same whether the entry sits flat in the Menu or inside a group.
 
 ## Sitemap and page metadata
 

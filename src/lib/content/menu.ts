@@ -2,7 +2,8 @@ import { ContentValidationError } from './errors'
 import type { RawMenu } from './loader'
 import { documentFile } from './locations'
 import { shortTitleOrTitle } from './presentation'
-import type { MenuEntry } from './schemas'
+import type { MenuEntry, MenuGroup, MenuItem } from './schemas'
+import { isMenuGroup } from './schemas'
 import type { ContentDocument } from './types'
 
 // A resolved Menu entry (glossary: Menu): a label is always resolved here,
@@ -10,6 +11,22 @@ import type { ContentDocument } from './types'
 export interface MenuLink {
 	readonly url: string
 	readonly label: string
+}
+
+// A resolved Menu group (glossary: Menu group): a label with its entries
+// resolved the same way a flat Menu's are.
+export interface MenuGroupLink {
+	readonly label: string
+	readonly links: readonly MenuLink[]
+}
+
+// The resolved shape of a Menu (glossary: Menu): a flat list of links, or —
+// when the Menu file groups its entries — a list of labelled groups of
+// links. A Menu never mixes the two; schemas.ts validates that.
+export type ResolvedMenu = readonly MenuLink[] | readonly MenuGroupLink[]
+
+export function isGroupedMenu(menu: ResolvedMenu): menu is readonly MenuGroupLink[] {
+	return menu.length > 0 && 'links' in menu[0]
 }
 
 // Every document a Menu entry may name, by ID (issue #23): any content type's
@@ -43,17 +60,35 @@ function resolveEntry(file: string, entry: MenuEntry, targets: MenuTargets): Men
 	return { url: target.document.url, label: shortTitleOrTitle(target.document) }
 }
 
+function resolveGroup(file: string, group: MenuGroup, targets: MenuTargets): MenuGroupLink {
+	return {
+		label: group.label,
+		links: group.entries.map((entry) => resolveEntry(file, entry, targets)),
+	}
+}
+
+// schemas.ts's menuSchema already rejects a Menu that mixes entries and
+// groups, so the first item's shape tells us the whole array's; the casts
+// below just restate that guarantee to the type checker.
+function resolveItems(
+	file: string,
+	items: readonly MenuItem[],
+	targets: MenuTargets,
+): ResolvedMenu {
+	if (items.length > 0 && isMenuGroup(items[0])) {
+		return (items as readonly MenuGroup[]).map((group) => resolveGroup(file, group, targets))
+	}
+	return (items as readonly MenuEntry[]).map((entry) => resolveEntry(file, entry, targets))
+}
+
 export function resolveMenus(
 	rawMenus: ReadonlyMap<string, RawMenu>,
 	targets: MenuTargets,
-): ReadonlyMap<string, readonly MenuLink[]> {
-	const resolved = new Map<string, readonly MenuLink[]>()
+): ReadonlyMap<string, ResolvedMenu> {
+	const resolved = new Map<string, ResolvedMenu>()
 
 	for (const [name, menu] of rawMenus) {
-		resolved.set(
-			name,
-			menu.entries.map((entry) => resolveEntry(menu.file, entry, targets)),
-		)
+		resolved.set(name, resolveItems(menu.file, menu.items, targets))
 	}
 
 	return resolved

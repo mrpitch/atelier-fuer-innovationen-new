@@ -6,6 +6,7 @@ export const de = {
 	'navigation.nextLink': 'Nächste Seite: {title}',
 	'layout.headerMenu': 'Hauptnavigation',
 	'layout.footerMenu': 'Fußzeilen-Navigation',
+	'layout.footerLegalMenu': 'Rechtliche Hinweise',
 	'navigation.sitemap': 'Sitemap',
 	'stadt.navigation': 'Viertel und Zentrum der Wissensstadt',
 	'stadt.zentrumHeading': 'Zentrum',

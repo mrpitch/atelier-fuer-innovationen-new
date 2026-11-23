@@ -1,1 +1,13 @@
-[{ "id": "kontakt" }, { "id": "impressum" }, { "id": "datenschutz" }, { "id": "sitemap" }]
+[
+	{
+		"label": "Entdecken",
+		"entries": [
+			{ "id": "stadt" },
+			{ "id": "rundgaenge" },
+			{ "id": "themen" },
+			{ "id": "bibliothek" }
+		]
+	},
+	{ "label": "Lesen", "entries": [{ "id": "bibliothek/aufsaetze" }] },
+	{ "label": "Projekt", "entries": [{ "id": "idee" }] }
+]
