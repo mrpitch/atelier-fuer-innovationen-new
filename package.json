@@ -6,6 +6,7 @@
 		"dev": "next dev",
 		"build": "pnpm content:images && next build && pnpm pages:check",
 		"start": "next start",
+		"serve:out": "node scripts/serve-out.mts",
 		"lint": "eslint --max-warnings 0",
 		"spellcheck": "cspell --no-progress \"src/content/**/*.mdx\"",
 		"typecheck": "next typegen && tsc --noEmit",

@@ -20,10 +20,16 @@ RUN groupmod -o -g $AGENT_GID node \
 # non-root user — browser installation and apt-get both require root.
 # PLAYWRIGHT_BROWSERS_PATH bakes the binary at a fixed, world-readable path
 # so the agent user can reach it at runtime without write access to root-owned
-# directories.
+# directories. The browser is pinned to the playwright-core version in the
+# lockfile (pulled in by @playwright/mcp): each version expects its own
+# Chromium revision, and an unpinned install fetches the latest one.
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-RUN npx --yes playwright install --with-deps chromium \
-  && chmod -R o+rx /ms-playwright
+COPY pnpm-lock.yaml /tmp/pnpm-lock.yaml
+RUN version="$(grep -m1 -oE '^  playwright-core@[^:(]+' /tmp/pnpm-lock.yaml | cut -d@ -f2)" \
+  && test -n "$version" \
+  && npx --yes "playwright-core@$version" install --with-deps chromium \
+  && chmod -R o+rx /ms-playwright \
+  && rm /tmp/pnpm-lock.yaml
 
 # lychee for `pnpm links:check`, the link check CI runs too. Same pinned
 # version as CI: both install through scripts/install-lychee.sh.
