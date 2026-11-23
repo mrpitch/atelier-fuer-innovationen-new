@@ -15,8 +15,6 @@ React 19 with Next.js App Router. UI components additionally follow the [Compone
 ## Structure
 
 - Small components with one responsibility. Flat JSX; extract a part when nesting gets deep.
-- Named `function` declarations. Arrow functions only for callbacks, render props and closures.
-- Typed props. Derive from the element or primitive (`React.ComponentProps<'a'>`) instead of restating its props.
 - Group related logic: derived values, then handlers, then the JSX.
 
 ## State and effects
@@ -24,26 +22,16 @@ React 19 with Next.js App Router. UI components additionally follow the [Compone
 - Derive values during render instead of synchronising them into state.
 - Keep state in the lowest component that needs it. Never mirror props in state.
 - An effect is for synchronising with something outside React: the DOM, a browser API, a subscription. Data transformations, derived state and logic that belongs to an event go elsewhere ([You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect)). `eslint-plugin-react-hooks` flags `setState` called synchronously in an effect.
-- `useMemo`, `useCallback` and `memo` only for a measured performance problem.
 
 ## Event handlers
 
-Name handlers after the event (`handleSubmit`, `handleToggle`) and define them in the component body, not inline in JSX:
-
-```tsx
-function handleToggle() {
-	setOpen((open) => !open)
-}
-
-return <button onClick={handleToggle}>…</button>
-```
-
-Keep handlers short; move logic into a helper in `src/lib/utils/` when it grows.
+Keep handlers short; move logic into a helper in `src/lib/utils/` when it grows. Lint wants a handler named `handle…`, so rename a prop you forward when you destructure it (`{ onSelect: handleSelect }`), or pass it as `props.onSelect`.
 
 ## Props and composition
 
+- Derive props from the element or primitive instead of restating them: `React.ComponentProps<'a'>`, the part's own type around a Base UI part (`AccordionPrimitive.Item.Props`), `useRender.ComponentProps<'a'>` for a component that can render as another element.
 - Composition over configuration: `children` and slots before a growing list of boolean props.
-- Semantic, predictable prop names. Stable, meaningful `key`s in lists (an ID, never an index for reorderable lists).
+- Semantic, predictable prop names.
 
 ## Server and Client Components
 

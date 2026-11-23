@@ -222,7 +222,9 @@ export function buildContentGraph(
 	// reconciled against — a Draft is still a real file on disk, so hiding it
 	// from the exposed graph below is `isVisible`'s job, not loadSeiten's.
 	const allSeiten = loadSeiten(contentDir)
-	const isVisible = (seite: Seite) => development || !seite.draft
+	function isVisible(seite: Seite) {
+		return development || !seite.draft
+	}
 	const seiten = allSeiten.filter(isVisible)
 	const seitenByLocale = localizeAll(locales, seiten, (seite, locale) =>
 		localizeSeite(seite, locale, loadSeiteTranslation(contentDir, seite.id, locale)),

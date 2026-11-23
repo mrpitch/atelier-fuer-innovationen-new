@@ -6,7 +6,7 @@ import { Fragment, jsx, jsxs } from 'react/jsx-runtime'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { ViertelTeaserCard } from '@/components/viertel/viertel-teaser'
+import { ViertelTeaserCard } from '@/components/viertel/viertel-teaser-card'
 import { buildContentGraph } from '@/lib/content'
 
 import { useMDXComponents } from './mdx-components'

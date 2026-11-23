@@ -4,7 +4,7 @@ title: Theme system
 description: How the Kartei theme reaches Tailwind and shadcn components, the files in src/lib/styles, dark mode through next-themes, and what changes when another theme becomes active.
 tags: [css, theming, tailwind, next-themes, dark-mode, design-tokens]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
@@ -40,7 +40,6 @@ One theme is active per build. Kartei is the active theme; its source is DESIGN.
 ```
 
 - Tailwind v4 compiles through `@tailwindcss/turbopack`, set as the `*.css` loader in `next.config.ts`. There is no PostCSS config and no `tailwind.config` file.
-- `src/app/layout.tsx` imports `@/lib/styles/globals.css` once. No other file imports global CSS.
 - The base layer sets `bg-background text-foreground font-sans` on `<body>` and `border-border outline-ring/50` on every element.
 
 ## Dark mode
@@ -52,8 +51,6 @@ One theme is active per build. Kartei is the active theme; its source is DESIGN.
 | Effect                        | `next-themes` puts `dark` on `<html>` before hydration; `<html>` carries `suppressHydrationWarning` for that |
 | Variant                       | `dark:` matches descendants of `.dark`                                                                       |
 | Tokens                        | `.dark` in `variables-kartei.css` redefines every colour token                                               |
-
-Components use tokens, so most need no `dark:` classes at all.
 
 ## Tokens every theme defines
 

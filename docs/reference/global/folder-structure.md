@@ -26,14 +26,12 @@ src/
     └── <domain>/        a concern with internals of its own, such as content/ for the content graph
 ```
 
-## Files and exports
+## Files
 
-| Rule                 | Detail                                                                                                                                          |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| File names           | kebab-case: `viertel-tile.tsx`, `use-media-query.ts`, `slugify.ts`                                                                              |
-| Exports              | Named exports. Default exports only where Next.js requires them: `page.tsx`, `layout.tsx`, `not-found.tsx` and the other route file conventions |
-| One concern per file | A component file holds one component plus its private helpers. A `utils/` file holds one function                                               |
-| Imports              | `@/` for anything under `src/`. Relative imports only inside one folder                                                                         |
+| Rule                 | Detail                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------- |
+| File names           | kebab-case: `viertel-tile.tsx`, `use-media-query.ts`, `slugify.ts`                                |
+| One concern per file | A component file holds one component plus its private helpers. A `utils/` file holds one function |
 
 ## src/components
 
@@ -72,4 +70,4 @@ A concern gets a domain folder once it needs at least two of these:
 
 A domain folder has an `index.ts` as its public API. Consumers import from `@/lib/<domain>`.
 
-`src/lib/utils/cn.ts` re-exports `cn` from the `cn` package for registry items that import it through `aliases.utils`. Project code imports `cn` from `'cn'`, as the shadcn primitives do.
+`src/lib/utils/cn.ts` re-exports `cn` from the `cn` package for registry items that import it through `aliases.utils`.

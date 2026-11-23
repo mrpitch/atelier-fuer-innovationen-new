@@ -261,7 +261,7 @@ In Figma these come from the `Style` collection: `font/family/heading` is Instru
 Sizes are desktop / mobile; where only one size is given, both use it. The sizes are those drawn in the screens.
 
 - **Display** (Instrument Serif 400, 88px / 48px, line height 1.0, tracking −2%): page titles of the Viertel, Rundgang, Thema, Stadtplan-Hub and Rundgänge-Hub pages.
-- **Page titles, other sizes** (Instrument Serif 400): Startseite hero 60px / 48px (line height 1.0, −2%); Station 64px (1.02); Bibliothek, Mosaik and legal pages 60px (1.0, −1.5px); Dossier 64px and Aufsatz 52px (1.05); Kapitel and Abschnitt 48px (1.02–1.05).
+- **Page titles, other sizes** (Instrument Serif 400): Startseite hero 60px / 48px (line height 1.0, −2%); Station 64px (1.02); Übersicht, Chronik and legal pages 60px (1.0, −1.5px); Inhaltsseiten 48px (1.05); Kapitel and Abschnitt 48px (1.02–1.05).
 - **Headline** (Instrument Serif 400, 36px, line height 1.5, −1.5%): the statement heading of a Startseite section, such as "Jedes Viertel blickt aus einem anderen Winkel auf die Zukunft." The Rundgänge-Hub uses 48px / 36px.
 - **Heading** (Instrument Serif 400, 24px, line height 32px, −0.6px): section headings on inner pages, such as "Ein Weg, zwei Gangarten" and "Was in jedem Viertel liegt".
 - **Title** (Instrument Serif 400, 1.05–1.15, −1%): Viertel names on tiles 34px, the Stadtplatz 40px Italic, Rundgang titles 32px (44px on the hub), Thema-Karte 44px, Bibliothek entries 36px, Themen-Orte 28px, Chronik entries 26px, Steckbrief values 22px (1.25).
@@ -288,10 +288,14 @@ Sizes are desktop / mobile; where only one size is given, both use it. The sizes
 - **Tablet:** the Startseite and Viertel-Seite are also drawn at 768px and 1024px.
 - **Spacing:** on the Tailwind 4px scale. Sections have 64–80px of padding top and bottom (80px on the Startseite, 72px on the Viertel-Seite, 56–64px on hubs and inner pages) and 40px on mobile. A section's heading block sits 24–40px above its content; list items are 12–16px apart.
 - **Page hero (Bild-Hero):** a 748px text column and a 420px illustration, 80px apart, with 48px padding above and 80px below. On mobile the illustration comes first, then the text.
-- **Place bar:** Viertel, Rundgang and Thema pages have an Ortsleiste under the header: the breadcrumb on the left, the neighbouring places on the right ("← 02 Märkte", "04 Inszenierung →"). Kapitel and Abschnitt pages use the Ebenen-Leiste instead: the current place with "Sie sind hier", the breadcrumb, and a progress count ("KAPITEL 4 · 3 VON 8").
+- **Place bar:** Viertel, Rundgang and Thema pages and every Übersicht, Inhaltsseite and Chronik page have an Ortsleiste under the header: the breadcrumb on the left, the neighbouring places on the right, named after them ("← 02 Märkte", "04 Inszenierung →", "Xenia in Telepolis ’95 →"). Kapitel and Abschnitt pages use the Ebenen-Leiste instead: the current place with "Sie sind hier", the breadcrumb, and a progress count ("KAPITEL 4 · 3 VON 8").
 - **Stadtplan:** a 3 × 3 grid of square-cornered 416 × 340px tiles sharing Haarlinie borders. The eight Viertel run clockwise from top left, with the Zentrum in the middle. On mobile the tiles stack in one column in the desktop reading order (01, 02, 03, 08, Zentrum, 04, 07, 06, 05).
 - **Reading pages (Kapitel, Abschnitt):** three columns 56px apart: a 300px Themen-Weg sidebar, a 608px text column and a 260px right column, with 64px margin on the left and 96px on the right. The right column holds the "Gangart wechseln" box and an "Im Viertel außerdem" list of related material. On mobile a Themen-Weg button opens the sidebar, and the right-column content follows the text.
 - **Rundgang station pages:** the Rundgang-Leiste on top, then a 620px illustration stage on Pappe beside an 820px text area, and the station navigation along the bottom. On mobile they stack, and the bottom bar keeps only the previous and next buttons.
+- **Seitenkopf (Übersicht, Inhaltsseite, Chronik):** the uppercase mono eyebrow in Petrol, the page title, then a Schibsted Grotesk introduction on an Übersicht or the Chronik, or an Italic subtitle and an optional mono meta line on an Inhaltsseite. Items 24px apart.
+- **Übersicht** (`/bibliothek`, `/bibliothek/[typ]`): the Seitenkopf in a 608px column, a filter row with tabs and search, then the Bibliothek entries across the full 1248px column.
+- **Inhaltsseite** (Dossier, Mosaik-Baustein, Aufsatz, Ereignis, and the Idee, Menschen and Kontakt pages): three columns 56px apart with 96px margins on both sides, so they line up with the header and the Ortsleiste: a 268px navigation column, a 608px content column and a 260px right column. The left column is always navigation, in one of two forms: the sections of the page as jump links ("Inhalt") on long texts, or the siblings of a collection entry with the current one active ("Alle Dossiers · 4", "Alle Mosaik-Bausteine · 17", "Ausstellungen · 3"). The right column holds links to related places as outline list items under a section label ("Zum Dossier", "Zur Ausstellung"). The content column opens with the Seitenkopf and then carries only the blocks the page needs, 48px apart: Steckbrief (facts in two columns), Fließtext (Literata with Heading-size subheads and Italic quotes), Inhaltsliste (numbered list items that link to original texts).
+- **Chronik** (`/chronik`): the Seitenkopf, the Zeitleiste of milestones in an 880px column (year, line with dot, entry), then the Arbeitsschwerpunkte list. Mobile versions of Übersicht, Inhaltsseite and Chronik are not drawn yet.
 
 **The Text Leads Rule.** On a reading page the text column is the widest thing on screen. When navigation competes with it, collapse the navigation.
 
@@ -315,7 +319,17 @@ Flat paper. Surfaces and controls sit at rest with no shadow: the kit's `shadow/
 - **Cards, dialogs and the Gangart box:** 8px. The Thema-Karte is drawn with 12px (see Open Deviations).
 - **Badges:** pills.
 - **Stadtplan tiles and Rundgang cards:** square-cornered, so the grid reads as one continuous map rather than a set of cards.
-- **Illustrations:** each sits on a full circle of Petrolschleier with a thin horizon line at its base. Line art is Graphit in a single stroke weight; surfaces are painted Karteikarte, Petrol and Schieferblau. Sizes: 420px in a page hero, 128px on a tile, 44 × 64px as a station stop.
+- **Illustrations:** each sits on a full circle of Petrolschleier (184px in the 240px component) with a thin horizon line and a flat shadow at its base. Line art is Graphit at 2px with round caps and joins (3–4px only for load-bearing parts); surfaces are painted Karteikarte, Petrol and Schieferblau. Sizes: 420px in a page hero, 128px on a tile, 44 × 64px as a station stop. The Figma page `Illustrationen` holds the catalogue and the reasoning.
+
+### Named Rules
+
+**The One Object Rule.** Each Viertel, Thema and the Stadtplatz is one object that could stand in a city, chosen because it tells the place's focus at a glance. Viertel are objects seen from the front, the Zentrum is the only piece of architecture, Themen are abstract sculptures, Rundgänge are floor plans seen from above. One place, one object, one statement.
+
+**The One Line Rule.** Contours are one weight of Graphit. No gradients, no cast shadows, no hatching. A drawing that no longer reads as a silhouette at 64px has too much detail.
+
+**The Key Part Rule.** Surfaces are mostly Karteikarte. Petrol paints the one part that carries the statement (the signpost arrow, the globe, the tree trunk). Schieferblau is the second accent and exists only here. Koralle never appears in an illustration.
+
+**The Dashed Way Rule.** Movement is a dashed line (4px dash, 6px gap): a path, a flight line, an orbit, a Rundgang route. A filled dot marks a start or a position.
 
 ## Components
 

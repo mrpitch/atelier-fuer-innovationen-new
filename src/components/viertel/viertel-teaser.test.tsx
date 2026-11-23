@@ -6,7 +6,8 @@ import { describe, expect, it } from 'vitest'
 
 import { buildContentGraph } from '@/lib/content'
 
-import { ViertelTeaser, ViertelTeaserCard } from './viertel-teaser'
+import { ViertelTeaser } from './viertel-teaser'
+import { ViertelTeaserCard } from './viertel-teaser-card'
 
 const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '__fixtures__')
 

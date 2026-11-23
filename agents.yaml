@@ -55,7 +55,7 @@ docs:
   adrDir: docs/adr
   conventions:
     - 'PRODUCT.md and DESIGN.md (from /impeccable) live at the repo root. DESIGN.md specifies the Kartei tokens; src/lib/styles/variables-kartei.css and fonts/kartei.ts implement them, so a token change updates both.'
-    - 'Figma app file with all designs: https://www.figma.com/design/ms4MqN4CJhsLTMTKqTSC8p/Atelier-f%C3%BCr-Innovationen (`figma.app`). The screens are defined on the numbered pages 1–6 (1 · Startseite to 6 · Impressum, Datenschutz, Sitemap; `figma.app.templatesPage`). Project components are on the Components page (`figma.app.componentsPage`). The Redesign Spike page is the source for design analysis.'
+    - 'Figma app file with all designs: https://www.figma.com/design/ms4MqN4CJhsLTMTKqTSC8p/Atelier-f%C3%BCr-Innovationen (`figma.app`). The screens are defined on the numbered pages 1–6 (1 · Startseite to 6 · Impressum, Datenschutz, Sitemap; `figma.app.templatesPage`). Project components are on the Components page (`figma.app.componentsPage`). The Illustrationen page holds the illustration catalogue and its design principles (see DESIGN.md, Shapes). The Redesign Spike page is the source for design analysis.'
 
 figma:
   kit:

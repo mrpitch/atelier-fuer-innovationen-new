@@ -22,6 +22,8 @@ function createBodyImage(documentId: string) {
 // this to <Body components={...}>, which MDX merges with and overrides the
 // globally registered set (mdx-components.tsx) for that one render — the
 // documented way to pass per-page data into an MDX component.
-export function bodyImageComponents(documentId: string): MDXComponents {
+function bodyImageComponents(documentId: string): MDXComponents {
 	return { img: createBodyImage(documentId) }
 }
+
+export { bodyImageComponents }

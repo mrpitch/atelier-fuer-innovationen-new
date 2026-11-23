@@ -4,7 +4,7 @@ title: Component blueprint
 description: The structure every UI component follows, matching the base-nova shadcn source - function components on Base UI primitives, data-slot, CVA variants, cn() and the render prop for composition.
 tags: [components, react, shadcn, base-ui, cva]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
@@ -12,18 +12,10 @@ authoritative: true
 
 Components follow the source the shadcn CLI installs for the `base-nova` style: Base UI primitives, React 19, Tailwind v4. A project component and an installed primitive look the same.
 
-| Rule        | Detail                                                                                                                                                                                                                                                      |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Declaration | A named `function`. React 19 passes `ref` as a prop, so there is no `forwardRef` and no `displayName`                                                                                                                                                       |
-| Props       | `React.ComponentProps<'element'>` for a plain element, the part's own type around a Base UI part (`AccordionPrimitive.Item.Props`, `DialogPrimitive.Popup.Props`), `useRender.ComponentProps<'element'>` for a component that can render as another element |
-| `data-slot` | The root element carries `data-slot="<kebab-name>"` (`data-slot="viertel-tile"`). Parents style parts with `has-data-[slot=…]:` or `*:data-[slot=…]:` instead of an extra prop                                                                              |
-| Variants    | `cva()` from `class-variance-authority`; the component exports its `…Variants` function                                                                                                                                                                     |
-| Classes     | `className` always goes through `cn()` from `'cn'`, last, so callers can override                                                                                                                                                                           |
-| Composition | Base UI's `render` prop: `<DialogTrigger render={<Button variant="outline" />}>`. There is no `asChild`. A project component that needs `render` builds on `useRender`                                                                                      |
-| Base UI     | One import per primitive from its subpath: `import { Dialog as DialogPrimitive } from '@base-ui/react/dialog'`. ESLint rejects `radix-ui` and `@radix-ui/*`                                                                                                 |
-| Links       | A link that looks like a button is `<Link className={buttonVariants({ variant: 'outline' })}>`. `<Button render={<a />}>` would give the anchor `role="button"`                                                                                             |
-| Icons       | `<Icon iconName="…" />`, never a lucide import: [Icon registry](./icon-registry.md). Inside a button, mark it `data-icon="inline-start"` or `"inline-end"` so the padding adjusts                                                                           |
-| Exports     | Named exports at the bottom: `export { Button, buttonVariants }`                                                                                                                                                                                            |
+- `data-slot`: the root element carries `data-slot="<kebab-name>"` (`data-slot="viertel-tile"`). Parents style parts with `has-data-[slot=…]:` or `*:data-[slot=…]:` instead of an extra prop.
+- Variants: `cva()` from `class-variance-authority`; the component exports its `…Variants` function.
+- Classes: `className` always goes through `cn()` from `'cn'`, last, so callers can override.
+- Icons: `<Icon iconName="…" />` ([Icon registry](./icon-registry.md)). Inside a button, mark it `data-icon="inline-start"` or `"inline-end"` so the padding adjusts.
 
 ## Around a Base UI primitive, with variants
 
@@ -60,7 +52,7 @@ export { Button, buttonVariants }
 
 ## Rendering as another element
 
-`useRender` swaps the element for whatever `render` passes and merges the props. Its `state` becomes data attributes: `{ slot: 'badge', variant }` renders `data-slot="badge" data-variant="default"`.
+A project component that needs `render` builds on `useRender`, which swaps the element for whatever `render` passes and merges the props. Its `state` becomes data attributes: `{ slot: 'badge', variant }` renders `data-slot="badge" data-variant="default"`.
 
 ```tsx
 import { mergeProps } from '@base-ui/react/merge-props'

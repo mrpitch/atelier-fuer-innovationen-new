@@ -1,10 +1,10 @@
 ---
 type: reference
 title: Font system
-description: The four font variables (sans, serif, heading, mono), the Kartei families behind them, where next/font loads them and why the variables sit on body.
+description: The four font variables (sans, serif, heading, mono), the Kartei families behind them, where next/font loads them.
 tags: [css, fonts, next-font, typography, theming]
 status: stable
-last_reviewed: 2026-11-21
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
@@ -46,8 +46,6 @@ export { heading, mono, sans, serif } from './kartei'
 ```tsx
 <body className={cn(sans.variable, serif.variable, heading.variable, mono.variable, 'flex min-h-full flex-col')}>
 ```
-
-They don't go on `<html>`. `theme.css` maps `--font-sans: var(--font-sans)` so that `font-sans` reads the `next/font` value, and Tailwind also writes that self-reference to `:root`. On `<html>` it would compete with the `next/font` class at equal specificity, and only the order of the CSS chunks would decide which wins. On `<body>` the class always wins.
 
 ## Rules
 
