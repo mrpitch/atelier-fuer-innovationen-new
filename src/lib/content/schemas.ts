@@ -7,7 +7,10 @@ export const seiteFrontmatterSchema = z.object({
 	description: z.string().min(1),
 	shortTitle: z.string().min(1).optional(),
 	// A Draft (glossary) is written and checked but not yet published: left
-	// out of the Sitemap and sitemap.xml, issue #34.
+	// out of the Sitemap and sitemap.xml unconditionally (issue #34), and, in
+	// a production build or content:check, out of Navigation, Menus and the
+	// build itself too — `next dev` is the one place it still renders
+	// (issue #33, graph.ts's `development` option).
 	draft: z.boolean().default(false),
 })
 
@@ -154,3 +157,22 @@ export const stationFrontmatterSchema = z.object({
 })
 
 export type StationFrontmatter = z.infer<typeof stationFrontmatterSchema>
+
+// A translation file's frontmatter (issue #36, ADR-0001): every field is
+// optional, since a translation need not repeat one it doesn't change —
+// title, Short title, description and slug for any type, plus Viertel's own
+// Leitsatz and Steckbrief. This schema only validates each field's shape;
+// which of these keys a given content type actually allows is the loader's
+// job (loader.ts's translatableKeys, passed to loadTranslation), so a Seite
+// translation setting `leitsatz` still fails even though this schema alone
+// would accept it.
+export const translationFrontmatterSchema = z.object({
+	title: z.string().min(1).optional(),
+	shortTitle: z.string().min(1).optional(),
+	description: z.string().min(1).optional(),
+	slug: z.string().min(1).optional(),
+	leitsatz: z.string().min(1).optional(),
+	steckbrief: viertelSteckbriefSchema.optional(),
+})
+
+export type TranslationFrontmatter = z.infer<typeof translationFrontmatterSchema>

@@ -93,6 +93,18 @@ A document's ID is the path under `src/content`, without extension or locale suf
 
 For Seite, the ID doubles as the URL rule: the URL is the Seite's folder path, so ID `''` is `/` and ID `idee` is `/idee` ([ADR-0003](../../adr/adr-0003-urls-from-content-graph-rules.md)).
 
+## Translations
+
+The structure is ready for translation without shipping any (issue #36, [ADR-0001](../../adr/adr-0001-unprefixed-default-locale-urls.md)): German, the default locale, stays unprefixed with no file suffix; a later locale gets a file suffix on content and a URL prefix on routes. No extra locale is configured today — no English content, language switcher or second [dictionary](../i18n/dictionary.md) ships — so this is plumbing, exercised by fixtures with a test-only locale, not a shipped feature.
+
+A translation file is a sibling `*.<locale>.mdx` next to the German document it translates, sharing its ID (above): `idee/index.mdx`'s translation for locale `xx` is `idee/index.xx.mdx`; the root Seite's is `index.xx.mdx`. It holds only **translatable fields** — `title`, `shortTitle`, `description`, `slug`, and, on a Viertel, `leitsatz` and `steckbrief` — and inherits every other field (numbers, references, Draft state) from the German document untouched. A translation file setting a non-translatable field (e.g. a Seite's `draft`) throws `ContentValidationError` naming the file and that field directly, the same shape every other frontmatter error in this module uses. A translatable field a translation omits falls back to the German document's value; a locale with no translation file at all for a document falls back to the whole German document, under that locale's own URL prefix.
+
+A translation may set its own `slug`, replacing the document's own final URL path segment (an ancestor segment is never translated); its URL is always `/<locale>/...`, German's own URL rule (above) with the locale prefixed. `src/lib/content/translation.ts`'s `localizeSeite`/`localizeViertel` do this merge — pure functions, like `viertel.ts`'s `orderViertel` — fed by `src/lib/content/loader.ts`'s `loadSeiteTranslation`/`loadViertelTranslation`, which read a document's translation file for one locale (`loadTranslation`, their shared implementation) and check its frontmatter keys against that type's own translatable-field list before `loadTranslation`'s reader even parses their shape. Only Seite and Viertel support translation today — the two types the issue's acceptance criteria exercise; a later content type reuses the same `loadTranslation`/`localize*` shape rather than inventing its own.
+
+`buildContentGraph(contentDir, locales)`'s `locales` parameter is the extra locales configured for this build, beyond German: empty by default, so every real page (none pass a second argument) never attempts a translation lookup at all, and `src/lib/content/loader.ts`'s own file listing excludes any `*.<code>.mdx`-shaped file from being read as a standalone document regardless of whether that locale happens to be configured — a stray translation file for an unconfigured locale still never becomes a bogus extra document. A test passes a non-empty list (e.g. `['xx']`) to exercise this plumbing. `graph.getSeite(id, locale)`/`graph.getViertel(id, locale)` return that locale's merged view; `graph.locales` is the configured list itself, and `graph.getLocalizedSeiten(locale)`/`graph.getLocalizedViertel(locale)` are every Seite/Viertel translated into it — the catch-all route's own source for a locale's prefixed routes.
+
+`src/app/[[...slug]]/page.tsx`'s catch-all route generates a prefixed route per configured locale per Seite and per Viertel, from `graph.getLocalizedSeiten`/`graph.getLocalizedViertel`; `graph.resolveUrl(url)` resolves a request's URL (the route's own joined `slug` param) back to the Seite or Viertel it names — tagged with a `kind` discriminant — and, for a locale's own prefixed URL, that locale — the one place a URL is parsed instead of built, so the route never parses a locale prefix by hand. A Viertel's own unprefixed German URL resolves through `resolveUrl` too, even though Next.js actually serves it from the Viertel's dedicated route (`src/app/stadt/[viertel]/page.tsx`, more specific and so preferred over the catch-all) rather than from here; only a Viertel's localized, prefixed URLs are the catch-all's to generate and render, reusing that dedicated route's own `ViertelDetail` component (`src/components/viertel/viertel-detail.tsx`) so the two routes render a Viertel identically. With no extra locale configured, `generateStaticParams` contributes nothing beyond the existing unprefixed Seiten and Viertel, so the production build has no prefixed routes and German URLs are unchanged. A translated page still renders the German compiled MDX body, and — for a Seite — Breadcrumbs and previous/next, and — for a Viertel — its related Aufsätze, Stationen and Kapitel link: `graph.getBody` only imports the German file, and none of that related, under-translation data has a translated form yet — left for whichever sub-issue ships a real second locale.
+
 ## Frontmatter validation
 
 `src/lib/content/frontmatter.ts` splits a document into its YAML frontmatter and MDX body by hand and parses the YAML with the `yaml` package — not `gray-matter` 4, which is unmaintained. `src/lib/content/loader.ts` then validates the parsed frontmatter against the type's Zod schema.
@@ -111,7 +123,7 @@ The same error carries a `meta.json` problem (below): `file` is the `meta.json` 
 
 ## The content graph
 
-`buildContentGraph(contentDir)` (`src/lib/content/graph.ts`) is the one public interface for content: it runs the loader over `contentDir` and returns a `ContentGraph` with a `seiten` list, a `getSeite(id)` lookup, and the Navigation reads below. Taking `contentDir` as a parameter, rather than hardcoding `src/content`, is what lets tests point it at a fixture directory ([Testing conventions](../testing/testing-conventions.md)).
+`buildContentGraph(contentDir, locales)` (`src/lib/content/graph.ts`) is the one public interface for content: it runs the loader over `contentDir` and returns a `ContentGraph` with a `seiten` list, a `getSeite(id, locale)` lookup, and the Navigation reads below. Taking `contentDir` as a parameter, rather than hardcoding `src/content`, is what lets tests point it at a fixture directory ([Testing conventions](../testing/testing-conventions.md)); `locales` is the Translations section's own parameter (above), empty for every real caller.
 
 `graph.getBody(id)` compiles a Seite's, Viertel's or the Zentrum's MDX body through Next's MDX pipeline and returns its component (issue #55): pages render a body through this instead of importing `@/content` themselves. Unlike the rest of the graph, it always imports from the real `src/content` through the `@/content` alias — a bundler-resolved path a fixture directory can't stand in for — so it isn't exercised by `buildContentGraph`'s fixture-backed tests. `id === ''` (the root Seite) gets its own literal import: the general `@/content/${id}/index.mdx` pattern can't resolve it, because the resulting path would have no folder segment between `content` and `index.mdx` (issue #25).
 
@@ -133,6 +145,19 @@ It is strict: every actual child of that folder must appear exactly once. An ID 
 
 `baseUrl` is a placeholder (`https://xenia.example.com`) until a real production domain is decided; it feeds `metadataBase` in `src/app/layout.tsx`, which resolves the per-page canonical link in `src/app/[[...slug]]/page.tsx`.
 
+## Drafts
+
+A **Draft** (glossary) is a Seite with `draft: true` in its frontmatter (`seiteFrontmatterSchema` in `schemas.ts`, default `false`): written and checked but not yet published (issue #33).
+
+`buildContentGraph(contentDir, options)` takes an optional `development` flag (default `false`). Next assigns `NODE_ENV` `'development'` only for `next dev`, `'production'` for every other command including `next build` — `layout.tsx` and `[[...slug]]/page.tsx` pass `{ development: process.env.NODE_ENV === 'development' }` for exactly that split; every other caller, `content:check` included, defaults to the strict behaviour below:
+
+- `graph.seiten`/`graph.getSeite(id)` leave a Draft out, so `generateStaticParams` in `[[...slug]]/page.tsx` never builds it a page, and visiting its URL 404s (`dynamicParams = false`).
+- `graph.navigation`, `getBreadcrumbs`, `getPrevious` and `getNext` leave a Draft's own node out; its children, if any, reparent to its nearest visible ancestor instead of disappearing with it — the same rule the Sitemap uses, below. `buildNavigation` (`navigation.ts`) takes this as an `isVisible` predicate, defaulting to always-visible for any caller that doesn't pass one.
+- A Menu entry referencing a Draft fails instead of resolving (`menu.ts`'s `resolveEntry`), naming the Menu file and the Draft's own file (`loader.ts`'s `seiteFile(id)`) — the same way an entry with no matching Seite at all fails, just with its own reason text.
+- A Draft is still fully validated regardless of `development`: frontmatter parsing (below) never looks at `draft` before validating the rest of a document's frontmatter, and `meta.json`'s reconciliation (below) is checked against the full, Draft-included set of a folder's actual children — a Draft is still a real file on disk, so an author can still order it inside a `meta.json` ahead of publishing it.
+
+`next dev` is the one place a Draft renders like any other Seite: reachable by URL, listed in Navigation and Menus, with working breadcrumbs and previous/next links.
+
 ## Sitemap
 
 `graph.sitemap` (`src/lib/content/graph.ts`, built by `listSitemap` in `navigation.ts`) is a flat, published-only list of every content type's documents. The Sitemap page and `sitemap.xml` both read this one list instead of re-deriving it (issue #34), so a later content type only has to join `listSitemap` once to appear in both (issue #60).
@@ -148,9 +173,7 @@ The list is one block per area, each area in its own derivation's order:
 | Themen            | Thema                                                    | `themen`'s own order                             |
 | Rundgänge         | Rundgang, each immediately followed by its own Stationen | `rundgaenge`'s own order, then Station number    |
 
-A Draft's own entry is left out; its published children, if any, still appear. Only Seite carries the Draft concept (below), so every other type's documents are always included.
-
-A **Draft** (glossary) is a Seite with `draft: true` in its frontmatter (`seiteFrontmatterSchema` in `schemas.ts`, default `false`): written and checked but not yet published.
+A Draft's own entry is left out; its published children, if any, still appear. Only Seite carries the Draft concept ([Drafts](#drafts)), so every other type's documents are always included. Unlike `graph.navigation`, this exclusion isn't `development`-aware: the Sitemap is always a published-only view, in or out of `next dev`.
 
 `src/content/sitemap/index.mdx` is a plain Seite like any other, whose body is a single `<SitemapList />` — the one MDX component the provider (`src/mdx-components.tsx`) currently registers. The component (`src/components/navigation/sitemap-list.tsx`) reads the content graph itself, unlike Breadcrumbs and PreviousNext, because it sits inside the Sitemap Seite's own MDX body rather than being handed items by `page.tsx`. `src/content/menus/footer.json` links to it like any other Seite, by ID.
 

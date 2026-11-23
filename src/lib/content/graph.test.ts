@@ -162,6 +162,102 @@ describe('buildContentGraph', () => {
 		})
 	})
 
+	describe('Drafts', () => {
+		it('renders a Draft like any Seite in dev, but hides it (and reparents its children) everywhere else', () => {
+			const dev = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'), {
+				development: true,
+			})
+			const production = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'))
+
+			expect(dev.getSeite('entwurf')).toBeDefined()
+			expect(dev.seiten.map((seite) => seite.id)).toContain('entwurf')
+			expect(dev.navigation.children.map((child) => child.id)).toEqual([
+				'entwurf',
+				'veroeffentlicht',
+			])
+
+			expect(production.getSeite('entwurf')).toBeUndefined()
+			expect(production.seiten.map((seite) => seite.id)).not.toContain('entwurf')
+			expect(production.navigation.children.map((child) => child.id)).toEqual([
+				'entwurf/kind',
+				'veroeffentlicht',
+			])
+		})
+
+		it('omits a Draft ancestor from breadcrumbs in production, but keeps it in dev', () => {
+			const dev = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'), {
+				development: true,
+			})
+			const production = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'))
+
+			expect(dev.getBreadcrumbs('entwurf/kind').map((link) => link.id)).toEqual([
+				'',
+				'entwurf',
+				'entwurf/kind',
+			])
+			expect(production.getBreadcrumbs('entwurf/kind').map((link) => link.id)).toEqual([
+				'',
+				'entwurf/kind',
+			])
+		})
+
+		it('links previous/next across a hidden Draft parent in production, matching the reparented tree', () => {
+			const dev = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'), {
+				development: true,
+			})
+			const production = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'))
+
+			expect(dev.getNext('entwurf')?.id).toBe('veroeffentlicht')
+			expect(dev.getNext('entwurf/kind')).toBeUndefined()
+
+			expect(production.getNext('entwurf/kind')?.id).toBe('veroeffentlicht')
+			expect(production.getPrevious('veroeffentlicht')?.id).toBe('entwurf/kind')
+			expect(production.getPrevious('entwurf/kind')).toBeUndefined()
+		})
+
+		it('fails a Draft with invalid frontmatter the same way any Seite does', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'draft-invalid'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('entwurf', 'index.mdx'))
+				expect(validationError.field).toBe('description')
+				expect(validationError.reason).toMatch(/string/i)
+			}
+		})
+
+		it('still fails a Draft with invalid frontmatter in dev — being unpublished never skips validation', () => {
+			expect(() =>
+				buildContentGraph(path.join(fixturesDir, 'draft-invalid'), { development: true }),
+			).toThrow(ContentValidationError)
+		})
+
+		it('fails a Menu entry referencing a Draft in production, naming the Menu file and the Draft', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'menu-draft'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('menus', 'header.json'))
+				expect(validationError.field).toBe('entwurf')
+				expect(validationError.reason).toContain(path.join('entwurf', 'index.mdx'))
+			}
+		})
+
+		it('resolves the same Menu entry in dev, the one restriction development lifts', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'menu-draft'), {
+				development: true,
+			})
+
+			expect(graph.getMenu('header')).toEqual([{ url: '/entwurf', label: 'Entwurf' }])
+		})
+	})
+
 	describe('site data', () => {
 		it('reads the site name, tagline, base URL and copyright from site.json', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
@@ -661,6 +757,109 @@ describe('buildContentGraph', () => {
 				expect(validationError.file).toBe('index.mdx')
 				expect(validationError.field).toBe('(body-image)')
 				expect(validationError.reason).toContain('./fehlt.jpg')
+			}
+		})
+	})
+
+	describe('Translations (issue #36)', () => {
+		it("inherits a Viertel's number and ID from the German document, taking Leitsatz and Steckbrief from the translation when present", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			const german = graph.getViertel('stadt/erste-viertel')
+			const translated = graph.getViertel('stadt/erste-viertel', 'xx')
+
+			expect(german?.number).toBe(1)
+			expect(translated?.id).toBe(german?.id)
+			expect(translated?.number).toBe(german?.number)
+			// title isn't set by the translation, so it falls back to German.
+			expect(translated?.title).toBe(german?.title)
+			expect(translated?.leitsatz).toBe('Translated leitsatz.')
+			expect(translated?.steckbrief.prozessansatz).toBe('Translated prozessansatz.')
+			expect(translated?.steckbrief.bauform).toBe('Translated bauform.')
+			expect(translated?.body).toContain('Translated Testinhalt.')
+			expect(translated?.url).toBe('/xx/stadt/translated-viertel')
+		})
+
+		it('resolves a translated Viertel slug to its prefixed localized URL, and lists it among the localized Viertel', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			expect(graph.getLocalizedViertel('xx').map((viertel) => viertel.id)).toEqual([
+				'stadt/erste-viertel',
+			])
+
+			const resolved = graph.resolveUrl('/xx/stadt/translated-viertel')
+			expect(resolved?.kind).toBe('viertel')
+			expect(resolved?.kind === 'viertel' && resolved.viertel.id).toBe('stadt/erste-viertel')
+			expect(resolved?.locale).toBe('xx')
+
+			// The German Viertel's own URL is unaffected by the translation.
+			const german = graph.resolveUrl('/stadt/erste-viertel')
+			expect(german?.kind).toBe('viertel')
+			expect(german?.locale).toBeUndefined()
+		})
+
+		it('falls back to the German document when a locale has no translation', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			const fallback = graph.getSeite('ohne-uebersetzung', 'xx')
+			expect(fallback?.title).toBe('Ohne Übersetzung')
+			expect(fallback?.description).toBe('Platzhalter für Tests.')
+			expect(fallback?.body).toContain('Deutscher Testinhalt.')
+			expect(fallback?.url).toBe('/xx/ohne-uebersetzung')
+		})
+
+		it('uses a translated slug for a prefixed localized URL, and the translated body', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			const translated = graph.getSeite('mit-uebersetzung', 'xx')
+			expect(translated?.title).toBe('With translation')
+			expect(translated?.description).toBe('Placeholder for tests.')
+			expect(translated?.body).toContain('Translated body.')
+			expect(translated?.url).toBe('/xx/with-translation')
+
+			// The German document and its URL are unaffected by the translation.
+			const german = graph.getSeite('mit-uebersetzung')
+			expect(german?.title).toBe('Mit Übersetzung')
+			expect(german?.body).toContain('Deutscher Testinhalt.')
+			expect(german?.url).toBe('/mit-uebersetzung')
+		})
+
+		it("uses a translated slug for the root Seite's own prefixed URL, instead of dropping it", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			const translated = graph.getSeite('', 'xx')
+			expect(translated?.url).toBe('/xx/start')
+		})
+
+		it('has no configured locales, and no prefixed Seiten, by default', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
+
+			expect(graph.locales).toEqual([])
+			expect(graph.getLocalizedSeiten('xx')).toEqual([])
+			expect(graph.getSeite('kontakt', 'xx')).toBeUndefined()
+		})
+
+		it('fails when a translation sets a non-translatable field, naming the file and the field', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'translation-invalid-field'), { locales: ['xx'] })
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe('index.xx.mdx')
+				expect(validationError.field).toBe('draft')
+				expect(validationError.reason).toMatch(/translatable/i)
 			}
 		})
 	})

@@ -11,7 +11,11 @@ import { ThemeProvider } from '@/components/utils/theme-provider'
 import { buildContentGraph, siteWordmark } from '@/lib/content'
 import { heading, mono, sans, serif } from '@/lib/styles/fonts'
 
-const graph = buildContentGraph(path.join(process.cwd(), 'src/content'))
+// `next dev` is the one caller that previews a Draft (issue #33); every other
+// command, `next build` included, sees the published-only graph.
+const graph = buildContentGraph(path.join(process.cwd(), 'src/content'), {
+	development: process.env.NODE_ENV === 'development',
+})
 
 export const metadata: Metadata = {
 	metadataBase: new URL(graph.site.baseUrl),

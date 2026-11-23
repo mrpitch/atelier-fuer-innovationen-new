@@ -8,7 +8,7 @@ export { isRelativeImagePath, resolveBodyAssetPath } from './body'
 export { ContentValidationError } from './errors'
 export type { SplitDocument } from './frontmatter'
 export { splitDocument } from './frontmatter'
-export type { ContentGraph } from './graph'
+export type { ContentGraph, ContentGraphOptions } from './graph'
 export { buildContentGraph } from './graph'
 export type {
 	Abschnitt,
