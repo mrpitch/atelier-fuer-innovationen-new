@@ -111,10 +111,12 @@ export interface ContentGraph {
 	// Start › Rundgänge › Rundgang › Station), the document itself last.
 	// Empty for an unknown or hidden ID.
 	getBreadcrumbs(id: string): readonly NavigationLink[]
-	// Seiten walk Navigation; Abschnitte all Abschnitte in Kapitel number order,
-	// across Kapitel; Kapitel all Kapitel in number order; Stationen their own
-	// Rundgang's. Undefined at either end of a sequence and for every other
-	// type.
+	// Seiten walk Navigation; Viertel their stadt/meta.json number order (with
+	// a neighbour's `number` set, issue #82); Abschnitte all Abschnitte in
+	// Kapitel number order, across Kapitel; Kapitel all Kapitel in number
+	// order; Stationen their own Rundgang's; Rundgänge and Themen their own
+	// resolved list order. Undefined at either end of a sequence, for the
+	// Zentrum, and for every other type.
 	getPrevious(id: string): NavigationLink | undefined
 	getNext(id: string): NavigationLink | undefined
 

@@ -33,9 +33,12 @@ function logicalParent(entry: ContentDocument): string | undefined {
 // is Navigation's own sibling sequence for a Seite (navigation.ts).
 //
 // Previous/next walk a sequence per type: Seiten their Navigation siblings;
-// Kapitel all Kapitel in number order; Abschnitte every Abschnitt in Kapitel
-// number order, crossing from the last of one Kapitel to the first of the
-// next; Stationen only their own Rundgang's. Every other type has none.
+// Viertel their stadt/meta.json number order; Kapitel all Kapitel in number
+// order; Abschnitte every Abschnitt in Kapitel number order, crossing from
+// the last of one Kapitel to the first of the next; Stationen only their own
+// Rundgang's; Rundgänge and Themen their own resolved list order (issue #82).
+// The Zentrum and every other type have none: a one-document "sequence"
+// never has a previous or a next.
 export function buildTrail(
 	set: ContentSet,
 	entries: readonly ContentDocument[],
@@ -48,12 +51,18 @@ export function buildTrail(
 		for (const { id } of documents) sequenceById.set(id, links)
 	}
 
+	addSequence(
+		set.viertel,
+		set.viertel.map((viertel) => ({ ...toLink(viertel), number: viertel.number })),
+	)
 	addSequence(set.kapitel, set.kapitel.map(toLink))
 	addSequence(set.abschnitt, set.abschnitt.map(toLink))
 	for (const rundgang of set.rundgang) {
 		const stationen = set.station.filter((station) => station.rundgangId === rundgang.id)
 		addSequence(stationen, stationen.map(toLink))
 	}
+	addSequence(set.rundgang, set.rundgang.map(toLink))
+	addSequence(set.thema, set.thema.map(toLink))
 
 	function sequenceFor(id: string): readonly NavigationLink[] | undefined {
 		return byId.get(id)?.kind === 'seite' ? siblingsOf(id) : sequenceById.get(id)
