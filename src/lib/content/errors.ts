@@ -26,6 +26,13 @@ export const ZENTRUM_FIELD = '(zentrum)'
 // instead names that ID directly, the same way meta.json does (issue #28).
 export const VIERTEL_ORDER_FIELD = '(viertel-order)'
 
+// The field name when a body's problem isn't a frontmatter key at all: a
+// relative image a body references (markdown image syntax) doesn't exist
+// next to the document (issue #35). A content-referencing component's own
+// unknown-ID prop instead names that prop directly (e.g. `ViertelTeaser.id`),
+// the same way a frontmatter reference field names itself.
+export const BODY_IMAGE_FIELD = '(body-image)'
+
 // The field name when a Kapitel's own Abschnitt order file (its meta.json,
 // issue #30) isn't tied to one listed ID: the file is missing, invalid JSON,
 // or a schema issue with no path of its own. A listed ID with no matching

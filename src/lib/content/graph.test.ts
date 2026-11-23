@@ -724,6 +724,43 @@ describe('buildContentGraph', () => {
 		})
 	})
 
+	describe('Body (issue #35)', () => {
+		it('resolves a <ViertelTeaser id> and a relative image against the content graph', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'body-valid'))
+
+			expect(graph.getViertel('stadt/erste-viertel')?.leitsatz).toBe('Platzhalter-Leitsatz.')
+			expect(graph.bodyImages).toEqual(['foto.svg'])
+		})
+
+		it('fails a <ViertelTeaser id> that points to an unknown Viertel, naming the file and the ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'body-viertel-teaser-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe('index.mdx')
+				expect(validationError.field).toBe('ViertelTeaser.id')
+				expect(validationError.reason).toContain('stadt/nichtvorhanden')
+			}
+		})
+
+		it('fails a relative body image that does not exist, naming the file and the path', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'body-image-missing'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe('index.mdx')
+				expect(validationError.field).toBe('(body-image)')
+				expect(validationError.reason).toContain('./fehlt.jpg')
+			}
+		})
+	})
+
 	describe('Translations (issue #36)', () => {
 		it("inherits a Viertel's number and ID from the German document, taking Leitsatz and Steckbrief from the translation when present", () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {

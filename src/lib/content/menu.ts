@@ -1,6 +1,6 @@
 import { ContentValidationError } from './errors'
 import type { RawMenu, Seite } from './loader'
-import { seiteFile, shortTitleOrTitle } from './loader'
+import { documentFile, shortTitleOrTitle } from './loader'
 import type { MenuEntry } from './schemas'
 
 // A resolved Menu entry (glossary: Menu): a label is always resolved here,
@@ -33,7 +33,7 @@ function resolveEntry(
 		throw new ContentValidationError(
 			file,
 			entry.id,
-			`menu references a Draft: ${seiteFile(seite.id)}`,
+			`menu references a Draft: ${documentFile(seite.id)}`,
 		)
 	}
 	return { url: seite.url, label: shortTitleOrTitle(seite) }

@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# generated from src/content by content-images.mts (issue #35) — never hand-authored
+/public/
+
 # production
 /build
 

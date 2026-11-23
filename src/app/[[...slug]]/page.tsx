@@ -3,6 +3,7 @@ import path from 'node:path'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { bodyImageComponents } from '@/components/content/body-image'
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
 import { RundgaengeListe } from '@/components/rundgang/rundgaenge-liste'
@@ -115,7 +116,7 @@ export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
 		<main>
 			<Breadcrumbs items={graph.getBreadcrumbs(id)} />
 			<h1>{seite.title}</h1>
-			<Body />
+			<Body components={bodyImageComponents(id)} />
 			{id === STADT_SEITE_ID && <ViertelListe viertel={graph.viertel} zentrum={graph.zentrum} />}
 			{id === RUNDGAENGE_SEITE_ID && <RundgaengeListe rundgaenge={graph.rundgaenge} />}
 			{id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
