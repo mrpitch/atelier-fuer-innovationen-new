@@ -12,5 +12,6 @@
 			"Bash(pnpm run sandcastle:build)",
 			"Bash(~/Dev/home/tools/sandcastle/bin/sandcastle-run *)"
 		]
-	}
+	},
+	"enabledMcpjsonServers": ["playwright"]
 }
