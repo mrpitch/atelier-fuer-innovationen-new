@@ -17,6 +17,8 @@ The site is German-only, but its structure has to allow translations later. It i
 
 German, the default locale, has no prefix (`/stadt/kontexte`). A later locale gets a prefix and may use its own slugs (`/en/city/contexts`). German readers shouldn't carry a `/de` segment for translations that don't exist yet.
 
+The localized URL of any content type is `/<locale>` plus that type's URL rule ([ADR-0003](adr-0003-urls-from-content-graph-rules.md)) applied to translated slugs: a translation's `slug` replaces the document's own final segment, an ancestor Seite's translated slug replaces its folder name wherever the URL contains it (`/en/city/contexts`), and a Kapitel, Abschnitt or Station URL continues its translated parent's. A missing translation falls back to the German segments under the same prefix.
+
 ## Consequences
 
 - Good: German URLs stay short and won't change when a translation is added.

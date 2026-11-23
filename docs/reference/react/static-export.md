@@ -46,6 +46,10 @@ From the Next.js static export guide (`node_modules/next/dist/docs/01-app/02-gui
 | Image Optimization with the default loader      | `next/image` with `unoptimized: true` (already set)                           |
 | Intercepting Routes                             | Plain routes                                                                  |
 
+## Static files
+
+`public/` is copied into `out/` verbatim. Its `content/` subfolder is generated: `pnpm content:images` (`scripts/content-images.mts`) copies each body image from `src/content/<path>` to `public/content/<path>` before `next build`, and `.gitignore` ignores only `/public/content/`. The rest of `public/` is for hand-authored static assets. A body image's `src` is `/content/<path>` (`bodyImageComponents` in `src/mdx-components.tsx`).
+
 ## Locale
 
 German pages have no URL prefix; a later locale gets one (ADR-0001). Nothing can redirect by browser language, because no server sees the request.

@@ -33,3 +33,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm build
+      # The same link check the Sandcastle sandbox runs; see docs/reference/content/content-layer.md#links.
+      - run: scripts/install-lychee.sh "$HOME/.local/bin"
+      - run: pnpm links:check

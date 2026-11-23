@@ -21,6 +21,10 @@ re-run `docs index` after adding or moving files.
 - [Icon registry](reference/components/icon-registry.md)
 - [shadcn setup](reference/components/shadcn-setup.md)
 
+### Content
+
+- [Content layer](reference/content/content-layer.md)
+
 ### Css
 
 - [Design tokens](reference/css/design-tokens.md)
@@ -30,12 +34,21 @@ re-run `docs index` after adding or moving files.
 
 ### Global
 
+- [Docs tooling](reference/global/docs-tooling.md)
 - [Folder structure](reference/global/folder-structure.md)
+
+### I18n
+
+- [Dictionary](reference/i18n/dictionary.md)
 
 ### React
 
 - [React component conventions](reference/react/react-component-conventions.md)
 - [Static export](reference/react/static-export.md)
+
+### Testing
+
+- [Testing conventions](reference/testing/testing-conventions.md)
 
 ## Explanation
 

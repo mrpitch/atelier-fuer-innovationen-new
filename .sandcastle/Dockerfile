@@ -25,6 +25,11 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 RUN npx --yes playwright install --with-deps chromium \
   && chmod -R o+rx /ms-playwright
 
+# lychee for `pnpm links:check`, the link check CI runs too. Same pinned
+# version as CI: both install through scripts/install-lychee.sh.
+COPY scripts/install-lychee.sh /tmp/install-lychee.sh
+RUN /tmp/install-lychee.sh /usr/local/bin && rm /tmp/install-lychee.sh
+
 USER ${AGENT_UID}:${AGENT_GID}
 
 # /implement's own flow ends with a commit, run inside this container on the

@@ -1,0 +1,38 @@
+// The German UI dictionary (issue #26): every UI string a component shows
+// goes here, by key, instead of inline in the component.
+export const de = {
+	'navigation.youAreHere': 'Sie sind hier',
+	'navigation.previousLink': 'Vorherige Seite: {title}',
+	'navigation.nextLink': 'Nächste Seite: {title}',
+	'layout.headerMenu': 'Hauptnavigation',
+	'layout.footerMenu': 'Fußzeilen-Navigation',
+	'navigation.sitemap': 'Sitemap',
+	'stadt.navigation': 'Viertel und Zentrum der Wissensstadt',
+	'stadt.zentrumHeading': 'Zentrum',
+	'stadt.viertelHeading': 'Die acht Viertel',
+	'viertel.numberedTitle': '{number} {title}',
+	'viertel.steckbrief.prozessansatz': 'Prozessansatz',
+	'viertel.steckbrief.bauform': 'Bauform',
+	'viertel.steckbrief.prozessdokument': 'Prozessdokument',
+	'viertel.steckbrief.imStadtzentrum': 'Im Stadtzentrum',
+	'viertel.aufsaetzeHeading': 'Mehr aus dem Viertel',
+	'viertel.kapitelHeading': 'Kapitel des Leitthemas',
+	'aufsatz.readingTime': 'ca. {n} Min.',
+	'kapitel.number': 'Kapitel {n}',
+	'kapitel.numberedTitle': 'Kapitel {n}: {title}',
+	'kapitel.abschnitteCount': '{n} Abschnitte',
+	'kapitel.themenOrtHeading': 'Themen-Ort',
+	'abschnitt.numberedTitle': '{number} {title}',
+	'abschnitt.readingTime': 'ca. {n} Min.',
+	'rundgaenge.navigation': 'Die Rundgänge der Wissensstadt',
+	'rundgang.stationenCount': '{n} Stationen',
+	'rundgang.duration': 'ca. {n} Min.',
+	'rundgang.summary': '{stationen} · {duration}',
+	'station.numberedTitle': 'Station {n}: {title}',
+	'station.readingTime': 'ca. {n} Min.',
+	'ort.stationenHeading': 'Stationen an diesem Ort',
+	'themen.navigation': 'Die drei Themen',
+	'thema.kapitelHeading': 'Kapitel',
+} as const
+
+export type DictionaryKey = keyof typeof de

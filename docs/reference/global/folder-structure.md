@@ -12,9 +12,10 @@ authoritative: true
 
 ```text
 src/
+├── mdx-components.tsx   the MDX component map and the per-document body image override
 ├── app/                 routes: layouts, pages, metadata, generateStaticParams
 ├── components/
-│   ├── ui/              shadcn primitives and the icon registry (icons.tsx)
+│   ├── ui/              shadcn primitives and the registries keyed by name or ID (icons.tsx, illustration.tsx)
 │   ├── pro-blocks/      shadcndesign Pro Blocks, one folder per block category
 │   ├── utils/           providers without markup of their own (theme-provider.tsx)
 │   └── <feature>/       project components by feature: layout/, viertel/, rundgang/ …
@@ -37,7 +38,7 @@ src/
 
 | Folder        | Contents                                                    | Written by                                                      |
 | ------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
-| `ui/`         | shadcn primitives, `icons.tsx`                              | `shadcn add`, then adapted: lucide imports swapped for `<Icon>` |
+| `ui/`         | shadcn primitives, `icons.tsx`, `illustration.tsx`          | `shadcn add`, then adapted: lucide imports swapped for `<Icon>` |
 | `pro-blocks/` | Pro Blocks (`shadcn.proBlocksDir` in `agents.yaml`)         | `shadcn add @shadcndesign/<block>`, then adapted the same way   |
 | `utils/`      | Client providers and wrappers                               | the project                                                     |
 | `<feature>/`  | Project components, named after the glossary term they show | the project                                                     |
@@ -66,7 +67,8 @@ A concern gets a domain folder once it needs at least two of these:
 | Domain folder | What it owns                                                                                   |
 | ------------- | ---------------------------------------------------------------------------------------------- |
 | `content/`    | The content layer of epic #23: loader, frontmatter schemas per content type, the content graph |
+| `dictionary/` | The German UI dictionary (issue #26): lookup by key, interpolation                             |
 
-A domain folder has an `index.ts` as its public API. Consumers import from `@/lib/<domain>`, never from a file inside it.
+A domain folder has an `index.ts` as its public API. Consumers import from `@/lib/<domain>`, never from a file inside it. Lint enforces this for every folder in `src/lib/` except the type-based `utils/`, `styles/` and `hooks/`, static and dynamic imports alike (`restrictions/lib-domain-deep-imports`, `restrictions/lib-domain-deep-dynamic-imports`).
 
-`src/lib/utils/cn.ts` re-exports `cn` from the `cn` package for registry items that import it through `aliases.utils`.
+`src/lib/utils/` holds one pure function per file, named after it (`format-two-digits.ts` exports `formatTwoDigits`); lint rejects a second export (`restrictions/multiple-exports-syntax`). `src/lib/utils/cn.ts` re-exports `cn` from the `cn` package for registry items that import it through `aliases.utils`.

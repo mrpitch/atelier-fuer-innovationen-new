@@ -4,7 +4,7 @@ title: Glossary
 description: Canonical definitions for domain terms — the shared vocabulary used by the codebase, docs, and AI agents.
 tags: [glossary, domain, language]
 status: stable
-last_reviewed: 2026-11-20
+last_reviewed: 2026-11-22
 authoritative: true
 ---
 
@@ -32,6 +32,10 @@ _Avoid_: page (for the Wissensstadt types), Artikel
 A document that is written and checked but not yet published.
 _Avoid_: Entwurf, unpublished, hidden
 
+**Sitemap**
+A generated page and `sitemap.xml` file that list every published document in Navigation order, derived from the content graph. Distinct from Navigation, which is the hierarchy itself.
+_Avoid_: site map
+
 ## The Wissensstadt
 
 **Viertel**
@@ -49,6 +53,10 @@ _Avoid_: Profil, fact sheet
 **Zentrum**
 The Stadtplatz at the heart of the Wissensstadt, surrounded by the eight Viertel. It isn't a Viertel.
 _Avoid_: Stadtplatz (as an entity name), Station 0
+
+**Ort**
+A Viertel or the Zentrum together — wherever a Station can stand. Not to be confused with Themen-Ort, a Thema presented as a single place.
+_Avoid_: place, location
 
 **Rundgang**
 A guided walk through the Wissensstadt: an ordered sequence of Stationen with an introduction.
