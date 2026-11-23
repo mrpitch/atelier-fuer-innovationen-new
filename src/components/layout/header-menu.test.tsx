@@ -4,8 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import type { MenuLink } from '@/lib/content'
-import { buildContentGraph } from '@/lib/content'
+import { asFlatMenu, buildContentGraph } from '@/lib/content'
 
 import { HeaderMenu } from './header-menu'
 
@@ -15,10 +14,8 @@ function buildFixtureGraph() {
 	return buildContentGraph(path.join(fixturesDir, 'header-valid'))
 }
 
-function headerMenu(graph: ReturnType<typeof buildFixtureGraph>): readonly MenuLink[] {
-	// menu.ts's resolveMenus guarantees the header Menu resolves flat
-	// (FLAT_MENU_NAMES); the cast just restates that to the type checker.
-	return graph.getMenu('header') as readonly MenuLink[]
+function headerMenu(graph: ReturnType<typeof buildFixtureGraph>) {
+	return asFlatMenu(graph.getMenu('header'))
 }
 
 // The <a> for one Menu entry, so a test can check its aria-current without
