@@ -7,7 +7,10 @@ export const seiteFrontmatterSchema = z.object({
 	description: z.string().min(1),
 	shortTitle: z.string().min(1).optional(),
 	// A Draft (glossary) is written and checked but not yet published: left
-	// out of the Sitemap and sitemap.xml, issue #34.
+	// out of the Sitemap and sitemap.xml unconditionally (issue #34), and, in
+	// a production build or content:check, out of Navigation, Menus and the
+	// build itself too — `next dev` is the one place it still renders
+	// (issue #33, graph.ts's `development` option).
 	draft: z.boolean().default(false),
 })
 

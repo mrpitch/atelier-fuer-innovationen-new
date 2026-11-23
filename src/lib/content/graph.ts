@@ -187,6 +187,17 @@ export interface ContentGraph {
 	getThemenByKapitel(kapitelId: string): readonly Thema[]
 }
 
+export interface ContentGraphOptions {
+	// Next assigns NODE_ENV 'development' only for `next dev`, 'production'
+	// for every other command (`next build` included) — the exact dev/build
+	// split issue #33 wants: in dev a Draft (glossary) renders like any other
+	// Seite, including in Navigation and Menus; by default (every other
+	// caller, content:check included) it's hidden from both, has no page, and
+	// a Menu entry referencing it fails instead of resolving.
+	readonly development?: boolean
+	readonly locales?: readonly string[]
+}
+
 // The one public interface for content (ADR-0002): built from loader output,
 // and able to load any content directory so tests can point it at fixtures.
 // `locales` (issue #36, ADR-0001) is the extra locales configured for
@@ -195,15 +206,23 @@ export interface ContentGraph {
 // non-empty list to exercise this plumbing with a test-only locale.
 export function buildContentGraph(
 	contentDir: string,
-	locales: readonly string[] = [],
+	options: ContentGraphOptions = {},
 ): ContentGraph {
-	const seiten = loadSeiten(contentDir)
+	const { development = false, locales = [] } = options
+
+	// The full set, Draft included, is what meta.json and a Menu file are
+	// reconciled against — a Draft is still a real file on disk, so hiding it
+	// from the exposed graph below is `isVisible`'s job, not loadSeiten's.
+	const allSeiten = loadSeiten(contentDir)
+	const isVisible = (seite: Seite) => development || !seite.draft
+	const seiten = allSeiten.filter(isVisible)
 	const seitenByLocale = localizeAll(locales, seiten, (seite, locale) =>
 		localizeSeite(seite, locale, loadSeiteTranslation(contentDir, seite.id, locale)),
 	)
-	const navigation = buildNavigation(seiten, loadMeta(contentDir))
+
+	const navigation = buildNavigation(allSeiten, loadMeta(contentDir), isVisible)
 	const site = loadSite(contentDir)
-	const menus = resolveMenus(seiten, loadMenus(contentDir))
+	const menus = resolveMenus(allSeiten, loadMenus(contentDir), isVisible)
 	const viertel = orderViertel(loadViertelOrder(contentDir), loadViertelDocuments(contentDir))
 	const viertelByLocale = localizeAll(locales, viertel, (item, locale) =>
 		localizeViertel(item, locale, loadViertelTranslation(contentDir, item.id, locale)),
@@ -276,9 +295,11 @@ export function buildContentGraph(
 			return undefined
 		},
 		navigation: navigation.tree,
+		// Published-only in or out of `next dev`: it reads the full Seiten set
+		// to find Drafts itself, not the dev-aware `seiten`.
 		sitemap: listSitemap({
 			tree: navigation.tree,
-			seiten,
+			seiten: allSeiten,
 			zentrum,
 			viertel,
 			aufsaetze,

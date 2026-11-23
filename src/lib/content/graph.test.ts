@@ -162,6 +162,102 @@ describe('buildContentGraph', () => {
 		})
 	})
 
+	describe('Drafts', () => {
+		it('renders a Draft like any Seite in dev, but hides it (and reparents its children) everywhere else', () => {
+			const dev = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'), {
+				development: true,
+			})
+			const production = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'))
+
+			expect(dev.getSeite('entwurf')).toBeDefined()
+			expect(dev.seiten.map((seite) => seite.id)).toContain('entwurf')
+			expect(dev.navigation.children.map((child) => child.id)).toEqual([
+				'entwurf',
+				'veroeffentlicht',
+			])
+
+			expect(production.getSeite('entwurf')).toBeUndefined()
+			expect(production.seiten.map((seite) => seite.id)).not.toContain('entwurf')
+			expect(production.navigation.children.map((child) => child.id)).toEqual([
+				'entwurf/kind',
+				'veroeffentlicht',
+			])
+		})
+
+		it('omits a Draft ancestor from breadcrumbs in production, but keeps it in dev', () => {
+			const dev = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'), {
+				development: true,
+			})
+			const production = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'))
+
+			expect(dev.getBreadcrumbs('entwurf/kind').map((link) => link.id)).toEqual([
+				'',
+				'entwurf',
+				'entwurf/kind',
+			])
+			expect(production.getBreadcrumbs('entwurf/kind').map((link) => link.id)).toEqual([
+				'',
+				'entwurf/kind',
+			])
+		})
+
+		it('links previous/next across a hidden Draft parent in production, matching the reparented tree', () => {
+			const dev = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'), {
+				development: true,
+			})
+			const production = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'))
+
+			expect(dev.getNext('entwurf')?.id).toBe('veroeffentlicht')
+			expect(dev.getNext('entwurf/kind')).toBeUndefined()
+
+			expect(production.getNext('entwurf/kind')?.id).toBe('veroeffentlicht')
+			expect(production.getPrevious('veroeffentlicht')?.id).toBe('entwurf/kind')
+			expect(production.getPrevious('entwurf/kind')).toBeUndefined()
+		})
+
+		it('fails a Draft with invalid frontmatter the same way any Seite does', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'draft-invalid'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('entwurf', 'index.mdx'))
+				expect(validationError.field).toBe('description')
+				expect(validationError.reason).toMatch(/string/i)
+			}
+		})
+
+		it('still fails a Draft with invalid frontmatter in dev — being unpublished never skips validation', () => {
+			expect(() =>
+				buildContentGraph(path.join(fixturesDir, 'draft-invalid'), { development: true }),
+			).toThrow(ContentValidationError)
+		})
+
+		it('fails a Menu entry referencing a Draft in production, naming the Menu file and the Draft', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'menu-draft'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('menus', 'header.json'))
+				expect(validationError.field).toBe('entwurf')
+				expect(validationError.reason).toContain(path.join('entwurf', 'index.mdx'))
+			}
+		})
+
+		it('resolves the same Menu entry in dev, the one restriction development lifts', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'menu-draft'), {
+				development: true,
+			})
+
+			expect(graph.getMenu('header')).toEqual([{ url: '/entwurf', label: 'Entwurf' }])
+		})
+	})
+
 	describe('site data', () => {
 		it('reads the site name, tagline, base URL and copyright from site.json', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
@@ -630,7 +726,9 @@ describe('buildContentGraph', () => {
 
 	describe('Translations (issue #36)', () => {
 		it("inherits a Viertel's number and ID from the German document, taking Leitsatz and Steckbrief from the translation when present", () => {
-			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
 
 			const german = graph.getViertel('stadt/erste-viertel')
 			const translated = graph.getViertel('stadt/erste-viertel', 'xx')
@@ -648,7 +746,9 @@ describe('buildContentGraph', () => {
 		})
 
 		it('resolves a translated Viertel slug to its prefixed localized URL, and lists it among the localized Viertel', () => {
-			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
 
 			expect(graph.getLocalizedViertel('xx').map((viertel) => viertel.id)).toEqual([
 				'stadt/erste-viertel',
@@ -666,7 +766,9 @@ describe('buildContentGraph', () => {
 		})
 
 		it('falls back to the German document when a locale has no translation', () => {
-			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
 
 			const fallback = graph.getSeite('ohne-uebersetzung', 'xx')
 			expect(fallback?.title).toBe('Ohne Übersetzung')
@@ -676,7 +778,9 @@ describe('buildContentGraph', () => {
 		})
 
 		it('uses a translated slug for a prefixed localized URL, and the translated body', () => {
-			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
 
 			const translated = graph.getSeite('mit-uebersetzung', 'xx')
 			expect(translated?.title).toBe('With translation')
@@ -692,7 +796,9 @@ describe('buildContentGraph', () => {
 		})
 
 		it("uses a translated slug for the root Seite's own prefixed URL, instead of dropping it", () => {
-			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), ['xx'])
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
 
 			const translated = graph.getSeite('', 'xx')
 			expect(translated?.url).toBe('/xx/start')
@@ -710,7 +816,7 @@ describe('buildContentGraph', () => {
 			expect.assertions(4)
 
 			try {
-				buildContentGraph(path.join(fixturesDir, 'translation-invalid-field'), ['xx'])
+				buildContentGraph(path.join(fixturesDir, 'translation-invalid-field'), { locales: ['xx'] })
 			} catch (error) {
 				expect(error).toBeInstanceOf(ContentValidationError)
 				const validationError = error as ContentValidationError
