@@ -12,7 +12,7 @@ export { splitDocument } from './frontmatter'
 export type { ContentGraph, ContentGraphOptions } from './graph'
 export { buildContentGraph, contentGraph } from './graph'
 export type { MenuGroupLink, MenuLink, ResolvedMenu } from './menu'
-export { isGroupedMenu } from './menu'
+export { asFlatMenu, asGroupedMenu, isGroupedMenu } from './menu'
 export { shortTitleOrTitle, siteWordmark } from './presentation'
 export { flattenNavigation } from './sitemap'
 export type {
