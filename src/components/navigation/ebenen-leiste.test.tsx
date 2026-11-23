@@ -58,6 +58,9 @@ describe('EbenenLeiste', () => {
 		)
 
 		expect(html).toContain('Viertel 02 · Zweite')
+		expect(html).toContain('href="/stadt"')
+		expect(html).toContain('href="/stadt/zweite-viertel"')
+		expect(html).toContain('href="/stadt/zweite-viertel/kapitel-2"')
 		expect(html).toContain('Zweites Kapitel')
 		expect(html).toContain('Zweiter Abschnitt')
 		expect(html).toContain('KAPITEL 2 · 2 VON 2')
