@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import type * as React from 'react'
 
-import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
-import { PreviousNext } from '@/components/navigation/previous-next'
+import { EbenenLeiste } from '@/components/navigation/ebenen-leiste'
+import { Illustration } from '@/components/ui/illustration'
 import type { Kapitel } from '@/lib/content'
 import { contentGraph, shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
@@ -23,10 +23,20 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 	const abschnitte = graph.getAbschnitteByKapitel(kapitel.id)
 	const abschnitteCount = t('kapitel.abschnitteCount', { n: abschnitte.length })
 	const themenOrte = graph.getThemenByKapitel(kapitel.id)
+	const ort = graph.getViertel(kapitel.viertelId)
+	if (!ort) throw new Error(`KapitelDetail: unknown Viertel ID: ${kapitel.viertelId}`)
 
 	return (
 		<div data-slot="kapitel-detail" {...props}>
-			<Breadcrumbs items={graph.getBreadcrumbs(kapitel.id)} />
+			<EbenenLeiste
+				ort={ort}
+				illustration={<Illustration id={ort.id} label={ort.title} />}
+				breadcrumbs={graph.getBreadcrumbs(kapitel.id)}
+				// The Viertel count, not graph.kapitel.length: ADR-0003's "Kapitel n =
+				// Viertel n" makes a Kapitel's own number range over every Viertel, not
+				// just the ones that already have a Kapitel.
+				kapitel={{ number: kapitel.number, total: graph.viertel.length }}
+			/>
 			<p>{t('kapitel.number', { n: kapitel.number })}</p>
 			<h1>{kapitel.title}</h1>
 			<Body components={bodyImageComponents(kapitel.id)} />
@@ -57,7 +67,6 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 					</ul>
 				</nav>
 			)}
-			<PreviousNext previous={graph.getPrevious(kapitel.id)} next={graph.getNext(kapitel.id)} />
 		</div>
 	)
 }
