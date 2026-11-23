@@ -55,7 +55,12 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 				>
 					<Header site={graph.site} homeUrl={graph.navigation.url} menu={headerMenu} />
 					{children}
-					<Footer site={graph.site} groups={footerMenu} legalMenu={footerLegalMenu} />
+					<Footer
+						site={graph.site}
+						homeUrl={graph.navigation.url}
+						groups={footerMenu}
+						legalMenu={footerLegalMenu}
+					/>
 				</ThemeProvider>
 			</body>
 		</html>

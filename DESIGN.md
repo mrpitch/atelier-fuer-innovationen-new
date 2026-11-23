@@ -410,3 +410,4 @@ Places where the screens break their own system. They're recorded here, not adop
 - On mobile, the pull quotes on the Startseite and Thema-Seite are set in Schibsted Grotesk 500 18px, which breaks the Source Text Rule.
 - The Thema-Karte uses a raw 12px corner radius instead of the kit's 8px card radius.
 - Input borders are below 3:1 contrast (see Inputs).
+- The desktop header's current area (issue #81) has no dedicated active state in Figma: the screens draw it as the NavigationMenu item's `State=Hover` variant, the same Pappe pill a pointer hover shows. The code gives the current entry a real active state (`aria-current="page"`, `data-active`), which happens to render identically to Hover since both map to `bg-muted`.
