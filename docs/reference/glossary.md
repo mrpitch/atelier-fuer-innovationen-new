@@ -4,7 +4,7 @@ title: Glossary
 description: Canonical definitions for domain terms — the shared vocabulary used by the codebase, docs, and AI agents.
 tags: [glossary, domain, language]
 status: stable
-last_reviewed: 2026-11-22
+last_reviewed: 2026-11-23
 authoritative: true
 ---
 
@@ -17,15 +17,19 @@ The hierarchy of content as it sits in the site: parents, children, siblings and
 _Avoid_: sitemap (for this meaning), menu
 
 **Menu**
-A hand-curated, ordered list of links, such as the header or footer links. It points at content or external addresses and takes titles and addresses from its targets instead of restating them.
+A hand-curated, ordered list of links, such as the header or footer links. It points at content or external addresses and takes titles and addresses from its targets instead of restating them. A Menu may instead hold labelled Menu groups, never a mix of the two.
 _Avoid_: navigation, nav
+
+**Menu group**
+A labelled, ordered set of Menu entries inside a Menu, such as a footer column. A Menu holds either entries or groups, never both.
+_Avoid_: column, section
 
 **Short title**
 An optional shorter name a document carries for places where space is tight: Menus, breadcrumbs, previous/next links. The document owns it; links never rename their target.
 _Avoid_: nav title, menu label
 
 **Seite**
-A plain standalone page outside the Wissensstadt model, such as Start, Idee, Kontakt, Impressum or Datenschutz.
+A plain standalone page outside the Wissensstadt model, such as Start, Idee, Impressum or Datenschutz.
 _Avoid_: page (for the Wissensstadt types), Artikel
 
 **Draft**

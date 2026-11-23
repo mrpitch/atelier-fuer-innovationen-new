@@ -302,6 +302,88 @@ describe('buildContentGraph', () => {
 				expect(validationError.reason).toMatch(/unknown|no matching/i)
 			}
 		})
+
+		it('resolves a grouped Menu to labelled groups of links', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'menu-groups-valid'))
+
+			expect(graph.getMenu('footer')).toEqual([
+				{
+					label: 'Entdecken',
+					links: [
+						{ url: '/mit-kurztitel', label: 'Kurz' },
+						{ url: 'https://extern.example.com', label: 'Extern' },
+					],
+				},
+				{ label: 'Lesen', links: [{ url: '/ohne-kurztitel', label: 'Testseite ohne Kurztitel' }] },
+			])
+		})
+
+		it('fails when a Menu mixes Menu entries and Menu groups', () => {
+			expect.assertions(3)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'menu-groups-mixed'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('menus', 'header.json'))
+				expect(validationError.reason).toMatch(/mix/i)
+			}
+		})
+
+		it('fails when a Menu group is empty', () => {
+			expect.assertions(3)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'menu-groups-empty'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('menus', 'header.json'))
+				expect(validationError.reason).toMatch(/no entries/i)
+			}
+		})
+
+		it('fails when a Menu group entry lists an unknown ID, the same way a flat entry does', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'menu-groups-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('menus', 'header.json'))
+				expect(validationError.field).toBe('nichtvorhanden')
+				expect(validationError.reason).toMatch(/unknown|no matching/i)
+			}
+		})
+
+		it('fails when a Menu group entry references a Draft in production, the same way a flat entry does', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'menu-groups-draft'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('menus', 'header.json'))
+				expect(validationError.field).toBe('entwurf')
+				expect(validationError.reason).toContain(path.join('entwurf', 'index.mdx'))
+			}
+		})
+
+		it('fails when header, which must resolve flat, is grouped instead', () => {
+			expect.assertions(3)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'menu-shape-mismatch'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('menus', 'header.json'))
+				expect(validationError.reason).toMatch(/flat/i)
+			}
+		})
 	})
 
 	describe('Viertel and Zentrum', () => {

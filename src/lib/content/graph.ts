@@ -17,7 +17,7 @@ import {
 	validateBodyImages,
 } from './loader'
 import { parentId, STADT_DIR } from './locations'
-import type { MenuLink } from './menu'
+import type { ResolvedMenu } from './menu'
 import { resolveMenus } from './menu'
 import { buildNavigation } from './navigation'
 import { summarizeRundgang } from './rundgang'
@@ -121,8 +121,9 @@ export interface ContentGraph {
 	readonly site: Site
 	// name is the Menu file's basename (header, footer, …). An unlisted Menu
 	// returns an empty list rather than throwing. An entry's ID may name a
-	// published document of any type.
-	getMenu(name: string): readonly MenuLink[]
+	// published document of any type. A grouped Menu resolves to labelled
+	// groups of links instead of a flat list (glossary: Menu group).
+	getMenu(name: string): ResolvedMenu
 
 	// The Viertel (glossary), ordered and numbered by stadt/meta.json.
 	readonly viertel: readonly Viertel[]

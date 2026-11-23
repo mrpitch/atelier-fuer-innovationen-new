@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import { ThemeProvider } from '@/components/utils/theme-provider'
+import type { MenuGroupLink, MenuLink } from '@/lib/content'
 import { contentGraph, siteWordmark } from '@/lib/content'
 import { heading, mono, sans, serif } from '@/lib/styles/fonts'
 
@@ -22,6 +23,12 @@ export function generateMetadata(): Metadata {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
 	const graph = contentGraph()
+	// menu.ts's resolveMenus guarantees header and footer-legal resolve flat,
+	// footer grouped (content:check fails otherwise); the casts below just
+	// restate that guarantee to the type checker.
+	const headerMenu = graph.getMenu('header') as readonly MenuLink[]
+	const footerMenu = graph.getMenu('footer') as readonly MenuGroupLink[]
+	const footerLegalMenu = graph.getMenu('footer-legal') as readonly MenuLink[]
 
 	return (
 		<html
@@ -46,9 +53,9 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<Header site={graph.site} homeUrl={graph.navigation.url} menu={graph.getMenu('header')} />
+					<Header site={graph.site} homeUrl={graph.navigation.url} menu={headerMenu} />
 					{children}
-					<Footer site={graph.site} menu={graph.getMenu('footer')} />
+					<Footer site={graph.site} groups={footerMenu} legalMenu={footerLegalMenu} />
 				</ThemeProvider>
 			</body>
 		</html>
