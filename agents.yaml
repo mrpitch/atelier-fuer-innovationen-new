@@ -47,8 +47,9 @@ release:
 
 sandbox:
   # Static export: only `next build` catches server features (Server Actions, cookies,
-  # dynamic routes without generateStaticParams), so the sandbox builds too.
-  checkCommand: pnpm check && pnpm build
+  # dynamic routes without generateStaticParams), so the sandbox builds too. links:check
+  # is CI's link check; the sandbox image installs lychee for it.
+  checkCommand: pnpm check && pnpm build && pnpm links:check
 
 docs:
   layout: diataxis

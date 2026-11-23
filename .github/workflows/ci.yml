@@ -33,11 +33,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm build
-      # Internal links only: --offline skips network requests, so an external site being down
-      # doesn't fail an unrelated PR. --root-dir resolves root-relative hrefs (e.g. "/idee")
-      # against the static export's own directory; lychee requires an absolute path for it.
-      - name: Check links
-        uses: lycheeverse/lychee-action@v2
-        with:
-          args: --offline --no-progress --root-dir ${{ github.workspace }}/out 'out/**/*.html'
-          fail: true
+      # The same link check the Sandcastle sandbox runs; see docs/reference/content/content-layer.md#links.
+      - run: scripts/install-lychee.sh "$HOME/.local/bin"
+      - run: pnpm links:check

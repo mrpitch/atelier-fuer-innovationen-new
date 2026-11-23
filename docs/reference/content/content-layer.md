@@ -302,7 +302,7 @@ An area with no published Seite at its folder — real content has none for Bibl
 
 `src/app/sitemap.ts` follows Next's `sitemap.ts` file convention to produce `sitemap.xml` in the build output: every entry of `flattenNavigation(graph.sitemap)` resolved to an absolute URL against `graph.site.baseUrl`. It exports `dynamic = 'force-static'` because a static export can't revalidate a Route Handler at runtime ([Static export](../react/static-export.md)).
 
-`pnpm sitemap:check` (`scripts/sitemap-check.mts`) is the backstop for `graph.sitemap` itself falling out of sync with what actually gets built: it walks every `.html` file `next build`'s static export wrote under `out/` and fails, naming the page, if that page's URL isn't in `out/sitemap.xml`. `pnpm build` runs it automatically, so a content type's page route without a matching sitemap entry fails the build rather than shipping a silently incomplete sitemap.
+`pnpm pages:check` (`scripts/pages-check.mts`) is the backstop for `graph.sitemap` falling out of sync with what actually gets built: it walks every `.html` file `next build`'s static export wrote under `out/` and fails, naming the page, if that page's URL isn't in `out/sitemap.xml`. `pnpm build` runs it automatically, so a content type's page route without a matching sitemap entry fails the build rather than shipping a silently incomplete sitemap. It checks each page's head too (see "Canonical URL and Open Graph tags").
 
 ## Routes and rendering
 
@@ -315,6 +315,8 @@ The optional catch-all `src/app/[[...slug]]/page.tsx` serves every Seite (German
 ## Canonical URL and Open Graph tags
 
 Every route's `generateMetadata` builds its metadata with `documentMetadata(document, siteName, locale?)` (`src/lib/utils/document-metadata.ts`): the canonical URL (`alternates.canonical`) and Open Graph tags (`openGraph.type`, `.title`, `.description`, `.url`, `.siteName`, `.locale`), from the document and `graph.site.name` — never written per page. A localized page passes its locale; every other page is `de_DE`. Both URLs resolve to absolute ones via `metadataBase` (`generateMetadata` in `src/app/layout.tsx`, set from `graph.site.baseUrl`).
+
+`pnpm pages:check` (part of `pnpm build`, see "Sitemap") fails, naming the page, when a built page has no canonical link, a canonical link to another path, a missing `og:title`, `og:description`, `og:url` or `og:site_name`, or an `og:url` that differs from its canonical link. Page routes arrive one content type at a time, and this catches a new route that skips `documentMetadata`.
 
 ## Menus
 
@@ -365,6 +367,8 @@ Content MDX (`src/content/**/*.mdx`) additionally rejects `import` and `export`:
 
 `.lintstagedrc.mjs` runs ESLint and cspell on staged `.mdx`, and `content:check` once per commit when a staged file could affect the content graph: anything under `src/content/` or `src/lib/content/`, or a `meta.json` anywhere — the content, loader code, and the `meta.json`/Menus/site data inputs [About the architecture](../../explanation/about-architecture.md) shows feeding the loader, as later epic sub-issues add them.
 
-## CI
+## Links
 
-`.github/workflows/ci.yml`'s `check` job runs [`lychee`](https://github.com/lycheeverse/lychee) over the built `out/` after `pnpm build`, with `--offline` so only local links are checked (an unrelated external site being down can't fail a PR) and `--base out` so root-relative hrefs resolve against the export's own files.
+`pnpm links:check` runs [`lychee`](https://github.com/lycheeverse/lychee) over the built `out/`, so run it after `pnpm build`. `--offline` checks local links only, so an unrelated external site being down can't fail a PR. `--root-dir` resolves root-relative hrefs (e.g. `/idee`) against the export's own files; lychee requires an absolute path for it.
+
+CI and the Sandcastle sandbox (`sandbox.checkCommand` in `agents.yaml`) both run it, with the lychee version pinned in `scripts/install-lychee.sh`. Locally, install lychee with `brew install lychee`.

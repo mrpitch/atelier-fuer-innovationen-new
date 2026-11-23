@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "pnpm content:images && next build && pnpm sitemap:check",
+		"build": "pnpm content:images && next build && pnpm pages:check",
 		"start": "next start",
 		"lint": "eslint --max-warnings 0",
 		"spellcheck": "cspell --no-progress \"src/content/**/*.mdx\"",
@@ -15,7 +15,8 @@
 		"content:check": "node scripts/content-check.mts",
 		"content:images": "node scripts/content-images.mts",
 		"docs:check": "node scripts/docs-check.mts",
-		"sitemap:check": "node scripts/sitemap-check.mts",
+		"pages:check": "node scripts/pages-check.mts",
+		"links:check": "lychee --offline --no-progress --root-dir \"$PWD/out\" 'out/**/*.html'",
 		"docs:lint": "markdownlint-cli2",
 		"docs:index": "npx tsx \"$HOME/.claude/skills/docs/scripts/generate-index.ts\" docs",
 		"check": "pnpm format:check && pnpm lint && pnpm spellcheck && pnpm typecheck && pnpm test && pnpm content:check && pnpm docs:check && pnpm docs:lint",
