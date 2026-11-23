@@ -100,7 +100,7 @@ Numbers are assigned after Drafts are left out, so a production graph has no gap
 
 - The **Navigation** tree is the Seite folder hierarchy in `meta.json` order, rooted at the start Seite. Only Seiten are in it.
 - **Breadcrumbs** cover every type: Seite ancestors, then type ancestors, the document last. A Kapitel is read inside its Viertel, an Abschnitt inside its Kapitel, a Station inside its Rundgang (Start › Stadt › Viertel › Kapitel › Abschnitt).
-- **Previous/next** walks one sequence per type: Seiten their Navigation siblings; Kapitel in number order; Abschnitte in number order across Kapitel boundaries; Stationen within their own Rundgang. Other types have none.
+- **Previous/next** walks one sequence per type: Seiten their Navigation siblings; Viertel their `stadt/meta.json` number order; Kapitel in number order; Abschnitte in number order across Kapitel boundaries; Stationen within their own Rundgang; Rundgänge and Themen in the order their files are read, since neither folder takes a `meta.json` (issue #82). The Zentrum and every other type have none: a one-document "sequence" never has a previous or a next.
 - A link's label is the target's Short title, else its title. The page's own `<h1>` is always the full title.
 
 ## Drafts

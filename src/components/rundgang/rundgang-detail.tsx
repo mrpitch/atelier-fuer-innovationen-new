@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type * as React from 'react'
 
-import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
+import { Ortsleiste } from '@/components/navigation/ortsleiste'
 import { Illustration } from '@/components/ui/illustration'
 import type { Rundgang } from '@/lib/content'
 import { contentGraph, shortTitleOrTitle } from '@/lib/content'
@@ -23,7 +23,11 @@ async function RundgangDetail({ rundgang, locale, ...props }: RundgangDetailProp
 
 	return (
 		<div data-slot="rundgang-detail" {...props}>
-			<Breadcrumbs items={graph.getBreadcrumbs(rundgang.id)} />
+			<Ortsleiste
+				breadcrumbs={graph.getBreadcrumbs(rundgang.id)}
+				previous={graph.getPrevious(rundgang.id)}
+				next={graph.getNext(rundgang.id)}
+			/>
 			<Illustration id={rundgang.id} label={rundgang.title} />
 			<h1>{rundgang.title}</h1>
 			<p>{t('rundgang.duration', { n: rundgang.durationMinutes })}</p>

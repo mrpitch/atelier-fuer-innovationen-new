@@ -34,6 +34,9 @@ export const de = {
 	'ort.stationenHeading': 'Stationen an diesem Ort',
 	'themen.navigation': 'Die drei Themen',
 	'thema.kapitelHeading': 'Kapitel',
+	'ortsleiste.previous': '← {label}',
+	'ortsleiste.next': '{label} →',
+	'ortsleiste.numberedLabel': '{number} {title}',
 } as const
 
 export type DictionaryKey = keyof typeof de

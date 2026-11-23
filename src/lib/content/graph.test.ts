@@ -1051,10 +1051,23 @@ describe('buildContentGraph', () => {
 				'stadt',
 				'stadt/v-b',
 			])
-			expect(production.getNext('stadt/v-a')).toBeUndefined()
+			expect(production.getNext('stadt/v-a')).toEqual({
+				id: 'stadt/v-c',
+				url: '/stadt/v-c',
+				title: 'Viertel C',
+				number: 2,
+			})
+			expect(dev.getNext('stadt/v-a')?.id).toBe('stadt/v-b')
 			expect(production.getNext('leitthema/k-a/ab-1')?.id).toBe('leitthema/k-a/ab-3')
 			expect(dev.getNext('leitthema/k-a/ab-1')?.id).toBe('leitthema/k-a/ab-2')
 			expect(production.getNext('rundgaenge/r-a/s-1')?.id).toBe('rundgaenge/r-a/s-3')
+		})
+
+		it('skips a Draft Viertel as a previous/next neighbour, leaving the remaining numbers as assigned', () => {
+			expect(production.getNext('stadt/v-a')).toMatchObject({ id: 'stadt/v-c', number: 2 })
+			expect(production.getPrevious('stadt/v-c')).toMatchObject({ id: 'stadt/v-a', number: 1 })
+			expect(dev.getNext('stadt/v-a')).toMatchObject({ id: 'stadt/v-b', number: 2 })
+			expect(dev.getNext('stadt/v-b')).toMatchObject({ id: 'stadt/v-c', number: 3 })
 		})
 
 		it('hides a Draft from resolveUrl', () => {
@@ -1340,9 +1353,10 @@ describe('buildContentGraph', () => {
 		})
 	})
 
-	describe('Breadcrumbs, previous and next for every type (issue #23)', () => {
+	describe('Breadcrumbs, previous and next for every type (issue #23, #82)', () => {
 		const graph = buildContentGraph(path.join(fixturesDir, 'leitthema-valid'))
 		const rundgangGraph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+		const themaGraph = buildContentGraph(path.join(fixturesDir, 'thema-valid'))
 
 		it('walks Start, Stadt-side ancestors and the Kapitel for an Abschnitt', () => {
 			expect(
@@ -1375,8 +1389,52 @@ describe('buildContentGraph', () => {
 		})
 
 		it('returns nothing for a type without a sequence, and for an unknown ID', () => {
-			expect(graph.getNext('stadt/erste-viertel')).toBeUndefined()
+			expect(graph.getNext('stadt/zentrum')).toBeUndefined()
+			expect(graph.getPrevious('stadt/zentrum')).toBeUndefined()
 			expect(graph.getBreadcrumbs('gibt-es-nicht')).toEqual([])
+		})
+
+		it("links Viertel to their neighbours in stadt/meta.json order, each neighbour's number set", () => {
+			expect(graph.getNext('stadt/erste-viertel')).toEqual({
+				id: 'stadt/zweite-viertel',
+				url: '/stadt/zweite-viertel',
+				title: 'Zweites Viertel',
+				number: 2,
+			})
+			expect(graph.getPrevious('stadt/zweite-viertel')).toEqual({
+				id: 'stadt/erste-viertel',
+				url: '/stadt/erste-viertel',
+				title: 'Erstes Viertel',
+				number: 1,
+			})
+			expect(graph.getPrevious('stadt/erste-viertel')).toBeUndefined()
+			expect(graph.getNext('stadt/zweite-viertel')).toBeUndefined()
+		})
+
+		it('links Rundgänge to their neighbours in resolved list order, carrying no number', () => {
+			expect(rundgangGraph.getNext('rundgaenge/besuch-im-zentrum')).toEqual({
+				id: 'rundgaenge/ohne-zentrum',
+				url: '/rundgaenge/ohne-zentrum',
+				title: 'Ohne Zentrum',
+			})
+			expect(rundgangGraph.getPrevious('rundgaenge/ohne-zentrum')?.id).toBe(
+				'rundgaenge/besuch-im-zentrum',
+			)
+			expect(rundgangGraph.getPrevious('rundgaenge/besuch-im-zentrum')).toBeUndefined()
+			expect(rundgangGraph.getNext('rundgaenge/ohne-zentrum')).toBeUndefined()
+		})
+
+		it('links Themen to their neighbours in resolved list order, carrying no number', () => {
+			expect(themaGraph.getNext('themen/ein-themen-ort')).toEqual({
+				id: 'themen/eine-welt-fuer-morgen',
+				url: '/themen/eine-welt-fuer-morgen',
+				title: 'Eine Welt für morgen',
+			})
+			expect(themaGraph.getPrevious('themen/eine-welt-fuer-morgen')?.id).toBe(
+				'themen/ein-themen-ort',
+			)
+			expect(themaGraph.getPrevious('themen/ein-themen-ort')).toBeUndefined()
+			expect(themaGraph.getNext('themen/eine-welt-fuer-morgen')).toBeUndefined()
 		})
 	})
 })

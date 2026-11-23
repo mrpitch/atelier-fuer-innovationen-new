@@ -1,6 +1,6 @@
 import type * as React from 'react'
 
-import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
+import { Ortsleiste } from '@/components/navigation/ortsleiste'
 import { StationenListe } from '@/components/rundgang/stationen-liste'
 import { Illustration } from '@/components/ui/illustration'
 import type { Zentrum } from '@/lib/content'
@@ -20,7 +20,11 @@ async function ZentrumDetail({ zentrum, locale, ...props }: ZentrumDetailProps) 
 
 	return (
 		<div data-slot="zentrum-detail" {...props}>
-			<Breadcrumbs items={graph.getBreadcrumbs(zentrum.id)} />
+			<Ortsleiste
+				breadcrumbs={graph.getBreadcrumbs(zentrum.id)}
+				previous={graph.getPrevious(zentrum.id)}
+				next={graph.getNext(zentrum.id)}
+			/>
 			<Illustration id={zentrum.id} label={zentrum.title} />
 			<h1>{zentrum.title}</h1>
 			<Body components={bodyImageComponents(zentrum.id)} />
