@@ -981,6 +981,13 @@ describe('buildContentGraph', () => {
 			expect(production.getNext('rundgaenge/r-a/s-1')?.id).toBe('rundgaenge/r-a/s-3')
 		})
 
+		it('skips a Draft Viertel as a previous/next neighbour, leaving the remaining numbers as assigned', () => {
+			expect(production.getNext('stadt/v-a')).toMatchObject({ id: 'stadt/v-c', number: 2 })
+			expect(production.getPrevious('stadt/v-c')).toMatchObject({ id: 'stadt/v-a', number: 1 })
+			expect(dev.getNext('stadt/v-a')).toMatchObject({ id: 'stadt/v-b', number: 2 })
+			expect(dev.getNext('stadt/v-b')).toMatchObject({ id: 'stadt/v-c', number: 3 })
+		})
+
 		it('hides a Draft from resolveUrl', () => {
 			expect(production.resolveUrl('/stadt/v-b')).toBeUndefined()
 			expect(production.resolveUrl('/stadt/v-c')?.kind).toBe('viertel')
