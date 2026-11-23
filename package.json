@@ -23,7 +23,7 @@
 		"check": "pnpm format:check && pnpm lint && pnpm spellcheck && pnpm typecheck && pnpm test && pnpm content:check && pnpm docs:check && pnpm docs:lint",
 		"prepare": "husky",
 		"afk": "~/Dev/home/tools/sandcastle/bin/sandcastle-run",
-		"sandcastle:build": "DOCKER_BUILDKIT=1 docker build --build-arg AGENT_UID=$(id -u) --build-arg AGENT_GID=$(id -g) -t sandcastle:atelier-fuer-innovationen-new -f .sandcastle/Dockerfile ."
+		"sandcastle:build": "DOCKER_BUILDKIT=1 docker build --build-arg AGENT_UID=$(id -u) --build-arg AGENT_GID=$(id -g) --build-arg PLAYWRIGHT_VERSION=$(grep -m1 -oE '^  playwright-core@[^:(]+' pnpm-lock.yaml | cut -d@ -f2) -t sandcastle:atelier-fuer-innovationen-new -f .sandcastle/Dockerfile ."
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.9.0",
