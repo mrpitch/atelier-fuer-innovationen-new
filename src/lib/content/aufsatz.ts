@@ -1,19 +1,30 @@
-import type { Aufsatz, AufsatzDocument, Viertel } from './loader'
+import type { Loaded } from './loader'
 import { computeReadingTime } from './reading-time'
 import { resolveReference } from './references'
+import type { Aufsatz, Visibility } from './types'
+import { pathUrl } from './urls'
 
 const VIERTEL_ID_FIELD = 'viertelId'
 
 // Resolves every Aufsatz's Viertel reference and computes its reading time
-// (issue #29). The reference check reuses references.ts's one generic
-// resolver — the same function a later reference field would call against
-// its own target collection, with no resolution code of its own.
+// (issue #29). The reference is checked against every Viertel document,
+// Drafts included, for every Aufsatz — a Draft Aufsatz is still fully
+// validated — and a published Aufsatz naming a Draft Viertel fails (issue
+// #33). The reference check reuses references.ts's one generic resolver.
 export function resolveAufsaetze(
-	documents: readonly AufsatzDocument[],
-	viertel: readonly Viertel[],
+	documents: readonly Loaded<'aufsatz'>[],
+	viertel: readonly Loaded<'viertel'>[],
+	isVisible: Visibility,
 ): Aufsatz[] {
-	return documents.map(({ file, ...document }) => {
-		resolveReference(file, VIERTEL_ID_FIELD, document.viertelId, viertel)
-		return { ...document, readingTimeMinutes: computeReadingTime(document.body) }
-	})
+	return documents
+		.map((document) => {
+			resolveReference(document, VIERTEL_ID_FIELD, document.viertelId, viertel, isVisible)
+			return document
+		})
+		.filter(isVisible)
+		.map(({ file: _file, ...document }) => ({
+			...document,
+			url: pathUrl(document.id),
+			readingTimeMinutes: computeReadingTime(document.body),
+		}))
 }

@@ -17,8 +17,9 @@
 /.next/
 /out/
 
-# generated from src/content by content-images.mts (issue #35) — never hand-authored
-/public/
+# body images copied from src/content by content-images.mts (issue #35) — never hand-authored.
+# Only public/content/ is generated: the rest of public/ is for hand-authored static assets.
+/public/content/
 
 # production
 /build

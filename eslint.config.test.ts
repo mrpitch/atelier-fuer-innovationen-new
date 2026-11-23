@@ -69,7 +69,7 @@ describe('content-graph boundaries', () => {
 			`import { loadSite } from '@/lib/content/loader'\nconsole.log(loadSite)\n`,
 			'src/app/foo.ts',
 		)
-		expect(ruleIds).toContain('restrictions/content-graph-deep-imports')
+		expect(ruleIds).toContain('restrictions/lib-domain-deep-imports')
 	})
 
 	it('fails a dynamic deep import of a file inside src/lib/content, even from inside the module', async () => {
@@ -81,8 +81,44 @@ describe('content-graph boundaries', () => {
 			`const x = import('@/lib/content/loader')\nconsole.log(x)\n`,
 			'src/lib/content/foo.ts',
 		)
-		expect(outside).toContain('restrictions/content-graph-deep-dynamic-imports')
-		expect(inside).toContain('restrictions/content-graph-deep-dynamic-imports')
+		expect(outside).toContain('restrictions/lib-domain-deep-dynamic-imports')
+		expect(inside).toContain('restrictions/lib-domain-deep-dynamic-imports')
+	})
+
+	it('fails a deep import of a file inside any src/lib domain folder, dictionary included', async () => {
+		const dictionary = await ruleIdsFor(
+			`import { t } from '@/lib/dictionary/de'\nconsole.log(t)\n`,
+			'src/app/foo.ts',
+		)
+		const dynamic = await ruleIdsFor(
+			`const x = import('@/lib/dictionary/de')\nconsole.log(x)\n`,
+			'src/app/foo.ts',
+		)
+		const nested = await ruleIdsFor(
+			`import { x } from '@/lib/some-domain/internal/file'\nconsole.log(x)\n`,
+			'src/app/foo.ts',
+		)
+		expect(dictionary).toContain('restrictions/lib-domain-deep-imports')
+		expect(dynamic).toContain('restrictions/lib-domain-deep-dynamic-imports')
+		expect(nested).toContain('restrictions/lib-domain-deep-imports')
+	})
+
+	it('passes importing a type-based src/lib folder file directly, and a domain folder itself', async () => {
+		const utils = await ruleIdsFor(
+			`import { formatTwoDigits } from '@/lib/utils/format-two-digits'\nconsole.log(formatTwoDigits)\n`,
+			'src/app/foo.ts',
+		)
+		const dynamicUtils = await ruleIdsFor(
+			`const x = import('@/lib/utils/format-two-digits')\nconsole.log(x)\n`,
+			'src/app/foo.ts',
+		)
+		const dictionary = await ruleIdsFor(
+			`import { t } from '@/lib/dictionary'\nconsole.log(t)\n`,
+			'src/app/foo.ts',
+		)
+		expect(utils).not.toContain('restrictions/lib-domain-deep-imports')
+		expect(dynamicUtils).not.toContain('restrictions/lib-domain-deep-dynamic-imports')
+		expect(dictionary).not.toContain('restrictions/lib-domain-deep-imports')
 	})
 
 	it('passes importing the content module itself, from outside or inside', async () => {
@@ -90,7 +126,7 @@ describe('content-graph boundaries', () => {
 			`import { buildContentGraph } from '@/lib/content'\nconsole.log(buildContentGraph)\n`,
 			'src/app/foo.ts',
 		)
-		expect(outside).not.toContain('restrictions/content-graph-deep-imports')
+		expect(outside).not.toContain('restrictions/lib-domain-deep-imports')
 	})
 
 	it('fails a literal ADR-0003 URL outside the module, string or template', async () => {

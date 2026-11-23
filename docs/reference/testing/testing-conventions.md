@@ -14,7 +14,7 @@ Vitest is the test runner (`pnpm test` → `vitest run`). `vitest.config.mts` at
 
 ## Test file location
 
-A test file sits next to the code it tests, named `<file>.test.ts`: `src/lib/content/graph.test.ts` tests `src/lib/content/graph.ts`. There is no separate `test/` or `__tests__/` tree.
+A test file sits next to the code it tests, named `<file>.test.ts` (`.test.tsx` for a component): `src/lib/content/graph.test.ts` tests `src/lib/content/graph.ts`, and `src/components/viertel/viertel-teaser-card.test.tsx` tests `viertel-teaser-card.tsx`. Each component gets its own test file, even when another component renders it. There is no separate `test/` or `__tests__/` tree.
 
 ## Fixture content directories
 

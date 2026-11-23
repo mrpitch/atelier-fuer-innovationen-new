@@ -1,31 +1,28 @@
 import '@/lib/styles/globals.css'
 
-import path from 'node:path'
-
 import { cn } from 'cn'
 import type { Metadata } from 'next'
 
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import { ThemeProvider } from '@/components/utils/theme-provider'
-import { buildContentGraph, siteWordmark } from '@/lib/content'
+import { contentGraph, siteWordmark } from '@/lib/content'
 import { heading, mono, sans, serif } from '@/lib/styles/fonts'
 
-// `next dev` is the one caller that previews a Draft (issue #33); every other
-// command, `next build` included, sees the published-only graph.
-const graph = buildContentGraph(path.join(process.cwd(), 'src/content'), {
-	development: process.env.NODE_ENV === 'development',
-})
-
-export const metadata: Metadata = {
-	metadataBase: new URL(graph.site.baseUrl),
-	title: {
-		template: `%s · ${graph.site.name}`,
-		default: siteWordmark(graph.site),
-	},
+export function generateMetadata(): Metadata {
+	const { site } = contentGraph()
+	return {
+		metadataBase: new URL(site.baseUrl),
+		title: {
+			template: `%s · ${site.name}`,
+			default: siteWordmark(site),
+		},
+	}
 }
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
+	const graph = contentGraph()
+
 	return (
 		<html
 			lang="de"

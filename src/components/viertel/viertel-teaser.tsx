@@ -1,6 +1,4 @@
-import path from 'node:path'
-
-import { buildContentGraph } from '@/lib/content'
+import { contentGraph } from '@/lib/content'
 
 import { ViertelTeaserCard } from './viertel-teaser-card'
 
@@ -17,7 +15,7 @@ interface ViertelTeaserProps {
 // field is (body.ts) before the build ever renders this, the same
 // assumption Illustration makes for its own ID lookup.
 function ViertelTeaser({ id }: ViertelTeaserProps) {
-	const graph = buildContentGraph(path.join(process.cwd(), 'src/content'))
+	const graph = contentGraph()
 	const viertel = graph.getViertel(id)
 	if (!viertel) {
 		throw new Error(`ViertelTeaser: unknown Viertel ID: ${id}`)

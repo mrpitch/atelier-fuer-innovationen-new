@@ -1,98 +1,51 @@
-import { ContentValidationError } from './errors'
-import type { Meta, RundgangDocument, Station, StationDocument } from './loader'
-import { shortTitleOrTitle } from './loader'
-import type { NavigationLink } from './navigation'
+import { PARENT_FIELD } from './errors'
+import type { Loaded } from './loader'
+import type { Meta } from './order'
+import { reconcileOrder } from './order'
 import { computeReadingTime } from './reading-time'
-import type { Referenceable } from './references'
-import { resolveReference } from './references'
+import { assertNotDraft, resolveReference } from './references'
+import type { Rundgang, Station, Visibility } from './types'
+import { stationUrl } from './urls'
 
 const ORT_ID_FIELD = 'ortId'
 
 // Orders one Rundgang's Stationen by its own meta.json (issue #32): strict
-// like orderAbschnitte — every listed ID must match an actual Station
-// document, and every actual document must be listed exactly once. A
-// Station's number counts from 0 when the first Station in that order
-// stands at the Zentrum, from 1 otherwise (ADR-0003, glossary) — decided
-// once from the first listed Station's resolved Ort, not per Station.
+// like orderAbschnitte, against every Station, Drafts included. Every
+// Station's Ort reference is resolved against the Viertel and the Zentrum
+// together (`orte`, every document of both) and a published Station naming a
+// Draft Ort fails (issue #33). Then Drafts are left out and the rest
+// numbered: counting from 0 when the first published Station stands at the
+// Zentrum, from 1 otherwise (ADR-0003, glossary) — decided once from the
+// first listed published Station, not per Station. `rundgang` is the
+// resolved Rundgang, undefined while it is a Draft in a production graph;
+// as with Abschnitt, a published Station inside it fails.
 export function orderStationen(
-	rundgang: Pick<RundgangDocument, 'url'>,
+	rundgangDocument: Pick<Loaded<'rundgang'>, 'id' | 'draft'>,
+	rundgang: Pick<Rundgang, 'id' | 'url'> | undefined,
 	meta: Meta,
-	documents: readonly StationDocument[],
-	orte: readonly Referenceable[],
-	zentrumId: string,
+	documents: readonly Loaded<'station'>[],
+	orte: readonly { readonly id: string; readonly draft: boolean }[],
+	zentrumId: string | undefined,
+	isVisible: Visibility,
 ): Station[] {
-	const byId = new Map(documents.map((document) => [document.id, document]))
-	const seen = new Set<string>()
-	const ordered: StationDocument[] = []
-
-	meta.order.forEach((id) => {
-		if (seen.has(id)) {
-			throw new ContentValidationError(meta.file, id, 'is listed more than once')
-		}
-		seen.add(id)
-
-		const document = byId.get(id)
-		if (!document) {
-			throw new ContentValidationError(meta.file, id, 'lists an ID with no matching Station')
-		}
-		ordered.push(document)
-	})
-
-	for (const document of documents) {
-		if (!seen.has(document.id)) {
-			throw new ContentValidationError(meta.file, document.id, 'is missing from the Station order')
-		}
+	const ordered = reconcileOrder(meta, documents, 'Station')
+	for (const document of ordered) {
+		resolveReference(document, ORT_ID_FIELD, document.ortId, orte, isVisible)
+		assertNotDraft(document, PARENT_FIELD, rundgangDocument, isVisible)
 	}
+	if (!rundgang) return []
 
-	const resolvedOrtIds = ordered.map(
-		(document) => resolveReference(document.file, ORT_ID_FIELD, document.ortId, orte).id,
-	)
-	const startsAtZentrum = resolvedOrtIds[0] === zentrumId
-	const offset = startsAtZentrum ? 0 : 1
+	const published = ordered.filter(isVisible)
+	const offset = published[0]?.ortId === zentrumId ? 0 : 1
 
-	return ordered.map(({ file: _file, ...document }, index) => {
+	return published.map(({ file: _file, ...document }, index) => {
 		const number = index + offset
 		return {
 			...document,
-			url: `${rundgang.url}/${number}`,
+			rundgangId: rundgang.id,
+			url: stationUrl(rundgang.url, number),
 			number,
 			readingTimeMinutes: computeReadingTime(document.body),
 		}
 	})
-}
-
-export interface StationNavigation {
-	getPreviousStation(id: string): NavigationLink | undefined
-	getNextStation(id: string): NavigationLink | undefined
-}
-
-function toLink(station: Station): NavigationLink {
-	return { id: station.id, url: station.url, title: shortTitleOrTitle(station) }
-}
-
-// Previous/next within one Rundgang (issue #32): unlike Abschnitt, a
-// Station's neighbours never cross into another Rundgang.
-export function buildStationNavigation(
-	stationenByRundgang: ReadonlyMap<string, readonly Station[]>,
-): StationNavigation {
-	function find(id: string): { sequence: readonly Station[]; index: number } | undefined {
-		for (const sequence of stationenByRundgang.values()) {
-			const index = sequence.findIndex((station) => station.id === id)
-			if (index !== -1) return { sequence, index }
-		}
-		return undefined
-	}
-
-	return {
-		getPreviousStation(id) {
-			const found = find(id)
-			return found && found.index > 0 ? toLink(found.sequence[found.index - 1]) : undefined
-		},
-		getNextStation(id) {
-			const found = find(id)
-			return found && found.index < found.sequence.length - 1
-				? toLink(found.sequence[found.index + 1])
-				: undefined
-		},
-	}
 }

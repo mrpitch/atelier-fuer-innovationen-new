@@ -19,12 +19,14 @@ The site is German-only today ([ADR-0001](../../adr/adr-0001-unprefixed-default-
 ```ts
 export const de = {
 	'navigation.youAreHere': 'Sie sind hier',
-	'navigation.previous': 'Vorherige Seite',
-	'navigation.next': 'Nächste Seite',
+	'navigation.previousLink': 'Vorherige Seite: {title}',
+	'navigation.nextLink': 'Nächste Seite: {title}',
 }
 ```
 
 This is the dictionary every later UI string goes into — a new piece of UI copy gets a new key here, named after the UI area it belongs to (`navigation.*`), not written inline in the component that shows it.
+
+Separators and the glue between values are copy too: `'Kapitel {n}: {title}'`, `'{stationen} · {duration}'`. A component never joins two strings with a literal colon or `·` in its JSX; the key holds the whole phrase and `t` fills the placeholders.
 
 ## Looking up a string
 
@@ -33,16 +35,16 @@ This is the dictionary every later UI string goes into — a new piece of UI cop
 ```tsx
 import { t } from '@/lib/dictionary'
 
-t('navigation.previous') // 'Vorherige Seite'
+t('navigation.previousLink', { title: 'Idee' }) // 'Vorherige Seite: Idee'
 ```
 
 ## Interpolation
 
-A dictionary value can carry `{name}` placeholders; `t`'s second argument fills them in. No current key needs one, but a later key like a reading progress count would:
+A dictionary value can carry `{name}` placeholders; `t`'s second argument fills them in:
 
 ```ts
-// if de.ts held 'reading.progress': 'Station {current} von {total}'
-t('reading.progress', { current: 3, total: 8 }) // 'Station 3 von 8'
+// de.ts holds 'kapitel.numberedTitle': 'Kapitel {n}: {title}'
+t('kapitel.numberedTitle', { n: 3, title: 'Inszenierung' }) // 'Kapitel 3: Inszenierung'
 ```
 
 `src/lib/dictionary/interpolate.ts` does the substitution: a placeholder with no matching param is left in the string as written, rather than throwing or silently dropping it.

@@ -1,56 +1,33 @@
-import path from 'node:path'
-
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { ViertelDetail } from '@/components/viertel/viertel-detail'
-import { buildContentGraph } from '@/lib/content'
-
-const graph = buildContentGraph(path.join(process.cwd(), 'src/content'))
-
-// A Viertel's ID is its URL segment under the Stadt area's document ID
-// (loader.ts's location rule); ADR-0003 keeps that mapping local to this
-// route instead of reusing the file path generically, the way Seite does.
-function idFromViertelSlug(slug: string): string {
-	return `stadt/${slug}`
-}
+import { contentGraph, findDocument, urlSegments } from '@/lib/content'
+import { documentMetadata } from '@/lib/utils/document-metadata'
 
 export function generateStaticParams() {
-	return graph.viertel.map((viertel) => ({ viertel: viertel.id.split('/').at(-1)! }))
+	return contentGraph().viertel.map((viertel) => {
+		const [, slug] = urlSegments(viertel.url)
+		return { viertel: slug }
+	})
 }
 
 export async function generateMetadata({
 	params,
 }: PageProps<'/stadt/[viertel]'>): Promise<Metadata> {
 	const { viertel: slug } = await params
-	const viertel = graph.getViertel(idFromViertelSlug(slug))
-	if (!viertel) notFound()
-
-	return {
-		title: viertel.title,
-		description: viertel.description,
-		alternates: { canonical: viertel.url },
-	}
+	return documentMetadata(
+		findDocument('viertel', 'stadt', slug) ?? notFound(),
+		contentGraph().site.name,
+	)
 }
 
 export default async function ViertelPage({ params }: PageProps<'/stadt/[viertel]'>) {
 	const { viertel: slug } = await params
-	const id = idFromViertelSlug(slug)
-	const viertel = graph.getViertel(id)
-	if (!viertel) notFound()
-
-	const Body = await graph.getBody(id)
-	const kapitel = graph.getKapitelByViertel(viertel.id)
 
 	return (
 		<main>
-			<ViertelDetail
-				viertel={viertel}
-				Body={Body}
-				kapitel={kapitel}
-				aufsaetze={graph.getAufsaetzeByViertel(viertel.id)}
-				stationen={graph.getStationenByOrt(viertel.id)}
-			/>
+			<ViertelDetail viertel={findDocument('viertel', 'stadt', slug) ?? notFound()} />
 		</main>
 	)
 }

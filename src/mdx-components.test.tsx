@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest'
 import { ViertelTeaserCard } from '@/components/viertel/viertel-teaser-card'
 import { buildContentGraph } from '@/lib/content'
 
-import { useMDXComponents } from './mdx-components'
+import { bodyImageComponents, useMDXComponents } from './mdx-components'
 
 const fixturesDir = path.join(
 	path.dirname(fileURLToPath(import.meta.url)),
@@ -54,8 +54,33 @@ describe('useMDXComponents', () => {
 		})
 		const html = renderToStaticMarkup(<Content />)
 
-		expect(html).toContain('data-slot="viertel-teaser"')
+		expect(html).toContain('data-slot="viertel-teaser-card"')
 		expect(html).toContain('Platzhalter-Leitsatz.')
 		expect(html).toContain('href="/stadt/erste-viertel"')
+	})
+})
+
+describe('bodyImageComponents', () => {
+	function render(body: string, documentId: string) {
+		const { default: Content } = evaluateSync(body, { Fragment, jsx, jsxs, useMDXComponents })
+		return renderToStaticMarkup(<Content components={bodyImageComponents(documentId)} />)
+	}
+
+	it('resolves a relative image path against the document folder, under /content/', () => {
+		const html = render('![Alt](./bild.svg)\n', 'stadt/annaeherung')
+
+		expect(html).toContain('src="/content/stadt/annaeherung/bild.svg"')
+		expect(html).toContain('alt="Alt"')
+		expect(html).toContain('data-slot="body-image"')
+	})
+
+	it('resolves a root document image to /content/<file>', () => {
+		expect(render('![Start](./startbild.svg)\n', '')).toContain('src="/content/startbild.svg"')
+	})
+
+	it('passes an absolute src through unchanged', () => {
+		const html = render('![Extern](https://example.com/x.png)\n', 'stadt/annaeherung')
+
+		expect(html).toContain('src="https://example.com/x.png"')
 	})
 })

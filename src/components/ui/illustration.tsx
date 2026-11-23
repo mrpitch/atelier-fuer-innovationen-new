@@ -18,8 +18,8 @@ function Placeholder({ label, ...props }: { label: string } & React.ComponentPro
 	)
 }
 
-// Looked up by the owning document's ID (8 Viertel + Zentrum), so content
-// never names an illustration file (issue #28).
+// Looked up by the owning document's ID (8 Viertel, Zentrum, 3 Themen,
+// 3 Rundgänge), so content never names an illustration file (issue #28).
 const illustrations = {
 	'stadt/annaeherung': Placeholder,
 	'stadt/maerkte-kooperation': Placeholder,
@@ -30,6 +30,11 @@ const illustrations = {
 	'stadt/potenziale': Placeholder,
 	'stadt/fuehrung': Placeholder,
 	'stadt/zentrum': Placeholder,
+	'themen/eine-welt-fuer-morgen': Placeholder,
+	'themen/futursysteme': Placeholder,
+	'themen/netzwerk-der-innovatoren': Placeholder,
+	'rundgaenge/besuch-im-zentrum': Placeholder,
+	'rundgaenge/durch-die-viertel': Placeholder,
 } satisfies Record<string, React.ComponentType<{ label: string } & React.ComponentProps<'svg'>>>
 
 type IllustrationId = keyof typeof illustrations
@@ -39,7 +44,7 @@ interface IllustrationProps extends React.ComponentProps<'svg'> {
 	label: string
 }
 
-// id comes from the content graph (a Viertel's or the Zentrum's own ID), not
+// id comes from the content graph (a Viertel's, the Zentrum's, a Thema's or a Rundgang's own ID), not
 // from a caller-written literal, so it can't be typed as IllustrationId —
 // an unmatched id is a registry gap, not a possible caller mistake to permit
 // silently.

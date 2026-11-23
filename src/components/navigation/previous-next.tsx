@@ -15,15 +15,9 @@ function PreviousNext({ previous, next, ...props }: PreviousNextProps) {
 	return (
 		<nav data-slot="previous-next" {...props}>
 			{previous && (
-				<Link href={previous.url}>
-					{t('navigation.previous')}: {previous.title}
-				</Link>
+				<Link href={previous.url}>{t('navigation.previousLink', { title: previous.title })}</Link>
 			)}
-			{next && (
-				<Link href={next.url}>
-					{t('navigation.next')}: {next.title}
-				</Link>
-			)}
+			{next && <Link href={next.url}>{t('navigation.nextLink', { title: next.title })}</Link>}
 		</nav>
 	)
 }

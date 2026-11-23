@@ -8,16 +8,24 @@ import {
 import { ContentValidationError } from './errors'
 
 describe('validateViertelTeaserReferences', () => {
-	const viertel = [{ id: 'stadt/annaeherung' }, { id: 'stadt/zukunft' }]
+	const viertel = [
+		{ id: 'stadt/annaeherung', draft: false },
+		{ id: 'stadt/zukunft', draft: false },
+		{ id: 'stadt/entwurf', draft: true },
+	]
+	const idee = { file: 'idee/index.mdx', draft: false }
+	function production(document: { readonly draft: boolean }) {
+		return !document.draft
+	}
 
 	it('passes every <ViertelTeaser id> that matches the Viertel list', () => {
 		const body = `Text.\n\n<ViertelTeaser id="stadt/annaeherung" />\n\n<ViertelTeaser id='stadt/zukunft' />`
-		expect(() => validateViertelTeaserReferences('idee/index.mdx', body, viertel)).not.toThrow()
+		expect(() => validateViertelTeaserReferences(idee, body, viertel, production)).not.toThrow()
 	})
 
 	it('ignores prose that merely mentions the component name', () => {
 		const body = 'Der ViertelTeaser zeigt ein Viertel.'
-		expect(() => validateViertelTeaserReferences('idee/index.mdx', body, viertel)).not.toThrow()
+		expect(() => validateViertelTeaserReferences(idee, body, viertel, production)).not.toThrow()
 	})
 
 	it('fails on an unknown ID, naming the file and the ID', () => {
@@ -25,7 +33,7 @@ describe('validateViertelTeaserReferences', () => {
 
 		expect.assertions(4)
 		try {
-			validateViertelTeaserReferences('idee/index.mdx', body, viertel)
+			validateViertelTeaserReferences(idee, body, viertel, production)
 		} catch (error) {
 			expect(error).toBeInstanceOf(ContentValidationError)
 			const validationError = error as ContentValidationError
@@ -33,6 +41,50 @@ describe('validateViertelTeaserReferences', () => {
 			expect(validationError.field).toBe('ViertelTeaser.id')
 			expect(validationError.reason).toMatch(/unknown ID: stadt\/nichtvorhanden/)
 		}
+	})
+})
+
+describe('validateViertelTeaserReferences and Drafts', () => {
+	const viertel = [{ id: 'stadt/entwurf', draft: true }]
+	const body = '<ViertelTeaser id="stadt/entwurf" />'
+
+	it('fails a published body naming a Draft Viertel, naming the body file and the Draft', () => {
+		expect.assertions(3)
+		try {
+			validateViertelTeaserReferences(
+				{ file: 'idee/index.mdx', draft: false },
+				body,
+				viertel,
+				(document) => !document.draft,
+			)
+		} catch (error) {
+			const validationError = error as ContentValidationError
+			expect(validationError.file).toBe('idee/index.mdx')
+			expect(validationError.field).toBe('ViertelTeaser.id')
+			expect(validationError.reason).toContain('stadt/entwurf/index.mdx')
+		}
+	})
+
+	it('allows a Draft body to name a Draft Viertel', () => {
+		expect(() =>
+			validateViertelTeaserReferences(
+				{ file: 'idee/index.mdx', draft: true },
+				body,
+				viertel,
+				(document) => !document.draft,
+			),
+		).not.toThrow()
+	})
+
+	it('allows any body to name a Draft Viertel when Drafts are visible', () => {
+		expect(() =>
+			validateViertelTeaserReferences(
+				{ file: 'idee/index.mdx', draft: false },
+				body,
+				viertel,
+				() => true,
+			),
+		).not.toThrow()
 	})
 })
 

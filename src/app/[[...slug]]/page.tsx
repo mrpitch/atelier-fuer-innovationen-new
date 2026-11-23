@@ -1,16 +1,23 @@
-import path from 'node:path'
-
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { bodyImageComponents } from '@/components/content/body-image'
+import { AbschnittDetail } from '@/components/abschnitt/abschnitt-detail'
+import { AufsatzDetail } from '@/components/aufsatz/aufsatz-detail'
+import { KapitelDetail } from '@/components/kapitel/kapitel-detail'
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
 import { RundgaengeListe } from '@/components/rundgang/rundgaenge-liste'
+import { RundgangDetail } from '@/components/rundgang/rundgang-detail'
+import { StationDetail } from '@/components/rundgang/station-detail'
+import { ThemaDetail } from '@/components/thema/thema-detail'
 import { ThemenListe } from '@/components/thema/themen-liste'
 import { ViertelDetail } from '@/components/viertel/viertel-detail'
 import { ViertelListe } from '@/components/viertel/viertel-liste'
-import { buildContentGraph } from '@/lib/content'
+import { ZentrumDetail } from '@/components/zentrum/zentrum-detail'
+import type { Seite } from '@/lib/content'
+import { contentGraph, urlFromSegments, urlSegments } from '@/lib/content'
+import { documentMetadata } from '@/lib/utils/document-metadata'
+import { bodyImageComponents } from '@/mdx-components'
 
 // The Stadt area's landing Seite (issue #28): the one Seite ID that also
 // lists the Viertel and Zentrum, derived from the content graph.
@@ -23,106 +30,118 @@ const RUNDGAENGE_SEITE_ID = 'rundgaenge'
 // lists the three Themen, derived from the content graph.
 const THEMEN_SEITE_ID = 'themen'
 
-// `next dev` is the one caller that previews a Draft (issue #33); every other
-// command, `next build` included, sees the published-only graph.
-const graph = buildContentGraph(path.join(process.cwd(), 'src/content'), {
-	development: process.env.NODE_ENV === 'development',
-})
-
 // A slug param's segments, joined back into the URL graph.resolveUrl expects
 // (ADR-0001: an optional locale segment is part of that URL, not something
 // this route parses by hand).
-function urlFromSlug(slug: string[] | undefined): string {
-	const segments = slug ?? []
-	return segments.length === 0 ? '/' : `/${segments.join('/')}`
+function resolveSlug(slug: string[] | undefined) {
+	const resolved = contentGraph().resolveUrl(urlFromSegments(slug ?? []))
+	if (!resolved) notFound()
+	return resolved
 }
 
-// The reverse of urlFromSlug, for generateStaticParams: a graph-provided URL
-// (German, or a configured locale's own prefixed one) back into slug
-// segments.
-function slugFromUrl(url: string): string[] {
-	return url.split('/').filter(Boolean)
-}
-
+// This route serves every Seite, German or localized, and every localized
+// document of any other type (issue #36, ADR-0001): a German Viertel,
+// Kapitel, … has its own dedicated route, so the only non-Seite URLs here are
+// the prefixed ones, one per `getLocalizedDocuments(locale)` entry for each
+// configured locale — none in production, so a production build has no
+// prefixed route.
 export function generateStaticParams() {
-	const german = graph.seiten.map((seite) => ({ slug: slugFromUrl(seite.url) }))
-	// Prefixed routes only exist once a locale is configured (issue #36,
-	// ADR-0001) — graph.locales is empty today, so neither of these
-	// contributes anything. A Viertel's own unprefixed German route comes
-	// from its dedicated page (src/app/stadt/[viertel]/page.tsx), not here —
-	// only its localized, prefixed URLs belong to the catch-all.
-	const translatedSeiten = graph.locales.flatMap((locale) =>
-		graph.getLocalizedSeiten(locale).map((seite) => ({ slug: slugFromUrl(seite.url) })),
+	const graph = contentGraph()
+	const german = graph.seiten.map((seite) => ({ slug: urlSegments(seite.url) }))
+	const localized = graph.locales.flatMap((locale) =>
+		graph
+			.getLocalizedDocuments(locale)
+			.map(({ document }) => ({ slug: urlSegments(document.url) })),
 	)
-	const translatedViertel = graph.locales.flatMap((locale) =>
-		graph.getLocalizedViertel(locale).map((viertel) => ({ slug: slugFromUrl(viertel.url) })),
-	)
-	return [...german, ...translatedSeiten, ...translatedViertel]
+	return [...german, ...localized]
 }
 
 export async function generateMetadata({ params }: PageProps<'/[[...slug]]'>): Promise<Metadata> {
 	const { slug } = await params
-	const resolved = graph.resolveUrl(urlFromSlug(slug))
-	if (!resolved) notFound()
-	const document = resolved.kind === 'seite' ? resolved.seite : resolved.viertel
+	const { document, locale } = resolveSlug(slug)
+	return documentMetadata(document, contentGraph().site.name, locale)
+}
 
-	return {
-		title: document.title,
-		description: document.description,
-		alternates: { canonical: document.url },
-		openGraph: {
-			title: document.title,
-			description: document.description,
-			url: document.url,
-			siteName: graph.site.name,
-		},
-	}
+// A Seite's page: its body plus, on the three area landing Seiten, the list
+// of the area's documents. Breadcrumbs and previous/next stay the German
+// Navigation under a locale: only the translatable fields a translation can
+// set change (issue #36).
+async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
+	const graph = contentGraph()
+	const Body = await graph.getBody(seite.id, locale)
+
+	return (
+		<main>
+			<Breadcrumbs items={graph.getBreadcrumbs(seite.id)} />
+			<h1>{seite.title}</h1>
+			<Body components={bodyImageComponents(seite.id)} />
+			{seite.id === STADT_SEITE_ID && (
+				<ViertelListe viertel={graph.viertel} zentrum={graph.zentrum} />
+			)}
+			{seite.id === RUNDGAENGE_SEITE_ID && <RundgaengeListe rundgaenge={graph.rundgaenge} />}
+			{seite.id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
+			<PreviousNext previous={graph.getPrevious(seite.id)} next={graph.getNext(seite.id)} />
+		</main>
+	)
 }
 
 export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
 	const { slug } = await params
-	const resolved = graph.resolveUrl(urlFromSlug(slug))
-	if (!resolved) notFound()
+	const resolved = resolveSlug(slug)
+	const { locale } = resolved
 
-	// A translated page's body is always the German body for now (issue #36
-	// is plumbing, not a shipped translation): no extra locale is configured,
-	// so this never runs in production, and there is no translated MDX to
-	// compile through Next's MDX pipeline yet (graph.getBody only imports the
-	// German file). Breadcrumbs, previous/next and a Viertel's related
-	// Aufsätze/Stationen/Kapitel stay the German Navigation and data for the
-	// same reason — only the fields a translation can set actually change.
-	if (resolved.kind === 'viertel') {
-		const { viertel } = resolved
-		const Body = await graph.getBody(viertel.id)
-
-		return (
-			<main>
-				<ViertelDetail
-					viertel={viertel}
-					Body={Body}
-					kapitel={graph.getKapitelByViertel(viertel.id)}
-					aufsaetze={graph.getAufsaetzeByViertel(viertel.id)}
-					stationen={graph.getStationenByOrt(viertel.id)}
-				/>
-			</main>
-		)
+	switch (resolved.kind) {
+		case 'viertel':
+			return (
+				<main>
+					<ViertelDetail viertel={resolved.document} locale={locale} />
+				</main>
+			)
+		case 'zentrum':
+			return (
+				<main>
+					<ZentrumDetail zentrum={resolved.document} locale={locale} />
+				</main>
+			)
+		case 'aufsatz':
+			return (
+				<main>
+					<AufsatzDetail aufsatz={resolved.document} locale={locale} />
+				</main>
+			)
+		case 'kapitel':
+			return (
+				<main>
+					<KapitelDetail kapitel={resolved.document} locale={locale} />
+				</main>
+			)
+		case 'abschnitt':
+			return (
+				<main>
+					<AbschnittDetail abschnitt={resolved.document} locale={locale} />
+				</main>
+			)
+		case 'thema':
+			return (
+				<main>
+					<ThemaDetail thema={resolved.document} locale={locale} />
+				</main>
+			)
+		case 'rundgang':
+			return (
+				<main>
+					<RundgangDetail rundgang={resolved.document} locale={locale} />
+				</main>
+			)
+		case 'station':
+			return (
+				<main>
+					<StationDetail station={resolved.document} locale={locale} />
+				</main>
+			)
+		case 'seite':
+			return <SeitePage seite={resolved.document} locale={locale} />
 	}
-
-	const { seite } = resolved
-	const id = seite.id
-	const Body = await graph.getBody(id)
-
-	return (
-		<main>
-			<Breadcrumbs items={graph.getBreadcrumbs(id)} />
-			<h1>{seite.title}</h1>
-			<Body components={bodyImageComponents(id)} />
-			{id === STADT_SEITE_ID && <ViertelListe viertel={graph.viertel} zentrum={graph.zentrum} />}
-			{id === RUNDGAENGE_SEITE_ID && <RundgaengeListe rundgaenge={graph.rundgaenge} />}
-			{id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
-			<PreviousNext previous={graph.getPrevious(id)} next={graph.getNext(id)} />
-		</main>
-	)
 }
 
 export const dynamicParams = false

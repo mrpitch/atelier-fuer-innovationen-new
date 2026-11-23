@@ -1,28 +1,24 @@
-import path from 'node:path'
-
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 
-import { StationenListe } from '@/components/rundgang/stationen-liste'
-import { Illustration } from '@/components/viertel/illustration'
-import { buildContentGraph } from '@/lib/content'
+import { ZentrumDetail } from '@/components/zentrum/zentrum-detail'
+import { contentGraph } from '@/lib/content'
+import { documentMetadata } from '@/lib/utils/document-metadata'
 
-const graph = buildContentGraph(path.join(process.cwd(), 'src/content'))
-
-export const metadata: Metadata = {
-	title: graph.zentrum.title,
-	description: graph.zentrum.description,
-	alternates: { canonical: graph.zentrum.url },
+// A production graph has no Zentrum while it is a Draft (issue #33).
+export function generateMetadata(): Metadata {
+	const graph = contentGraph()
+	if (!graph.zentrum) notFound()
+	return documentMetadata(graph.zentrum, graph.site.name)
 }
 
-export default async function ZentrumPage() {
-	const Body = await graph.getBody(graph.zentrum.id)
+export default function ZentrumPage() {
+	const { zentrum } = contentGraph()
+	if (!zentrum) notFound()
 
 	return (
 		<main>
-			<Illustration id={graph.zentrum.id} label={graph.zentrum.title} />
-			<h1>{graph.zentrum.title}</h1>
-			<Body />
-			<StationenListe stationen={graph.getStationenByOrt(graph.zentrum.id)} />
+			<ZentrumDetail zentrum={zentrum} />
 		</main>
 	)
 }

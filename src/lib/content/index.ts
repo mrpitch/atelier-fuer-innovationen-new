@@ -5,15 +5,25 @@
 import 'server-only'
 
 export { isRelativeImagePath, resolveBodyAssetPath } from './body'
+export { findDocument, urlFromSegments, urlSegments } from './document-route'
 export { ContentValidationError } from './errors'
 export type { SplitDocument } from './frontmatter'
 export { splitDocument } from './frontmatter'
 export type { ContentGraph, ContentGraphOptions } from './graph'
-export { buildContentGraph } from './graph'
+export { buildContentGraph, contentGraph } from './graph'
+export type { MenuLink } from './menu'
+export { shortTitleOrTitle, siteWordmark } from './presentation'
+export { flattenNavigation } from './sitemap'
 export type {
 	Abschnitt,
 	Aufsatz,
+	BaseDocument,
+	ContentDocument,
+	ContentKind,
 	Kapitel,
+	NavigationLink,
+	NavigationNode,
+	ResolvedDocument,
 	Rundgang,
 	Seite,
 	Site,
@@ -22,7 +32,4 @@ export type {
 	Viertel,
 	ViertelSteckbrief,
 	Zentrum,
-} from './loader'
-export { shortTitleOrTitle, siteWordmark } from './loader'
-export type { MenuLink } from './menu'
-export type { NavigationLink, NavigationNode } from './navigation'
+} from './types'

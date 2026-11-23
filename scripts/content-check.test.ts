@@ -28,6 +28,20 @@ describe('content:check', () => {
 		}
 	})
 
+	it('exits non-zero when a published document references a Draft, naming the referring file and the Draft', () => {
+		expect.assertions(4)
+
+		try {
+			runContentCheck(path.join(fixturesDir, 'draft-ref-aufsatz'))
+		} catch (error) {
+			const execError = error as NodeJS.ErrnoException & { status: number; stderr: string }
+			expect(execError.status).not.toBe(0)
+			expect(execError.stderr).toContain(path.join('aufsaetze', 'publiziert', 'index.mdx'))
+			expect(execError.stderr).toContain('viertelId')
+			expect(execError.stderr).toContain(path.join('stadt', 'entwurf', 'index.mdx'))
+		}
+	})
+
 	it('exits zero on the valid fixture', () => {
 		expect(() => runContentCheck(path.join(fixturesDir, 'valid'))).not.toThrow()
 	})

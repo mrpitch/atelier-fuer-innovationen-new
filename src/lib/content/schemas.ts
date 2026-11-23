@@ -1,23 +1,29 @@
 import { z } from 'zod'
 
-// The first content type (ADR-0002). Each type gets its own schema here as the
-// content layer grows.
-export const seiteFrontmatterSchema = z.object({
+// Every content type's frontmatter starts from these four fields (ADR-0002),
+// so a Draft (glossary) can be set on any type (issue #33): written and
+// checked but not yet published. A production build or content:check leaves a
+// Draft out of every list, count, Menu, the Sitemap and the build itself;
+// `next dev` is the one place it still renders (graph.ts's `development`
+// option).
+const baseShape = {
 	title: z.string().min(1),
 	description: z.string().min(1),
 	shortTitle: z.string().min(1).optional(),
-	// A Draft (glossary) is written and checked but not yet published: left
-	// out of the Sitemap and sitemap.xml unconditionally (issue #34), and, in
-	// a production build or content:check, out of Navigation, Menus and the
-	// build itself too — `next dev` is the one place it still renders
-	// (issue #33, graph.ts's `development` option).
 	draft: z.boolean().default(false),
-})
+}
+
+// The first content type (ADR-0002). Each type gets its own schema here as the
+// content layer grows.
+export const seiteFrontmatterSchema = z.object(baseShape)
 
 export type SeiteFrontmatter = z.infer<typeof seiteFrontmatterSchema>
 
 // meta.json holds only an ordered list of child IDs (issue #26) — nothing else,
-// so the schema is the list itself, not a wrapping object.
+// so the schema is the list itself, not a wrapping object. The same schema
+// reads every order file: a folder's Seite order, the Viertel order
+// (stadt/meta.json), a Kapitel's Abschnitt order and a Rundgang's Station
+// order.
 export const metaSchema = z.array(z.string().min(1))
 
 // Site-wide facts (issue #27): one data file, read by the header, footer and
@@ -33,7 +39,8 @@ export type Site = z.infer<typeof siteSchema>
 
 // A Menu entry (glossary: Menu) is either a content reference, whose label
 // comes from the target, or an external link with its own label — a Menu
-// never restates a content entry's label (issue #27).
+// never restates a content entry's label (issue #27). A content entry may
+// name any content type's document.
 const menuContentEntrySchema = z.strictObject({ id: z.string().min(1) })
 const menuExternalEntrySchema = z.strictObject({ url: z.url(), label: z.string().min(1) })
 export const menuEntrySchema = z.union([menuContentEntrySchema, menuExternalEntrySchema])
@@ -53,13 +60,11 @@ export const viertelSteckbriefSchema = z.object({
 
 export type ViertelSteckbrief = z.infer<typeof viertelSteckbriefSchema>
 
-// A Viertel's number comes from its position in the Viertel order file
+// A Viertel's number comes from its position in stadt/meta.json
 // (loader.ts), never from frontmatter — there is deliberately no `number`
 // field here, so one in a document's frontmatter is parsed and dropped.
 export const viertelFrontmatterSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	shortTitle: z.string().min(1).optional(),
+	...baseShape,
 	leitsatz: z.string().min(1),
 	steckbrief: viertelSteckbriefSchema,
 })
@@ -68,20 +73,9 @@ export type ViertelFrontmatter = z.infer<typeof viertelFrontmatterSchema>
 
 // The Zentrum isn't a Viertel (glossary) and has no Leitsatz, Steckbrief or
 // number — its frontmatter is the same shape as a Seite's.
-export const zentrumFrontmatterSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	shortTitle: z.string().min(1).optional(),
-})
+export const zentrumFrontmatterSchema = z.object(baseShape)
 
 export type ZentrumFrontmatter = z.infer<typeof zentrumFrontmatterSchema>
-
-// The Viertel order file (loader.ts) holds only an ordered list of Viertel
-// IDs — the same shape as meta.json, but its own schema since it is a
-// separate mechanism (issue #28): meta.json orders a folder's actual
-// children for Navigation, while this file numbers the Viertel only, and
-// never includes the Zentrum.
-export const viertelOrderSchema = z.array(z.string().min(1))
 
 // An Aufsatz (glossary) belongs to one Viertel, named by reference (issue
 // #29): `viertelId` holds another document's ID, checked against the actual
@@ -89,9 +83,7 @@ export const viertelOrderSchema = z.array(z.string().min(1))
 // graph. The `...Id` suffix also keeps the value out of the spell check
 // (cspell.json's frontmatter-identifier pattern).
 export const aufsatzFrontmatterSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	shortTitle: z.string().min(1).optional(),
+	...baseShape,
 	viertelId: z.string().min(1),
 })
 
@@ -101,9 +93,7 @@ export type AufsatzFrontmatter = z.infer<typeof aufsatzFrontmatterSchema>
 // same reference shape as Aufsatz's viertelId. Its number and URL come from
 // that Viertel (kapitel.ts), never from frontmatter.
 export const kapitelFrontmatterSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	shortTitle: z.string().min(1).optional(),
+	...baseShape,
 	viertelId: z.string().min(1),
 })
 
@@ -114,9 +104,7 @@ export type KapitelFrontmatter = z.infer<typeof kapitelFrontmatterSchema>
 // one Kapitel it branches off from, checked against the actual Kapitel by
 // `references.ts`, not here — the same split Aufsatz's `viertelId` makes.
 export const themaFrontmatterSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	shortTitle: z.string().min(1).optional(),
+	...baseShape,
 	kapitelId: z.string().min(1).optional(),
 })
 
@@ -125,11 +113,7 @@ export type ThemaFrontmatter = z.infer<typeof themaFrontmatterSchema>
 // An Abschnitt (glossary) belongs to one Kapitel by its folder location, not
 // by reference. Its position, number and URL come from the Kapitel's own
 // meta.json order (abschnitt.ts), never from frontmatter.
-export const abschnittFrontmatterSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	shortTitle: z.string().min(1).optional(),
-})
+export const abschnittFrontmatterSchema = z.object(baseShape)
 
 export type AbschnittFrontmatter = z.infer<typeof abschnittFrontmatterSchema>
 
@@ -137,11 +121,7 @@ export type AbschnittFrontmatter = z.infer<typeof abschnittFrontmatterSchema>
 // introduction — its body. Its Stationen sit in its own folder (issue #32),
 // ordered by their own meta.json; nothing here orders them, the same split
 // Kapitel/Abschnitt makes.
-export const rundgangFrontmatterSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	shortTitle: z.string().min(1).optional(),
-})
+export const rundgangFrontmatterSchema = z.object(baseShape)
 
 export type RundgangFrontmatter = z.infer<typeof rundgangFrontmatterSchema>
 
@@ -150,29 +130,30 @@ export type RundgangFrontmatter = z.infer<typeof rundgangFrontmatterSchema>
 // reference shape as Aufsatz's and Kapitel's `viertelId`, except its target
 // collection is the Viertel and the Zentrum together.
 export const stationFrontmatterSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	shortTitle: z.string().min(1).optional(),
+	...baseShape,
 	ortId: z.string().min(1),
 })
 
 export type StationFrontmatter = z.infer<typeof stationFrontmatterSchema>
 
 // A translation file's frontmatter (issue #36, ADR-0001): every field is
-// optional, since a translation need not repeat one it doesn't change —
-// title, Short title, description and slug for any type, plus Viertel's own
-// Leitsatz and Steckbrief. This schema only validates each field's shape;
-// which of these keys a given content type actually allows is the loader's
-// job (loader.ts's translatableKeys, passed to loadTranslation), so a Seite
-// translation setting `leitsatz` still fails even though this schema alone
-// would accept it.
+// optional, since a translation need not repeat one it doesn't change.
+// Title, Short title, description and slug are translatable on every type;
+// a Viertel's translation schema adds its own Leitsatz and Steckbrief. The
+// loader allows exactly the keys of the type's translation schema — any
+// other key (draft, a reference, …) is a validation error naming the file
+// and the key, never silently ignored.
 export const translationFrontmatterSchema = z.object({
 	title: z.string().min(1).optional(),
 	shortTitle: z.string().min(1).optional(),
 	description: z.string().min(1).optional(),
 	slug: z.string().min(1).optional(),
+})
+
+export const viertelTranslationFrontmatterSchema = translationFrontmatterSchema.extend({
 	leitsatz: z.string().min(1).optional(),
 	steckbrief: viertelSteckbriefSchema.optional(),
 })
 
-export type TranslationFrontmatter = z.infer<typeof translationFrontmatterSchema>
+// The widest shape: a non-Viertel translation never carries the last two.
+export type TranslationFrontmatter = z.infer<typeof viertelTranslationFrontmatterSchema>

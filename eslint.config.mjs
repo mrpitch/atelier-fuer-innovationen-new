@@ -65,8 +65,8 @@ const restrictions = {
 		'content-mdx-import-export': builtinRules.get('no-restricted-syntax'),
 		'content-fs-imports': builtinRules.get('no-restricted-imports'),
 		'content-module-imports': builtinRules.get('no-restricted-imports'),
-		'content-graph-deep-imports': builtinRules.get('no-restricted-imports'),
-		'content-graph-deep-dynamic-imports': builtinRules.get('no-restricted-syntax'),
+		'lib-domain-deep-imports': builtinRules.get('no-restricted-imports'),
+		'lib-domain-deep-dynamic-imports': builtinRules.get('no-restricted-syntax'),
 		'content-dynamic-imports': builtinRules.get('no-restricted-syntax'),
 		'content-url-literals': builtinRules.get('no-restricted-syntax'),
 		'ui-layer-imports': builtinRules.get('no-restricted-imports'),
@@ -139,8 +139,8 @@ const CONTENT_MODULE_MESSAGE =
 	'Only src/lib/content/ reads content, static or dynamic import alike. Import @/lib/content instead. See docs/explanation/about-architecture.md.'
 const CONTENT_FS_MESSAGE =
 	'File system access belongs in src/lib/content/, the one module that reads content. See docs/explanation/about-architecture.md.'
-const CONTENT_DEEP_IMPORT_MESSAGE =
-	'Import from @/lib/content, never a file inside it. See docs/reference/global/folder-structure.md.'
+const LIB_DOMAIN_DEEP_IMPORT_MESSAGE =
+	"Import from the domain folder's public API, @/lib/<domain>, never a file inside it. See docs/reference/global/folder-structure.md."
 const CONTENT_URL_MESSAGE =
 	"URLs come from the content graph's per-type rule (ADR-0003), not a hand-built path. Ask @/lib/content for the link instead."
 const CONTENT_HREF_MESSAGE =
@@ -312,23 +312,31 @@ const eslintConfig = defineConfig([
 			],
 
 			// Folder structure (folder-structure.md): a domain folder's index.ts is its public
-			// API; consumers import `@/lib/content`, never a file inside it. A separate rule name
-			// from the deep *static* import below (not just a second selector on it), even though
-			// both report the same message: nothing inside src/lib/content legitimately needs a
-			// deep import of itself, static or dynamic, so unlike `content-dynamic-imports` this
-			// one has no `src/lib/content/**` override to protect from accidentally disabling.
-			'restrictions/content-graph-deep-dynamic-imports': [
+			// API; consumers import `@/lib/<domain>`, never a file inside it. Every folder in
+			// src/lib/ is a domain folder except the type-based ones (utils/, styles/, hooks/),
+			// whose files are imported directly. A separate rule name from the deep *static*
+			// import below (not just a second selector on it), even though both report the same
+			// message: nothing inside a domain folder legitimately needs a deep import of itself,
+			// static or dynamic, so unlike `content-dynamic-imports` this one has no override to
+			// protect from accidentally disabling.
+			'restrictions/lib-domain-deep-dynamic-imports': [
 				'error',
 				{
-					selector: 'ImportExpression[source.value=/^@\\/lib\\/content\\//]',
-					message: CONTENT_DEEP_IMPORT_MESSAGE,
+					selector:
+						'ImportExpression[source.value=/^@\\x2flib\\x2f(?!(?:utils|styles|hooks)\\x2f)[^\\x2f]+\\x2f/]',
+					message: LIB_DOMAIN_DEEP_IMPORT_MESSAGE,
 				},
 			],
 
-			'restrictions/content-graph-deep-imports': [
+			'restrictions/lib-domain-deep-imports': [
 				'error',
 				{
-					patterns: [{ group: ['@/lib/content/*'], message: CONTENT_DEEP_IMPORT_MESSAGE }],
+					patterns: [
+						{
+							regex: '^@/lib/(?!(?:utils|styles|hooks)/)[^/]+/',
+							message: LIB_DOMAIN_DEEP_IMPORT_MESSAGE,
+						},
+					],
 				},
 			],
 
@@ -379,8 +387,9 @@ const eslintConfig = defineConfig([
 	{
 		// Body images (content-layer.md, issue #35): a body image's dimensions
 		// are unknown and optimization is off anyway (static export), so this
-		// is the one place a plain <img> is correct instead of next/image.
-		files: ['src/components/content/body-image.tsx'],
+		// is the one place a plain <img> is correct instead of next/image
+		// (bodyImageComponents, next to the MDX component map).
+		files: ['src/mdx-components.tsx'],
 		rules: { '@next/next/no-img-element': 'off' },
 	},
 	{

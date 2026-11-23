@@ -1,37 +1,45 @@
-import { ContentValidationError } from './errors'
-import type { Viertel, ViertelDocument, ViertelOrder } from './loader'
+import path from 'node:path'
 
-// A Viertel's number is its 1-based position in the Viertel order file, and
-// never comes from frontmatter (issue #28). Strict like meta.json's
-// orderChildren (navigation.ts): every listed ID must match an actual
-// Viertel document, and every actual Viertel document must be listed
-// exactly once.
+import { ContentValidationError, ZENTRUM_FIELD } from './errors'
+import type { Loaded } from './loader'
+import { STADT_DIR } from './locations'
+import type { Meta } from './order'
+import { reconcileOrder } from './order'
+import type { Viertel, Visibility, Zentrum } from './types'
+import { pathUrl } from './urls'
+
+// A Viertel's number is its 1-based position in stadt/meta.json (issue #28),
+// and never comes from frontmatter. The order is reconciled strictly against
+// every Viertel document, Drafts included; only then are Drafts left out
+// (issue #33), so the numbers of the published Viertel run 1..n without
+// gaps in production. A Draft Viertel shows up, numbered in place, only in
+// development.
 export function orderViertel(
-	order: ViertelOrder,
-	documents: readonly ViertelDocument[],
+	meta: Meta,
+	documents: readonly Loaded<'viertel'>[],
+	isVisible: Visibility,
 ): Viertel[] {
-	const byId = new Map(documents.map((document) => [document.id, document]))
-	const seen = new Set<string>()
-	const ordered: Viertel[] = []
+	return reconcileOrder(meta, documents, 'Viertel')
+		.filter(isVisible)
+		.map(({ file: _file, ...document }, index) => ({
+			...document,
+			url: pathUrl(document.id),
+			number: index + 1,
+		}))
+}
 
-	order.order.forEach((id, index) => {
-		if (seen.has(id)) {
-			throw new ContentValidationError(order.file, id, 'is listed more than once')
-		}
-		seen.add(id)
-
-		const document = byId.get(id)
-		if (!document) {
-			throw new ContentValidationError(order.file, id, 'lists an ID with no matching Viertel')
-		}
-		ordered.push({ ...document, number: index + 1 })
-	})
-
-	for (const document of documents) {
-		if (!seen.has(document.id)) {
-			throw new ContentValidationError(order.file, document.id, 'is missing from the Viertel order')
-		}
+// The Zentrum (issue #28): its own type, exactly one document at the
+// location rule — missing is an error — or none exposed in a production
+// graph while it is a Draft.
+export function resolveZentrum(
+	documents: readonly Loaded<'zentrum'>[],
+	isVisible: Visibility,
+): Zentrum | undefined {
+	if (documents.length === 0) {
+		const file = path.join(STADT_DIR, 'zentrum', 'index.mdx')
+		throw new ContentValidationError(file, ZENTRUM_FIELD, 'file not found')
 	}
-
-	return ordered
+	return documents
+		.filter(isVisible)
+		.map(({ file: _file, ...document }) => ({ ...document, url: pathUrl(document.id) }))[0]
 }

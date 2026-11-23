@@ -30,12 +30,13 @@ function runContentImages(contentDir: string, publicDir: string) {
 }
 
 describe('content:images', () => {
-	it('copies every body image into the given public directory', () => {
+	it('copies every body image into public/content/ of the given public directory', () => {
 		const publicDir = makeTempDir()
 
 		runContentImages(path.join(fixturesDir, 'body-valid'), publicDir)
 
-		expect(fs.existsSync(path.join(publicDir, 'foto.svg'))).toBe(true)
+		expect(fs.existsSync(path.join(publicDir, 'content', 'foto.svg'))).toBe(true)
+		expect(fs.existsSync(path.join(publicDir, 'foto.svg'))).toBe(false)
 	})
 
 	it('exits non-zero on a missing body image, naming the file and the path', () => {
@@ -52,8 +53,9 @@ describe('content:images', () => {
 		}
 	})
 
-	it('exits zero against the real content directory', () => {
+	it('exits zero against the real content directory and copies the start image', () => {
 		const publicDir = makeTempDir()
 		expect(() => runContentImages(path.join(repoRoot, 'src/content'), publicDir)).not.toThrow()
+		expect(fs.existsSync(path.join(publicDir, 'content', 'startbild.svg'))).toBe(true)
 	})
 })

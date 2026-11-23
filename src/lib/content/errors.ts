@@ -20,10 +20,11 @@ export const MENU_FIELD = '(menu)'
 // own (issue #28).
 export const ZENTRUM_FIELD = '(zentrum)'
 
-// The field name when the Viertel order file's problem isn't tied to one
-// listed ID: invalid JSON, or a schema issue with no path of its own. A
-// listed ID with no matching Viertel, or a Viertel missing from the list,
-// instead names that ID directly, the same way meta.json does (issue #28).
+// The field name when the Viertel order file's (stadt/meta.json) problem
+// isn't tied to one listed ID: the file is missing, invalid JSON, or a schema
+// issue with no path of its own. A listed ID with no matching Viertel, or a
+// Viertel missing from the list, instead names that ID directly, the same way
+// every other meta.json does (issue #28).
 export const VIERTEL_ORDER_FIELD = '(viertel-order)'
 
 // The field name when a body's problem isn't a frontmatter key at all: a
@@ -46,6 +47,17 @@ export const ABSCHNITT_ORDER_FIELD = '(abschnitt-order)'
 // Station, or a Station missing from the list, instead names that ID
 // directly, the same way the Abschnitt order file does.
 export const STATION_ORDER_FIELD = '(station-order)'
+
+// The field name when a translation file's problem isn't tied to one
+// frontmatter key: it sits next to no document of the configured locale's
+// own type (issue #36).
+export const TRANSLATION_FIELD = '(translation)'
+
+// The field name when a published document sits inside a Draft that its URL
+// depends on (a published Abschnitt in a Draft Kapitel, a published Station
+// in a Draft Rundgang): no frontmatter key carries that relationship, since a
+// document belongs to its parent by folder location (issue #33).
+export const PARENT_FIELD = '(parent)'
 
 export class ContentValidationError extends Error {
 	readonly file: string

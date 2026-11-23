@@ -20,8 +20,10 @@ function RundgaengeListe({ rundgaenge, ...props }: RundgaengeListeProps) {
 					<li key={rundgang.id}>
 						<Link href={rundgang.url}>{shortTitleOrTitle(rundgang)}</Link>
 						<p>
-							{t('rundgang.stationenCount', { n: rundgang.stationenCount })} ·{' '}
-							{t('rundgang.duration', { n: rundgang.durationMinutes })}
+							{t('rundgang.summary', {
+								stationen: t('rundgang.stationenCount', { n: rundgang.stationenCount }),
+								duration: t('rundgang.duration', { n: rundgang.durationMinutes }),
+							})}
 						</p>
 					</li>
 				))}

@@ -37,9 +37,11 @@ Keep handlers short; move logic into a helper in `src/lib/utils/` when it grows.
 
 The site is a static export, so Server Components run once, at build time: [Static export](./static-export.md).
 
-| Component kind          | Use for                                                           | Rule                                                     |
-| ----------------------- | ----------------------------------------------------------------- | -------------------------------------------------------- |
-| Server (default)        | Pages, layouts, everything that reads content                     | May import build-time modules such as the content loader |
-| Client (`'use client'`) | Interaction: theme switching, menus, reading state in the browser | Receives data as props                                   |
+| Component kind          | Use for                                                           | Rule                                                                                     |
+| ----------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Server (default)        | Pages, layouts, everything that reads content                     | May import build-time modules such as the content loader                                 |
+| Client (`'use client'`) | Interaction: theme switching, menus, reading state in the browser | Receives data as props. Never imports a module that reads files or other build-time APIs |
+
+Importing a domain folder under `src/lib/` goes through its public API, `@/lib/<domain>`, never a file inside it. Lint enforces this ([Folder structure](../global/folder-structure.md#srclib-type-based-or-domain-based)). Lint also rejects `fs` and `@/content` imports anywhere in `src/` outside `src/lib/content/`.
 
 Put `'use client'` on the smallest component that needs interaction, so the rest of the tree stays static HTML.

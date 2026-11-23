@@ -3,6 +3,7 @@ import type * as React from 'react'
 
 import type { Viertel } from '@/lib/content'
 import { shortTitleOrTitle } from '@/lib/content'
+import { formatTwoDigits } from '@/lib/utils/format-two-digits'
 
 interface ViertelTeaserCardProps extends React.ComponentProps<'article'> {
 	viertel: Viertel
@@ -14,9 +15,9 @@ interface ViertelTeaserCardProps extends React.ComponentProps<'article'> {
 // content directory.
 function ViertelTeaserCard({ viertel, ...props }: ViertelTeaserCardProps) {
 	return (
-		<article data-slot="viertel-teaser" {...props}>
+		<article data-slot="viertel-teaser-card" {...props}>
 			<Link href={viertel.url}>
-				<span>{String(viertel.number).padStart(2, '0')}</span>
+				<span>{formatTwoDigits(viertel.number)}</span>
 				<h3>{shortTitleOrTitle(viertel)}</h3>
 			</Link>
 			<p>{viertel.leitsatz}</p>

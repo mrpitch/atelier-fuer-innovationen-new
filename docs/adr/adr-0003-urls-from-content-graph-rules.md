@@ -36,7 +36,7 @@ Files sit where they belong in the domain: Kapitel under their Leitthema, Abschn
 - Good: URLs match the Figma navigation model ("Zusammenführung") while each document lives once, next to the things it belongs to.
 - Good: Links, Menus, the sitemap and metadata all ask the graph for a URL; no component builds one by hand.
 - Bad: The URL can't be read off the file path; you look it up in the graph's rule for that type.
-- Bad: Numbered URLs depend on position in `meta.json`. Reordering Viertel, Kapitel content or Stationen changes published URLs, which is accepted because that order is historical.
+- Bad: Numbered URLs depend on position in `meta.json`. Reordering Viertel, Kapitel content or Stationen changes published URLs, which is accepted because that order is historical. So does publishing a Draft that sits before them in `meta.json`: numbers count only published documents, so a production build has no gaps.
 
 ## Considered Options
 

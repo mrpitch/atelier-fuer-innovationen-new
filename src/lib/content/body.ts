@@ -1,7 +1,8 @@
 import path from 'node:path'
 
-import type { Referenceable } from './references'
+import type { Referenceable, Referrer } from './references'
 import { resolveReference } from './references'
+import type { Visibility } from './types'
 
 // Every `<ViertelTeaser id="...">` usage in a body (issue #35, the first
 // content-referencing component): a plain tag/attribute scan, since content
@@ -19,17 +20,20 @@ function extractComponentReferences(body: string, component: string, prop: strin
 	return ids
 }
 
-// Every `<ViertelTeaser id="...">` in a body, checked against the resolved
-// Viertel list the same way a frontmatter reference field is (references.ts)
-// — reusing resolveReference as-is, the one generic resolution mechanism
-// (content-layer.md), rather than a second ID-checking code path.
+// Every `<ViertelTeaser id="...">` in a body, checked against the Viertel
+// list the same way a frontmatter reference field is (references.ts) —
+// reusing resolveReference as-is, the one generic resolution mechanism
+// (content-layer.md), rather than a second ID-checking code path. A body of
+// a published document naming a Draft Viertel fails like any other
+// reference to a Draft (issue #33).
 export function validateViertelTeaserReferences(
-	file: string,
+	referrer: Referrer,
 	body: string,
 	viertel: readonly Referenceable[],
+	isVisible: Visibility,
 ): void {
 	for (const id of extractComponentReferences(body, 'ViertelTeaser', 'id')) {
-		resolveReference(file, 'ViertelTeaser.id', id, viertel)
+		resolveReference(referrer, 'ViertelTeaser.id', id, viertel, isVisible)
 	}
 }
 
