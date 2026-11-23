@@ -139,6 +139,25 @@ describe('buildContentGraph', () => {
 				{ id: '', url: '/', title: 'Start' },
 				{ id: 'entwurf/kind', url: '/entwurf/kind', title: 'Kind' },
 				{ id: 'veroeffentlicht', url: '/veroeffentlicht', title: 'Veröffentlicht' },
+				// The fixture's mandatory Zentrum (#28): no Viertel here, so this is
+				// the whole Stadt block.
+				{ id: 'stadt/zentrum', url: '/stadt/zentrum', title: 'Zentrum' },
+			])
+		})
+
+		it('lists every content type in its own area block, in the order each type documents', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'sitemap-all-types'))
+
+			expect(graph.sitemap.map((item) => item.id)).toEqual([
+				'',
+				'stadt/zentrum',
+				'stadt/ein-viertel',
+				'bibliothek/aufsaetze/ein-aufsatz',
+				'leitthema/ein-kapitel',
+				'leitthema/ein-kapitel/ein-abschnitt',
+				'themen/ein-thema',
+				'rundgaenge/ein-rundgang',
+				'rundgaenge/ein-rundgang/eine-station',
 			])
 		})
 	})
@@ -180,6 +199,20 @@ describe('buildContentGraph', () => {
 				'',
 				'entwurf/kind',
 			])
+		})
+
+		it('links previous/next across a hidden Draft parent in production, matching the reparented tree', () => {
+			const dev = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'), {
+				development: true,
+			})
+			const production = buildContentGraph(path.join(fixturesDir, 'sitemap-draft'))
+
+			expect(dev.getNext('entwurf')?.id).toBe('veroeffentlicht')
+			expect(dev.getNext('entwurf/kind')).toBeUndefined()
+
+			expect(production.getNext('entwurf/kind')?.id).toBe('veroeffentlicht')
+			expect(production.getPrevious('veroeffentlicht')?.id).toBe('entwurf/kind')
+			expect(production.getPrevious('entwurf/kind')).toBeUndefined()
 		})
 
 		it('fails a Draft with invalid frontmatter the same way any Seite does', () => {
@@ -532,6 +565,123 @@ describe('buildContentGraph', () => {
 		})
 	})
 
+	describe('Rundgang and Station', () => {
+		it("numbers a Rundgang's Stationen from 0 when the first stands at the Zentrum", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			const stationen = graph.getStationenByRundgang('rundgaenge/besuch-im-zentrum')
+			expect(stationen.map((station) => station.id)).toEqual([
+				'rundgaenge/besuch-im-zentrum/station-zentrum',
+				'rundgaenge/besuch-im-zentrum/station-eins',
+				'rundgaenge/besuch-im-zentrum/station-zwei',
+			])
+			expect(stationen.map((station) => station.number)).toEqual([0, 1, 2])
+			expect(stationen.map((station) => station.url)).toEqual([
+				'/rundgaenge/besuch-im-zentrum/0',
+				'/rundgaenge/besuch-im-zentrum/1',
+				'/rundgaenge/besuch-im-zentrum/2',
+			])
+		})
+
+		it("numbers a Rundgang's Stationen from 1 when the first stands at a Viertel", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			const stationen = graph.getStationenByRundgang('rundgaenge/ohne-zentrum')
+			expect(stationen.map((station) => station.number)).toEqual([1, 2])
+			expect(stationen.map((station) => station.url)).toEqual([
+				'/rundgaenge/ohne-zentrum/1',
+				'/rundgaenge/ohne-zentrum/2',
+			])
+		})
+
+		it("derives a Rundgang's Stationen count and duration from its Stationen, never from a written field", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			const besuch = graph.getRundgang('rundgaenge/besuch-im-zentrum')
+			// station-zentrum and station-eins are short bodies (1 Min. each);
+			// station-zwei's 201-word body rounds up to 2 Min. — 1 + 1 + 2 = 4,
+			// proving the duration is a real sum, not stationenCount * 1.
+			expect(besuch?.stationenCount).toBe(3)
+			expect(besuch?.durationMinutes).toBe(4)
+			expect(besuch).not.toHaveProperty('stationen')
+		})
+
+		it('derives the Stationen set at a Viertel or the Zentrum from the references, never from the Ort itself', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			expect(graph.getStationenByOrt('stadt/zentrum').map((station) => station.id)).toEqual([
+				'rundgaenge/besuch-im-zentrum/station-zentrum',
+			])
+			expect(graph.getStationenByOrt('stadt/erste-viertel').map((station) => station.id)).toEqual([
+				'rundgaenge/besuch-im-zentrum/station-eins',
+				'rundgaenge/ohne-zentrum/station-a',
+			])
+			expect(graph.getViertel('stadt/erste-viertel')).not.toHaveProperty('stationen')
+		})
+
+		it('keeps previous/next within one Rundgang, never crossing into another', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			expect(graph.getNextStation('rundgaenge/besuch-im-zentrum/station-zentrum')).toEqual({
+				id: 'rundgaenge/besuch-im-zentrum/station-eins',
+				url: '/rundgaenge/besuch-im-zentrum/1',
+				title: 'Erste Station',
+			})
+			expect(
+				graph.getPreviousStation('rundgaenge/besuch-im-zentrum/station-zentrum'),
+			).toBeUndefined()
+			expect(graph.getNextStation('rundgaenge/besuch-im-zentrum/station-zwei')).toBeUndefined()
+
+			// ohne-zentrum's first Station has no previous, even though
+			// besuch-im-zentrum's own Stationen come right before it in the list.
+			expect(graph.getPreviousStation('rundgaenge/ohne-zentrum/station-a')).toBeUndefined()
+		})
+
+		it('fails when a Station references a missing Viertel, naming the file, field and ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgang-missing-ort'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(
+					path.join('rundgaenge', 'verwaister-rundgang', 'verwaiste-station', 'index.mdx'),
+				)
+				expect(validationError.field).toBe('ortId')
+				expect(validationError.reason).toContain('stadt/nichtvorhanden')
+			}
+		})
+
+		it("fails when a Rundgang's Station order lists an unknown ID, naming the file and the ID", () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgang-station-order-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'einziger-rundgang', 'meta.json'))
+				expect(validationError.field).toBe('rundgaenge/einziger-rundgang/nichtvorhanden')
+				expect(validationError.reason).toMatch(/no matching/i)
+			}
+		})
+
+		it("fails when a Rundgang's Station order omits an actual child, naming the file and the ID", () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgang-station-order-missing-child'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'einziger-rundgang', 'meta.json'))
+				expect(validationError.field).toBe('rundgaenge/einziger-rundgang/zweite-station')
+				expect(validationError.reason).toMatch(/missing/i)
+			}
+		})
+	})
+
 	describe('Thema', () => {
 		it('resolves the Leitthema and a Themen-Ort to their ID and URL', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'thema-valid'))
@@ -570,6 +720,109 @@ describe('buildContentGraph', () => {
 				expect(validationError.file).toBe(path.join('themen', 'verwaister-themen-ort', 'index.mdx'))
 				expect(validationError.field).toBe('kapitelId')
 				expect(validationError.reason).toContain('leitthema/nichtvorhanden')
+			}
+		})
+	})
+
+	describe('Translations (issue #36)', () => {
+		it("inherits a Viertel's number and ID from the German document, taking Leitsatz and Steckbrief from the translation when present", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			const german = graph.getViertel('stadt/erste-viertel')
+			const translated = graph.getViertel('stadt/erste-viertel', 'xx')
+
+			expect(german?.number).toBe(1)
+			expect(translated?.id).toBe(german?.id)
+			expect(translated?.number).toBe(german?.number)
+			// title isn't set by the translation, so it falls back to German.
+			expect(translated?.title).toBe(german?.title)
+			expect(translated?.leitsatz).toBe('Translated leitsatz.')
+			expect(translated?.steckbrief.prozessansatz).toBe('Translated prozessansatz.')
+			expect(translated?.steckbrief.bauform).toBe('Translated bauform.')
+			expect(translated?.body).toContain('Translated Testinhalt.')
+			expect(translated?.url).toBe('/xx/stadt/translated-viertel')
+		})
+
+		it('resolves a translated Viertel slug to its prefixed localized URL, and lists it among the localized Viertel', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			expect(graph.getLocalizedViertel('xx').map((viertel) => viertel.id)).toEqual([
+				'stadt/erste-viertel',
+			])
+
+			const resolved = graph.resolveUrl('/xx/stadt/translated-viertel')
+			expect(resolved?.kind).toBe('viertel')
+			expect(resolved?.kind === 'viertel' && resolved.viertel.id).toBe('stadt/erste-viertel')
+			expect(resolved?.locale).toBe('xx')
+
+			// The German Viertel's own URL is unaffected by the translation.
+			const german = graph.resolveUrl('/stadt/erste-viertel')
+			expect(german?.kind).toBe('viertel')
+			expect(german?.locale).toBeUndefined()
+		})
+
+		it('falls back to the German document when a locale has no translation', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			const fallback = graph.getSeite('ohne-uebersetzung', 'xx')
+			expect(fallback?.title).toBe('Ohne Übersetzung')
+			expect(fallback?.description).toBe('Platzhalter für Tests.')
+			expect(fallback?.body).toContain('Deutscher Testinhalt.')
+			expect(fallback?.url).toBe('/xx/ohne-uebersetzung')
+		})
+
+		it('uses a translated slug for a prefixed localized URL, and the translated body', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			const translated = graph.getSeite('mit-uebersetzung', 'xx')
+			expect(translated?.title).toBe('With translation')
+			expect(translated?.description).toBe('Placeholder for tests.')
+			expect(translated?.body).toContain('Translated body.')
+			expect(translated?.url).toBe('/xx/with-translation')
+
+			// The German document and its URL are unaffected by the translation.
+			const german = graph.getSeite('mit-uebersetzung')
+			expect(german?.title).toBe('Mit Übersetzung')
+			expect(german?.body).toContain('Deutscher Testinhalt.')
+			expect(german?.url).toBe('/mit-uebersetzung')
+		})
+
+		it("uses a translated slug for the root Seite's own prefixed URL, instead of dropping it", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-valid'), {
+				locales: ['xx'],
+			})
+
+			const translated = graph.getSeite('', 'xx')
+			expect(translated?.url).toBe('/xx/start')
+		})
+
+		it('has no configured locales, and no prefixed Seiten, by default', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
+
+			expect(graph.locales).toEqual([])
+			expect(graph.getLocalizedSeiten('xx')).toEqual([])
+			expect(graph.getSeite('kontakt', 'xx')).toBeUndefined()
+		})
+
+		it('fails when a translation sets a non-translatable field, naming the file and the field', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'translation-invalid-field'), { locales: ['xx'] })
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe('index.xx.mdx')
+				expect(validationError.field).toBe('draft')
+				expect(validationError.reason).toMatch(/translatable/i)
 			}
 		})
 	})

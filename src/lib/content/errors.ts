@@ -33,6 +33,13 @@ export const VIERTEL_ORDER_FIELD = '(viertel-order)'
 // directly, the same way the Viertel order file does.
 export const ABSCHNITT_ORDER_FIELD = '(abschnitt-order)'
 
+// The field name when a Rundgang's own Station order file (its meta.json,
+// issue #32) isn't tied to one listed ID: the file is missing, invalid JSON,
+// or a schema issue with no path of its own. A listed ID with no matching
+// Station, or a Station missing from the list, instead names that ID
+// directly, the same way the Abschnitt order file does.
+export const STATION_ORDER_FIELD = '(station-order)'
+
 export class ContentValidationError extends Error {
 	readonly file: string
 	readonly field: string

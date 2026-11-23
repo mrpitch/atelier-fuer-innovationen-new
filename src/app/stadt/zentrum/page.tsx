@@ -2,6 +2,7 @@ import path from 'node:path'
 
 import type { Metadata } from 'next'
 
+import { StationenListe } from '@/components/rundgang/stationen-liste'
 import { Illustration } from '@/components/viertel/illustration'
 import { buildContentGraph } from '@/lib/content'
 
@@ -21,6 +22,7 @@ export default async function ZentrumPage() {
 			<Illustration id={graph.zentrum.id} label={graph.zentrum.title} />
 			<h1>{graph.zentrum.title}</h1>
 			<Body />
+			<StationenListe stationen={graph.getStationenByOrt(graph.zentrum.id)} />
 		</main>
 	)
 }

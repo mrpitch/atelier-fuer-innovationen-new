@@ -132,3 +132,47 @@ export const abschnittFrontmatterSchema = z.object({
 })
 
 export type AbschnittFrontmatter = z.infer<typeof abschnittFrontmatterSchema>
+
+// A Rundgang (glossary) is an ordered sequence of Stationen with an
+// introduction — its body. Its Stationen sit in its own folder (issue #32),
+// ordered by their own meta.json; nothing here orders them, the same split
+// Kapitel/Abschnitt makes.
+export const rundgangFrontmatterSchema = z.object({
+	title: z.string().min(1),
+	description: z.string().min(1),
+	shortTitle: z.string().min(1).optional(),
+})
+
+export type RundgangFrontmatter = z.infer<typeof rundgangFrontmatterSchema>
+
+// A Station (glossary) belongs to its Rundgang by folder location, and
+// stands at one Viertel or the Zentrum, by reference (issue #32) — the same
+// reference shape as Aufsatz's and Kapitel's `viertelId`, except its target
+// collection is the Viertel and the Zentrum together.
+export const stationFrontmatterSchema = z.object({
+	title: z.string().min(1),
+	description: z.string().min(1),
+	shortTitle: z.string().min(1).optional(),
+	ortId: z.string().min(1),
+})
+
+export type StationFrontmatter = z.infer<typeof stationFrontmatterSchema>
+
+// A translation file's frontmatter (issue #36, ADR-0001): every field is
+// optional, since a translation need not repeat one it doesn't change —
+// title, Short title, description and slug for any type, plus Viertel's own
+// Leitsatz and Steckbrief. This schema only validates each field's shape;
+// which of these keys a given content type actually allows is the loader's
+// job (loader.ts's translatableKeys, passed to loadTranslation), so a Seite
+// translation setting `leitsatz` still fails even though this schema alone
+// would accept it.
+export const translationFrontmatterSchema = z.object({
+	title: z.string().min(1).optional(),
+	shortTitle: z.string().min(1).optional(),
+	description: z.string().min(1).optional(),
+	slug: z.string().min(1).optional(),
+	leitsatz: z.string().min(1).optional(),
+	steckbrief: viertelSteckbriefSchema.optional(),
+})
+
+export type TranslationFrontmatter = z.infer<typeof translationFrontmatterSchema>
