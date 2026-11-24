@@ -1,12 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
+import { expectTokenColouredSvg } from '@/components/ui/illustrations/expect-token-coloured-svg'
 import { contentGraph } from '@/lib/content'
 
 import { Illustration } from './illustration'
-
-const TOKEN_CLASS =
-	/^(?:fill|stroke)-(?:secondary|foreground|card|primary|chart-4|border|primary-foreground)$/
 
 // One entry per Viertel, the Zentrum, every Thema and every Rundgang with
 // content (issue #88, #89, #90, #91). rundgaenge/besuch-in-der-umgebung has
@@ -53,19 +51,8 @@ describe('Illustration registry', () => {
 
 		const html = renderToStaticMarkup(<Illustration id={document.id} label={document.title} />)
 
-		expect(html).toContain('role="img"')
 		expect(html).toContain(`aria-label="${document.title.replaceAll('&', '&amp;')}"`)
-		expect(html).toContain('viewBox="0 0 240 240"')
-		expect(html).not.toMatch(/\sid="/)
-		expect(html).not.toMatch(/(?:fill|stroke)="(?:#|white)/i)
-
-		const classAttributes = [...html.matchAll(/class="([^"]+)"/g)]
-		expect(classAttributes.length).toBeGreaterThan(0)
-		for (const [, classValue] of classAttributes) {
-			for (const className of classValue!.split(' ')) {
-				expect(className).toMatch(TOKEN_CLASS)
-			}
-		}
+		expectTokenColouredSvg(html)
 	})
 
 	it('renders the real drawing for rundgaenge/besuch-in-der-umgebung, which has no content yet', () => {
@@ -74,19 +61,8 @@ describe('Illustration registry', () => {
 		)
 
 		expect(html).toContain('data-slot="illustration-besuch-in-der-umgebung"')
-		expect(html).toContain('role="img"')
 		expect(html).toContain('aria-label="Besuch in der Umgebung"')
-		expect(html).toContain('viewBox="0 0 240 240"')
-		expect(html).not.toMatch(/\sid="/)
-		expect(html).not.toMatch(/(?:fill|stroke)="(?:#|white)/i)
-
-		const classAttributes = [...html.matchAll(/class="([^"]+)"/g)]
-		expect(classAttributes.length).toBeGreaterThan(0)
-		for (const [, classValue] of classAttributes) {
-			for (const className of classValue!.split(' ')) {
-				expect(className).toMatch(TOKEN_CLASS)
-			}
-		}
+		expectTokenColouredSvg(html)
 	})
 
 	it('throws naming the ID when nothing is registered for it', () => {
