@@ -211,6 +211,48 @@ function escapeJsxAttributeValue(value: string): string {
 	return value.replaceAll('&', '&amp;').replaceAll('"', '&quot;')
 }
 
+// The outer ring and ground line every drawing starts with (issue #90). When
+// two adjacent paths match them exactly (ids aside), they are emitted as the
+// shared <IllustrationFrame /> instead of inline; any difference keeps the
+// paths inline.
+const FRAME_RING_ATTRS: Record<string, string> = {
+	d: 'M120 204C170.81 204 212 162.81 212 112C212 61.1898 170.81 20 120 20C69.1898 20 28 61.1898 28 112C28 162.81 69.1898 204 120 204Z',
+	fill: '#DCEBE9',
+}
+const FRAME_GROUND_ATTRS: Record<string, string> = {
+	d: 'M28 196H212',
+	'stroke-width': '2',
+	'stroke-linecap': 'round',
+	'stroke-linejoin': 'round',
+	stroke: '#1F2421',
+}
+const FRAME_ELEMENT = '<IllustrationFrame />'
+
+function isPathWith(node: XmlElement | undefined, expected: Record<string, string>): boolean {
+	if (!node || node.tag !== 'path' || node.children.length > 0) return false
+	const actual = Object.entries(node.attrs).filter(([name]) => name !== 'id')
+	return (
+		actual.length === Object.keys(expected).length &&
+		actual.every(([name, value]) => expected[name] === value)
+	)
+}
+
+function serializeChildren(children: XmlElement[], indent: string): string {
+	const lines: string[] = []
+	for (let i = 0; i < children.length; i++) {
+		if (
+			isPathWith(children[i], FRAME_RING_ATTRS) &&
+			isPathWith(children[i + 1], FRAME_GROUND_ATTRS)
+		) {
+			lines.push(`${indent}${FRAME_ELEMENT}`)
+			i++
+			continue
+		}
+		lines.push(serializeElement(children[i]!, indent))
+	}
+	return lines.join('\n')
+}
+
 function serializeElement(node: XmlElement, indent: string): string {
 	const nodeLabel = node.attrs.id ?? node.tag
 	const jsxAttrs = convertAttributes(node.attrs, nodeLabel)
@@ -222,9 +264,7 @@ function serializeElement(node: XmlElement, indent: string): string {
 		return `${indent}<${node.tag}${attrsText} />`
 	}
 
-	const childrenText = node.children
-		.map((child) => serializeElement(child, `${indent}\t`))
-		.join('\n')
+	const childrenText = serializeChildren(node.children, `${indent}\t`)
 	return `${indent}<${node.tag}${attrsText}>\n${childrenText}\n${indent}</${node.tag}>`
 }
 
@@ -278,7 +318,12 @@ function transformIllustrationSvg(svgSource: string, contentId: string): Transfo
 	const { name, slug } = moduleNames(contentId)
 	const groupJsx = serializeElement(group, '\t\t\t')
 
+	const frameImport = groupJsx.includes(FRAME_ELEMENT)
+		? "\nimport { IllustrationFrame } from './illustration-frame'\n"
+		: ''
+
 	const source = `import type * as React from 'react'
+${frameImport}
 
 function ${name}({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
 	return (

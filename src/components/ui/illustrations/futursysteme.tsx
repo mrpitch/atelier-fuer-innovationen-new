@@ -1,5 +1,7 @@
 import type * as React from 'react'
 
+import { IllustrationFrame } from './illustration-frame'
+
 function Futursysteme({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
 	return (
 		<svg
@@ -10,18 +12,7 @@ function Futursysteme({ label, ...props }: { label: string } & React.ComponentPr
 			{...props}
 		>
 			<g>
-				<path
-					d="M120 204C170.81 204 212 162.81 212 112C212 61.1898 170.81 20 120 20C69.1898 20 28 61.1898 28 112C28 162.81 69.1898 204 120 204Z"
-					className="fill-secondary"
-				/>
-				<path
-					fill="none"
-					d="M28 196H212"
-					strokeWidth="2"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-					className="stroke-foreground"
-				/>
+				<IllustrationFrame />
 				<path
 					opacity="0.08"
 					d="M120 202C147.614 202 170 199.314 170 196C170 192.686 147.614 190 120 190C92.3858 190 70 192.686 70 196C70 199.314 92.3858 202 120 202Z"

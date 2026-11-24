@@ -1,5 +1,7 @@
 import type * as React from 'react'
 
+import { IllustrationFrame } from './illustration-frame'
+
 function Annaeherung({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
 	return (
 		<svg
@@ -10,18 +12,7 @@ function Annaeherung({ label, ...props }: { label: string } & React.ComponentPro
 			{...props}
 		>
 			<g>
-				<path
-					d="M120 204C170.81 204 212 162.81 212 112C212 61.1898 170.81 20 120 20C69.1898 20 28 61.1898 28 112C28 162.81 69.1898 204 120 204Z"
-					className="fill-secondary"
-				/>
-				<path
-					fill="none"
-					d="M28 196H212"
-					strokeWidth="2"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-					className="stroke-foreground"
-				/>
+				<IllustrationFrame />
 				<path
 					opacity="0.08"
 					d="M120 202C136.569 202 150 199.314 150 196C150 192.686 136.569 190 120 190C103.431 190 90 192.686 90 196C90 199.314 103.431 202 120 202Z"

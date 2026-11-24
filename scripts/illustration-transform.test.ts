@@ -87,4 +87,54 @@ describe('transformIllustrationSvg', () => {
 	it('throws naming the content ID when it does not end in a kebab-case slug', () => {
 		expect(() => transformIllustrationSvg(FIXTURE_SVG, 'stadt/Märkte')).toThrow(/stadt\/Märkte/)
 	})
+
+	describe('shared frame', () => {
+		const RING =
+			'M120 204C170.81 204 212 162.81 212 112C212 61.1898 170.81 20 120 20C69.1898 20 28 61.1898 28 112C28 162.81 69.1898 204 120 204Z'
+		const ringPath = `<path id="Hintergrund" d="${RING}" fill="#DCEBE9"/>`
+		const groundPath =
+			'<path id="Boden" d="M28 196H212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#1F2421"/>'
+		const frameSvg = (ring: string, ground: string) => `<svg viewBox="0 0 240 240" fill="none">
+<g id="Illustration / Viertel / Testviertel">
+${ring}
+${ground}
+<path id="Haus" d="M1 1H2V2H1Z" fill="#00676B"/>
+</g>
+</svg>`
+
+		it('emits <IllustrationFrame /> and its import in place of a matching ring and ground line', () => {
+			const { source } = transformIllustrationSvg(
+				frameSvg(ringPath, groundPath),
+				'stadt/testviertel',
+			)
+
+			expect(source).toContain('<IllustrationFrame />')
+			expect(source).toContain("import { IllustrationFrame } from './illustration-frame'")
+			expect(source).not.toContain(RING)
+			expect(source).not.toContain('M28 196H212')
+			expect(source).toContain('d="M1 1H2V2H1Z"')
+		})
+
+		it('keeps a ring that differs inline', () => {
+			const { source } = transformIllustrationSvg(
+				frameSvg(ringPath.replace('#DCEBE9', '#FBFAF7'), groundPath),
+				'stadt/testviertel',
+			)
+
+			expect(source).not.toContain('IllustrationFrame')
+			expect(source).toContain(RING)
+			expect(source).toContain('d="M28 196H212"')
+		})
+
+		it('keeps a ground line that differs inline', () => {
+			const { source } = transformIllustrationSvg(
+				frameSvg(ringPath, groundPath.replace('M28 196H212', 'M28 190H212')),
+				'stadt/testviertel',
+			)
+
+			expect(source).not.toContain('IllustrationFrame')
+			expect(source).toContain(RING)
+			expect(source).toContain('d="M28 190H212"')
+		})
+	})
 })

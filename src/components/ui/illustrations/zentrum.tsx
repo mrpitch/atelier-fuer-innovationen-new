@@ -1,5 +1,7 @@
 import type * as React from 'react'
 
+import { IllustrationFrame } from './illustration-frame'
+
 function Zentrum({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
 	return (
 		<svg
@@ -10,18 +12,7 @@ function Zentrum({ label, ...props }: { label: string } & React.ComponentProps<'
 			{...props}
 		>
 			<g>
-				<path
-					d="M120 204C170.81 204 212 162.81 212 112C212 61.1898 170.81 20 120 20C69.1898 20 28 61.1898 28 112C28 162.81 69.1898 204 120 204Z"
-					className="fill-secondary"
-				/>
-				<path
-					fill="none"
-					d="M28 196H212"
-					strokeWidth="2"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-					className="stroke-foreground"
-				/>
+				<IllustrationFrame />
 				<path
 					d="M42 132V98L58 84L74 98V132H42Z"
 					strokeWidth="2"
