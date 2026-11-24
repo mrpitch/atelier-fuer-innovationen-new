@@ -1,6 +1,13 @@
 import type * as React from 'react'
 
 import { Annaeherung } from '@/components/ui/illustrations/annaeherung'
+import { Fuehrung } from '@/components/ui/illustrations/fuehrung'
+import { Inszenierung } from '@/components/ui/illustrations/inszenierung'
+import { Kontexte } from '@/components/ui/illustrations/kontexte'
+import { Potenziale } from '@/components/ui/illustrations/potenziale'
+import { Stadtplatz } from '@/components/ui/illustrations/stadtplatz'
+import { Wertschoepfung } from '@/components/ui/illustrations/wertschoepfung'
+import { Zukunft } from '@/components/ui/illustrations/zukunft'
 
 // Placeholder visual until an entry's real illustration is exported from the
 // Figma file (scripts/illustration-export.mts, issue #88). Swapping an entry
@@ -23,14 +30,19 @@ function Placeholder({ label, ...props }: { label: string } & React.ComponentPro
 // 3 Rundgänge), so content never names an illustration file (issue #28).
 const illustrations = {
 	'stadt/annaeherung': Annaeherung,
+	// Blocked: the "Vector" shape of this component (node 36474:7262) has its
+	// fill bound to the "Pappe" variable (#e7e3da) instead of "Karteikarte",
+	// which the export script rejects as an unknown colour — the illustration
+	// surfaces in docs/reference/design/kartei-design-system.md are Karteikarte,
+	// Petrol and Schieferblau only. Needs a Figma-side fix, not a code one.
 	'stadt/maerkte-kooperation': Placeholder,
-	'stadt/kontexte': Placeholder,
-	'stadt/inszenierung': Placeholder,
-	'stadt/zukunft': Placeholder,
-	'stadt/wertschoepfung': Placeholder,
-	'stadt/potenziale': Placeholder,
-	'stadt/fuehrung': Placeholder,
-	'stadt/zentrum': Placeholder,
+	'stadt/kontexte': Kontexte,
+	'stadt/inszenierung': Inszenierung,
+	'stadt/zukunft': Zukunft,
+	'stadt/wertschoepfung': Wertschoepfung,
+	'stadt/potenziale': Potenziale,
+	'stadt/fuehrung': Fuehrung,
+	'stadt/zentrum': Stadtplatz,
 	'themen/eine-welt-fuer-morgen': Placeholder,
 	'themen/futursysteme': Placeholder,
 	'themen/netzwerk-der-innovatoren': Placeholder,
