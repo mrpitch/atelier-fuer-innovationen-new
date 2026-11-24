@@ -1,17 +1,17 @@
 import { cn } from 'cn'
 import Link from 'next/link'
 import type * as React from 'react'
+import { useId } from 'react'
 
 import { Container } from '@/components/layout/container'
-import { Wortmarke } from '@/components/layout/wortmarke'
 import { buttonVariants } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import type { MenuGroupLink, MenuLink, Site } from '@/lib/content'
+import type { MenuGroupLink, MenuLink } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
 interface FooterProps extends React.ComponentProps<'footer'> {
-	site: Site
-	homeUrl: string
+	wortmarke: React.ReactNode
+	copyright: string
 	groups: readonly MenuGroupLink[]
 	legalMenu: readonly MenuLink[]
 }
@@ -38,7 +38,9 @@ function FooterLink({ url, label }: { url: string; label: string }) {
 // block's fixed-count grid, so a group the footer Menu gains later doesn't
 // need a layout change. Below 1024px (the mobile header's own breakpoint,
 // #84) everything stacks and centres.
-function Footer({ site, homeUrl, groups, legalMenu, className, ...props }: FooterProps) {
+function Footer({ wortmarke, copyright, groups, legalMenu, className, ...props }: FooterProps) {
+	const id = useId()
+
 	return (
 		<footer
 			data-slot="footer"
@@ -47,20 +49,25 @@ function Footer({ site, homeUrl, groups, legalMenu, className, ...props }: Foote
 		>
 			<Container className="flex flex-col gap-12 lg:gap-16">
 				<div className="flex flex-col items-center gap-12 text-center lg:flex-row lg:items-start lg:justify-between lg:text-left">
-					<Wortmarke site={site} homeUrl={homeUrl} />
+					{wortmarke}
 					<nav
 						data-slot="footer-menu"
 						aria-label={t('layout.footerMenu')}
 						className="flex flex-col items-center gap-12 text-center lg:flex-1 lg:flex-row lg:items-start lg:justify-between lg:gap-6 lg:text-left"
 					>
-						{groups.map((group) => (
+						{groups.map((group, index) => (
 							<div
 								data-slot="footer-menu-group"
 								key={group.label}
 								className="flex flex-col items-center gap-4 lg:items-start"
 							>
-								<h2 className="text-base font-medium text-foreground">{group.label}</h2>
-								<ul className="flex flex-col items-center gap-4 lg:items-start">
+								<p id={`${id}-${index}`} className="text-base font-medium text-foreground">
+									{group.label}
+								</p>
+								<ul
+									aria-labelledby={`${id}-${index}`}
+									className="flex flex-col items-center gap-4 lg:items-start"
+								>
 									{group.links.map((item) => (
 										<li key={item.url}>
 											<FooterLink url={item.url} label={item.label} />
@@ -73,7 +80,7 @@ function Footer({ site, homeUrl, groups, legalMenu, className, ...props }: Foote
 				</div>
 				<Separator role="presentation" />
 				<div className="flex flex-col-reverse items-center gap-12 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
-					<p className="text-muted-foreground">{site.copyright}</p>
+					<p className="text-muted-foreground">{copyright}</p>
 					<nav
 						data-slot="footer-legal-menu"
 						aria-label={t('layout.footerLegalMenu')}

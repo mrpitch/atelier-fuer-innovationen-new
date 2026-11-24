@@ -3,7 +3,7 @@ import type { RawMenu } from './loader'
 import { documentFile } from './locations'
 import { shortTitleOrTitle } from './presentation'
 import type { MenuEntry, MenuGroup, MenuItem } from './schemas'
-import { isMenuGroup } from './schemas'
+import { isMenuEntry, isMenuGroup } from './schemas'
 import type { ContentDocument } from './types'
 
 // A resolved Menu entry (glossary: Menu): a label is always resolved here,
@@ -68,17 +68,15 @@ function resolveGroup(file: string, group: MenuGroup, targets: MenuTargets): Men
 }
 
 // schemas.ts's menuSchema already rejects a Menu that mixes entries and
-// groups, so the first item's shape tells us the whole array's; the casts
-// below just restate that guarantee to the type checker.
+// groups, so a Menu with any group holds only groups.
 function resolveItems(
 	file: string,
 	items: readonly MenuItem[],
 	targets: MenuTargets,
 ): ResolvedMenu {
-	if (items.length > 0 && isMenuGroup(items[0])) {
-		return (items as readonly MenuGroup[]).map((group) => resolveGroup(file, group, targets))
-	}
-	return (items as readonly MenuEntry[]).map((entry) => resolveEntry(file, entry, targets))
+	const groups = items.filter(isMenuGroup)
+	if (groups.length > 0) return groups.map((group) => resolveGroup(file, group, targets))
+	return items.filter(isMenuEntry).map((entry) => resolveEntry(file, entry, targets))
 }
 
 // RootLayout's own convention (not something the Menu schema can see, since

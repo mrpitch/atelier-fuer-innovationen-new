@@ -6,15 +6,13 @@ import type * as React from 'react'
 import { useEffect, useId, useRef, useState } from 'react'
 
 import { HeaderMenu } from '@/components/layout/header-menu'
-import { Wortmarke } from '@/components/layout/wortmarke'
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icons'
-import type { MenuLink, Site } from '@/lib/content'
+import type { MenuLink } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
 interface MobileHeaderProps extends React.ComponentProps<'header'> {
-	site: Site
-	homeUrl: string
+	wortmarke: React.ReactNode
 	menu: readonly MenuLink[]
 }
 
@@ -26,7 +24,7 @@ interface MobileHeaderProps extends React.ComponentProps<'header'> {
 // The panel stays in the markup and is hidden while closed, so the button's
 // aria-controls always resolves. The panel is open only for the path it was
 // opened on: following a link changes the path and closes it, with no effect.
-function MobileHeader({ site, homeUrl, menu, className, ...props }: MobileHeaderProps) {
+function MobileHeader({ wortmarke, menu, className, ...props }: MobileHeaderProps) {
 	const currentPath = usePathname()
 	const [openedAt, setOpenedAt] = useState<string | null>(null)
 	const open = openedAt === currentPath
@@ -57,7 +55,7 @@ function MobileHeader({ site, homeUrl, menu, className, ...props }: MobileHeader
 			{...props}
 		>
 			<div className="flex h-16 items-center justify-between gap-4 px-6">
-				<Wortmarke site={site} homeUrl={homeUrl} />
+				{wortmarke}
 				<Button
 					ref={buttonRef}
 					variant="ghost"

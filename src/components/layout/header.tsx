@@ -4,12 +4,10 @@ import type * as React from 'react'
 import { Container } from '@/components/layout/container'
 import { HeaderNav } from '@/components/layout/header-nav'
 import { MobileHeader } from '@/components/layout/mobile-header'
-import { Wortmarke } from '@/components/layout/wortmarke'
-import type { MenuLink, Site } from '@/lib/content'
+import type { MenuLink } from '@/lib/content'
 
 interface HeaderProps extends React.ComponentProps<'header'> {
-	site: Site
-	homeUrl: string
+	wortmarke: React.ReactNode
 	menu: readonly MenuLink[]
 }
 
@@ -17,7 +15,7 @@ interface HeaderProps extends React.ComponentProps<'header'> {
 // Menu, with the reader's current area marked. Stays a Server Component —
 // HeaderNav is the only part that needs the router, for the current path.
 // From 1024px up (`lg`); below it the mobile header takes over.
-function Header({ site, homeUrl, menu, className, ...props }: HeaderProps) {
+function Header({ wortmarke, menu, className, ...props }: HeaderProps) {
 	return (
 		<>
 			<header
@@ -26,11 +24,11 @@ function Header({ site, homeUrl, menu, className, ...props }: HeaderProps) {
 				{...props}
 			>
 				<Container className="flex items-center justify-between gap-12">
-					<Wortmarke site={site} homeUrl={homeUrl} />
+					{wortmarke}
 					<HeaderNav menu={menu} />
 				</Container>
 			</header>
-			<MobileHeader site={site} homeUrl={homeUrl} menu={menu} className="lg:hidden" />
+			<MobileHeader wortmarke={wortmarke} menu={menu} className="lg:hidden" />
 		</>
 	)
 }

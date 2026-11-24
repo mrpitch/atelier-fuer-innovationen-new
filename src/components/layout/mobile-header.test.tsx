@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { buildContentGraph } from '@/lib/content'
 
 import { MobileHeader } from './mobile-header'
+import { Wortmarke } from './wortmarke'
 
 const pathname = vi.hoisted(() => ({ current: '/' }))
 vi.mock('next/navigation', () => ({ usePathname: () => pathname.current }))
@@ -22,7 +23,10 @@ describe('MobileHeader', () => {
 
 		pathname.current = rundgaenge.url
 		const html = renderToStaticMarkup(
-			<MobileHeader site={graph.site} homeUrl={graph.navigation.url} menu={menu} />,
+			<MobileHeader
+				wortmarke={<Wortmarke site={graph.site} homeUrl={graph.navigation.url} />}
+				menu={menu}
+			/>,
 		)
 
 		for (const item of menu) expect(html).toContain(`href="${item.url}"`)
@@ -37,8 +41,7 @@ describe('MobileHeader', () => {
 		pathname.current = '/'
 		const html = renderToStaticMarkup(
 			<MobileHeader
-				site={graph.site}
-				homeUrl={graph.navigation.url}
+				wortmarke={<Wortmarke site={graph.site} homeUrl={graph.navigation.url} />}
 				menu={graph.getMenu('header')}
 			/>,
 		)

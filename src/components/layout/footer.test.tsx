@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest'
 import { buildContentGraph } from '@/lib/content'
 
 import { Footer } from './footer'
+import { Wortmarke } from './wortmarke'
 
 const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '__fixtures__')
 
@@ -22,8 +23,8 @@ describe('Footer', () => {
 
 		const html = renderToStaticMarkup(
 			<Footer
-				site={graph.site}
-				homeUrl={graph.navigation.url}
+				wortmarke={<Wortmarke site={graph.site} homeUrl={graph.navigation.url} />}
+				copyright={graph.site.copyright}
 				groups={groups}
 				legalMenu={legalMenu}
 			/>,

@@ -39,25 +39,14 @@ function EbenenLeiste({
 	className,
 	...props
 }: EbenenLeisteProps) {
-	const progress = abschnitt
-		? {
-				current: abschnitt.position,
-				total: abschnitt.total,
-				label: t('ebenenLeiste.abschnittPosition', {
-					kapitel: kapitel.number,
-					position: abschnitt.position,
-					total: abschnitt.total,
-				}),
-			}
-		: {
-				current: kapitel.number,
-				total: kapitel.total,
-				label: t('ebenenLeiste.kapitelPosition', { number: kapitel.number, total: kapitel.total }),
-			}
+	const { position, total } = abschnitt ?? { position: kapitel.number, total: kapitel.total }
+	const label = abschnitt
+		? t('ebenenLeiste.abschnittPosition', { kapitel: kapitel.number, position, total })
+		: t('ebenenLeiste.kapitelPosition', { number: kapitel.number, total })
 
 	return (
 		<PlaceBar data-slot="ebenen-leiste" className={cn('lg:gap-6', className)} {...props}>
-			<Item size="sm" className="w-fit">
+			<Item className="w-fit">
 				<ItemMedia className="size-11">{illustration}</ItemMedia>
 				<ItemContent>
 					<ItemTitle>
@@ -79,15 +68,13 @@ function EbenenLeiste({
 			</Item>
 			<BreadcrumbTrail breadcrumbs={breadcrumbs} className="lg:flex-1" />
 			<div data-slot="fortschritt" className="flex flex-col gap-1.5">
-				<p className="font-mono text-xs text-muted-foreground">{progress.label}</p>
+				<p className="font-mono text-xs text-muted-foreground">{label}</p>
 				<div className="flex gap-1" aria-hidden="true">
-					{Array.from({ length: progress.total }, (_, index) => (
+					{Array.from({ length: total }, (_, index) => (
 						<span
 							key={index}
-							className={cn(
-								'h-1 flex-1 rounded-full',
-								index < progress.current ? 'bg-primary' : 'bg-muted',
-							)}
+							data-filled={index < position || undefined}
+							className="h-1 flex-1 rounded-full bg-muted data-filled:bg-primary"
 						/>
 					))}
 				</div>

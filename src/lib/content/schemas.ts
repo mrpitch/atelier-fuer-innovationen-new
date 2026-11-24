@@ -63,6 +63,10 @@ export function isMenuGroup(item: MenuItem): item is MenuGroup {
 	return 'entries' in item
 }
 
+export function isMenuEntry(item: MenuItem): item is MenuEntry {
+	return !isMenuGroup(item)
+}
+
 export const menuSchema = z.array(menuItemSchema).superRefine((items, ctx) => {
 	const groupCount = items.filter(isMenuGroup).length
 	if (groupCount > 0 && groupCount < items.length) {

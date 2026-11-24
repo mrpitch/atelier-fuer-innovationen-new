@@ -39,7 +39,6 @@ export const de = {
 	'thema.kapitelHeading': 'Kapitel',
 	'ortsleiste.previous': '← {label}',
 	'ortsleiste.next': '{label} →',
-	'ortsleiste.numberedLabel': '{number} {title}',
 	'ebenenLeiste.ortTitle': 'Viertel {number} · {title}',
 	'ebenenLeiste.kapitelPosition': 'THEMA · KAPITEL {number} VON {total}',
 	'ebenenLeiste.abschnittPosition': 'KAPITEL {kapitel} · {position} VON {total}',

@@ -24,7 +24,7 @@ interface OrtsleisteProps extends React.ComponentProps<'div'> {
 function neighbourLabel(link: NavigationLink): string {
 	return link.number === undefined
 		? link.title
-		: t('ortsleiste.numberedLabel', { number: formatTwoDigits(link.number), title: link.title })
+		: t('viertel.numberedTitle', { number: formatTwoDigits(link.number), title: link.title })
 }
 
 function NeighbourLink({
