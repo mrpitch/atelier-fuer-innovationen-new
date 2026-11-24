@@ -9,7 +9,8 @@
 // ILLUSTRATION_NODES below. The module is named after the node's content ID
 // (stadt/maerkte-kooperation → maerkte-kooperation.tsx), so re-running the
 // export on the same node reproduces the same module. Registering the result
-// in illustration.tsx is a separate, manual step.
+// in illustration.tsx is the one manual step; the per-drawing test is written
+// next to the module.
 import fs from 'node:fs'
 import { register } from 'node:module'
 import path from 'node:path'
@@ -96,14 +97,20 @@ for (const nodeId of nodeIds) {
 	const svgSource = await svgResponse.text()
 
 	const contentId = ILLUSTRATION_NODES[nodeId]!
-	const { slug, source } = transformIllustrationSvg(svgSource, contentId)
+	const { slug, source, testSource } = transformIllustrationSvg(svgSource, contentId)
 
-	const outFile = path.join(outDir, `${slug}.tsx`)
-	const prettierConfig = await prettier.resolveConfig(outFile)
-	const formatted = await prettier.format(source, { ...prettierConfig, filepath: outFile })
-	fs.writeFileSync(outFile, formatted)
+	const written: string[] = []
+	for (const [file, text] of [
+		[`${slug}.tsx`, source],
+		[`${slug}.test.tsx`, testSource],
+	] as const) {
+		const outFile = path.join(outDir, file)
+		const prettierConfig = await prettier.resolveConfig(outFile)
+		fs.writeFileSync(outFile, await prettier.format(text, { ...prettierConfig, filepath: outFile }))
+		written.push(path.relative(repoRoot, outFile))
+	}
 
 	console.log(
-		`illustration:export: wrote ${path.relative(repoRoot, outFile)} for ${contentId} from node "${nodeId}"`,
+		`illustration:export: wrote ${written.join(' and ')} for ${contentId} from node "${nodeId}"`,
 	)
 }

@@ -6,17 +6,15 @@ import { expectTokenColouredSvg } from './expect-token-coloured-svg'
 
 describe('ErsteAnnaeherung', () => {
 	it('renders the drawing as an accessible, token-coloured svg', () => {
-		const html = renderToStaticMarkup(<ErsteAnnaeherung label="Erste Annäherung" />)
+		const html = renderToStaticMarkup(<ErsteAnnaeherung label="Beschriftung" />)
 
 		expect(html).toContain('data-slot="illustration-erste-annaeherung"')
-		expect(html).toContain('aria-label="Erste Annäherung"')
+		expect(html).toContain('aria-label="Beschriftung"')
 		expectTokenColouredSvg(html)
 	})
 
 	it('passes extra svg props through to the root element', () => {
-		const html = renderToStaticMarkup(
-			<ErsteAnnaeherung label="Erste Annäherung" data-testid="probe" />,
-		)
+		const html = renderToStaticMarkup(<ErsteAnnaeherung label="Beschriftung" data-testid="probe" />)
 
 		expect(html).toContain('data-testid="probe"')
 	})

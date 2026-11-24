@@ -76,6 +76,14 @@ describe('transformIllustrationSvg', () => {
 		expect(source).not.toContain('Testviertel')
 	})
 
+	it('writes a test that imports the module and its shared token assertion', () => {
+		const { testSource } = transformIllustrationSvg(FIXTURE_SVG, 'stadt/maerkte-kooperation')
+
+		expect(testSource).toContain("import { MaerkteKooperation } from './maerkte-kooperation'")
+		expect(testSource).toContain("from './expect-token-coloured-svg'")
+		expect(testSource).toContain('data-slot="illustration-maerkte-kooperation"')
+	})
+
 	it('throws naming the content ID when it does not end in a kebab-case slug', () => {
 		expect(() => transformIllustrationSvg(FIXTURE_SVG, 'stadt/Märkte')).toThrow(/stadt\/Märkte/)
 	})

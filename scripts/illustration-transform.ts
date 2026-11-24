@@ -235,6 +235,37 @@ interface TransformedIllustration {
 	slug: string
 	/** The module source, ready to format and write. */
 	source: string
+	/** The module's test source, ready to format and write next to it. */
+	testSource: string
+}
+
+// The per-drawing test every module gets (testing-conventions: one test file
+// per component). The shared token-colour contract lives in
+// expect-token-coloured-svg.ts; the label is a stand-in, since the real title
+// belongs to the content document and the registry test covers that.
+function drawingTestSource(name: string, slug: string): string {
+	return `import { renderToStaticMarkup } from 'react-dom/server'
+import { describe, expect, it } from 'vitest'
+
+import { expectTokenColouredSvg } from './expect-token-coloured-svg'
+import { ${name} } from './${slug}'
+
+describe('${name}', () => {
+	it('renders the drawing as an accessible, token-coloured svg', () => {
+		const html = renderToStaticMarkup(<${name} label="Beschriftung" />)
+
+		expect(html).toContain('data-slot="illustration-${slug}"')
+		expect(html).toContain('aria-label="Beschriftung"')
+		expectTokenColouredSvg(html)
+	})
+
+	it('passes extra svg props through to the root element', () => {
+		const html = renderToStaticMarkup(<${name} label="Beschriftung" data-testid="probe" />)
+
+		expect(html).toContain('data-testid="probe"')
+	})
+})
+`
 }
 
 function transformIllustrationSvg(svgSource: string, contentId: string): TransformedIllustration {
@@ -260,7 +291,7 @@ ${groupJsx}
 export { ${name} }
 `
 
-	return { name, slug, source }
+	return { name, slug, source, testSource: drawingTestSource(name, slug) }
 }
 
-export { transformIllustrationSvg }
+export { drawingTestSource, transformIllustrationSvg }
