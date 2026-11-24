@@ -154,6 +154,42 @@ function kebabToCamel(name: string): string {
 	return name.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase())
 }
 
+// Figma's `/v1/images` export sometimes writes an umlaut in an `id` as
+// mojibake: the name's UTF-8 bytes, decoded a second time as Latin-1 (see
+// illustration-transform.test.ts). Reversing that — bytes-as-Latin-1, then
+// decoded as UTF-8 — is a no-op on plain ASCII and on a correctly-encoded
+// name it produces U+FFFD, which is the signal to leave the value alone.
+function fixMojibake(value: string): string {
+	const repaired = Buffer.from(value, 'latin1').toString('utf8')
+	return repaired.includes('�') ? value : repaired
+}
+
+const GERMAN_TRANSLITERATION: Record<string, string> = {
+	ä: 'ae',
+	Ä: 'Ae',
+	ö: 'oe',
+	Ö: 'Oe',
+	ü: 'ue',
+	Ü: 'Ue',
+	ß: 'ss',
+}
+
+function transliterateGerman(value: string): string {
+	return value.replace(/[äÄöÖüÜß]/g, (char) => GERMAN_TRANSLITERATION[char]!)
+}
+
+// The module's name comes from the exported group's own Figma layer name —
+// its `id` is "Illustration / <section> / <Name>" — not from anything typed
+// on the command line, so re-running the export on the same node reproduces
+// the same module.
+function deriveName(groupId: string): string {
+	const label = groupId.split('/').pop()?.trim()
+	if (!label) {
+		throw new Error(`Illustration export: cannot derive a name from group id "${groupId}"`)
+	}
+	return transliterateGerman(fixMojibake(label))
+}
+
 function colorToken(value: string): string | undefined {
 	if (value.toLowerCase() === 'white') return 'primary-foreground'
 	return TOKEN_BY_HEX[value.toUpperCase()]
@@ -213,20 +249,27 @@ function serializeElement(node: XmlElement, indent: string): string {
 	return `${indent}<${node.tag}${attrsText}>\n${childrenText}\n${indent}</${node.tag}>`
 }
 
-// name is the module's and the component's name, e.g. "Annaeherung" — chosen
-// by whoever runs the export, not derived from the Figma group's own name
-// (which Figma sometimes mis-encodes for names with umlauts).
-function transformIllustrationSvg(svgSource: string, name: string): string {
+interface TransformedIllustration {
+	/** The component's and the module's name, e.g. "Annaeherung". */
+	name: string
+	/** The output file's base name, e.g. "annaeherung". */
+	slug: string
+	/** The module source, ready to format and write. */
+	source: string
+}
+
+function transformIllustrationSvg(svgSource: string): TransformedIllustration {
 	const root = parseXml(svgSource)
 	const group = findIllustrationGroup(root)
 	if (!group) {
 		throw new Error('Illustration export: no "Illustration / …" group found in the SVG')
 	}
 
+	const name = deriveName(group.attrs.id!)
+	const slug = name.toLowerCase()
 	const groupJsx = serializeElement(group, '\t\t\t')
-	const slug = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
 
-	return `import type * as React from 'react'
+	const source = `import type * as React from 'react'
 
 function ${name}({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
 	return (
@@ -238,6 +281,8 @@ ${groupJsx}
 
 export { ${name} }
 `
+
+	return { name, slug, source }
 }
 
 export { transformIllustrationSvg }
