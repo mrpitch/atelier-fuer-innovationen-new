@@ -1,6 +1,14 @@
 import type * as React from 'react'
 
 import { Annaeherung } from '@/components/ui/illustrations/annaeherung'
+import { Fuehrung } from '@/components/ui/illustrations/fuehrung'
+import { Inszenierung } from '@/components/ui/illustrations/inszenierung'
+import { Kontexte } from '@/components/ui/illustrations/kontexte'
+import { MaerkteKooperation } from '@/components/ui/illustrations/maerkte-kooperation'
+import { Potenziale } from '@/components/ui/illustrations/potenziale'
+import { Wertschoepfung } from '@/components/ui/illustrations/wertschoepfung'
+import { Zentrum } from '@/components/ui/illustrations/zentrum'
+import { Zukunft } from '@/components/ui/illustrations/zukunft'
 
 // Placeholder visual until an entry's real illustration is exported from the
 // Figma file (scripts/illustration-export.mts, issue #88). Swapping an entry
@@ -23,14 +31,14 @@ function Placeholder({ label, ...props }: { label: string } & React.ComponentPro
 // 3 Rundgänge), so content never names an illustration file (issue #28).
 const illustrations = {
 	'stadt/annaeherung': Annaeherung,
-	'stadt/maerkte-kooperation': Placeholder,
-	'stadt/kontexte': Placeholder,
-	'stadt/inszenierung': Placeholder,
-	'stadt/zukunft': Placeholder,
-	'stadt/wertschoepfung': Placeholder,
-	'stadt/potenziale': Placeholder,
-	'stadt/fuehrung': Placeholder,
-	'stadt/zentrum': Placeholder,
+	'stadt/maerkte-kooperation': MaerkteKooperation,
+	'stadt/kontexte': Kontexte,
+	'stadt/inszenierung': Inszenierung,
+	'stadt/zukunft': Zukunft,
+	'stadt/wertschoepfung': Wertschoepfung,
+	'stadt/potenziale': Potenziale,
+	'stadt/fuehrung': Fuehrung,
+	'stadt/zentrum': Zentrum,
 	'themen/eine-welt-fuer-morgen': Placeholder,
 	'themen/futursysteme': Placeholder,
 	'themen/netzwerk-der-innovatoren': Placeholder,
