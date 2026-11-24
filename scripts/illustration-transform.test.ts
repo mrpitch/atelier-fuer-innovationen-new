@@ -82,4 +82,17 @@ describe('transformIllustrationSvg', () => {
 		expect(name).toBe('Annaeherung')
 		expect(slug).toBe('annaeherung')
 	})
+
+	it('joins a multi-word group name with an ampersand into one valid identifier', () => {
+		const svgWithAmpersand = FIXTURE_SVG.replace(
+			'Illustration / Viertel / Testviertel',
+			'Illustration / Viertel / M&#195;&#164;rkte &#38; Kooperation',
+		)
+
+		const { name, slug, source } = transformIllustrationSvg(svgWithAmpersand)
+
+		expect(name).toBe('MaerkteKooperation')
+		expect(slug).toBe('maerktekooperation')
+		expect(source).toContain('function MaerkteKooperation(')
+	})
 })

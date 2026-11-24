@@ -187,7 +187,14 @@ function deriveName(groupId: string): string {
 	if (!label) {
 		throw new Error(`Illustration export: cannot derive a name from group id "${groupId}"`)
 	}
-	return transliterateGerman(fixMojibake(label))
+	// Multi-word names ("Märkte & Kooperation") become one identifier.
+	const words = transliterateGerman(fixMojibake(label))
+		.split(/[^A-Za-z0-9]+/)
+		.filter(Boolean)
+	if (words.length === 0) {
+		throw new Error(`Illustration export: cannot derive a name from group id "${groupId}"`)
+	}
+	return words.join('')
 }
 
 function colorToken(value: string): string | undefined {
