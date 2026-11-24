@@ -6,7 +6,6 @@ import {
 	type LucideIcon,
 	type LucideProps,
 	Menu,
-	MoreHorizontal,
 	X,
 } from 'lucide-react'
 
@@ -18,7 +17,6 @@ const icons = {
 	arrowRight: ArrowRight,
 	chevronRight: ChevronRight,
 	menu: Menu,
-	moreHorizontal: MoreHorizontal,
 	x: X,
 } satisfies Record<string, LucideIcon>
 
