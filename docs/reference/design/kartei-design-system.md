@@ -157,7 +157,7 @@ Flat paper. Surfaces and controls sit at rest with no shadow: the kit's `shadow/
 - **Cards, dialogs and the Gangart box:** 8px. The Thema-Karte is drawn with 12px (see Open deviations).
 - **Badges:** pills.
 - **Stadtplan tiles and Rundgang cards:** square-cornered, so the grid reads as one continuous map rather than a set of cards.
-- **Illustrations:** each sits on a full circle of Petrolschleier (184px in the 240px component) with a thin horizon line and a flat shadow at its base. Line art is Graphit at 2px with round caps and joins (3–4px only for load-bearing parts); surfaces are painted Karteikarte, Petrol and Schieferblau. Sizes: 420px in a page hero, 128px on a tile, 44 × 64px as a station stop. The Figma page `Illustrationen` holds the catalogue and the reasoning.
+- **Illustrations:** each sits on a full circle of Petrolschleier (184px in the 240px component) with a thin horizon line and a flat shadow at its base. Line art is Graphit at 2px with round caps and joins (3–4px only for load-bearing parts); surfaces are painted Karteikarte, Petrol and Schieferblau. Sizes: 420px in a page hero, 128px on a tile, 44px in the Ebenen-Leiste, 36px in a station stop (the stop itself is 44 × 64px). The Figma page `Illustrationen` holds the catalogue and the reasoning.
 
 ### Shape rules
 
