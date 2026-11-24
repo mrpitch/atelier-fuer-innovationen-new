@@ -1,182 +1,20 @@
 ---
-name: Xenia · Städte des Wissens
-description: Die Kartei im Lesesaal — the Xenia research archive of 1996, reopened: stone-grey archive paper, index cards, graphite type and one petrol ink.
-colors:
-  petrol: '#00676b'
-  petrolschleier: '#dcebe9'
-  tiefpetrol: '#00474a'
-  koralle: '#e5482b'
-  korallenhauch: '#ffd9cc'
-  koralle-dunkel: '#8a2b14'
-  siegellack: '#c23a1d'
-  archivstein: '#f1eee8'
-  karteikarte: '#fbfaf7'
-  graphit: '#1f2421'
-  bleigrau: '#5c5f58'
-  pappe: '#e7e3da'
-  haarlinie: '#d6d1c5'
-  feldlinie: '#c9c3b5'
-  petrol-dark: '#5cc8c2'
-  petrolschleier-dark: '#163a39'
-  tiefpetrol-dark: '#bfe9e5'
-  koralle-dark: '#ff8a6e'
-  lesesaal-dark: '#121615'
-  karteikarte-dark: '#1a201e'
-  graphit-dark: '#ecebe4'
-  bleigrau-dark: '#a5aaa2'
-  pappe-dark: '#1f2624'
-  haarlinie-dark: '#2c3431'
-typography:
-  display:
-    fontFamily: 'Instrument Serif, Literata, Georgia, serif'
-    fontSize: '88px'
-    fontWeight: 400
-    lineHeight: 1
-    letterSpacing: '-0.02em'
-  hero:
-    fontFamily: 'Instrument Serif, Literata, Georgia, serif'
-    fontSize: '60px'
-    fontWeight: 400
-    lineHeight: 1
-    letterSpacing: '-0.02em'
-  headline:
-    fontFamily: 'Instrument Serif, Literata, Georgia, serif'
-    fontSize: '36px'
-    fontWeight: 400
-    lineHeight: 1.5
-    letterSpacing: '-0.015em'
-  title:
-    fontFamily: 'Instrument Serif, Literata, Georgia, serif'
-    fontSize: '32px'
-    fontWeight: 400
-    lineHeight: 1.15
-    letterSpacing: '-0.01em'
-  heading:
-    fontFamily: 'Instrument Serif, Literata, Georgia, serif'
-    fontSize: '24px'
-    fontWeight: 400
-    lineHeight: 1.33
-    letterSpacing: '-0.6px'
-  text:
-    fontFamily: 'Literata, Georgia, serif'
-    fontSize: '18px'
-    fontWeight: 400
-    lineHeight: 1.6
-  body:
-    fontFamily: 'Schibsted Grotesk, system-ui, sans-serif'
-    fontSize: '16px'
-    fontWeight: 400
-    lineHeight: 1.5
-  ui:
-    fontFamily: 'Schibsted Grotesk, system-ui, sans-serif'
-    fontSize: '14px'
-    fontWeight: 500
-    lineHeight: 1.43
-  label:
-    fontFamily: 'DM Mono, ui-monospace, monospace'
-    fontSize: '12px'
-    fontWeight: 500
-    lineHeight: 1.33
-rounded:
-  none: '0px'
-  sm: '2px'
-  md: '2px'
-  lg: '4px'
-  xl: '8px'
-  pill: '9999px'
-spacing:
-  '1': '4px'
-  '2': '8px'
-  '3': '12px'
-  '4': '16px'
-  '6': '24px'
-  '8': '32px'
-  '10': '40px'
-  '14': '56px'
-  '16': '64px'
-  '18': '72px'
-  '20': '80px'
-  '24': '96px'
-components:
-  button-primary:
-    backgroundColor: '{colors.petrol}'
-    textColor: '#ffffff'
-    typography: '{typography.ui}'
-    rounded: '{rounded.lg}'
-    padding: '0 10px'
-    height: '32px'
-  button-secondary:
-    backgroundColor: '{colors.petrolschleier}'
-    textColor: '{colors.tiefpetrol}'
-    typography: '{typography.ui}'
-    rounded: '{rounded.lg}'
-    padding: '0 10px'
-    height: '32px'
-  button-outline:
-    backgroundColor: '{colors.archivstein}'
-    textColor: '{colors.graphit}'
-    typography: '{typography.ui}'
-    rounded: '{rounded.lg}'
-    padding: '0 10px'
-    height: '32px'
-  button-ghost:
-    textColor: '{colors.graphit}'
-    typography: '{typography.ui}'
-    rounded: '{rounded.lg}'
-    padding: '0 10px'
-    height: '32px'
-  button-small:
-    typography: '{typography.ui}'
-    rounded: '{rounded.sm}'
-    padding: '0 8px'
-    height: '24px'
-  nav-item-active:
-    backgroundColor: '{colors.pappe}'
-    textColor: '{colors.graphit}'
-    typography: '{typography.ui}'
-    rounded: '{rounded.lg}'
-    height: '36px'
-  card:
-    backgroundColor: '{colors.karteikarte}'
-    textColor: '{colors.graphit}'
-    rounded: '{rounded.xl}'
-  list-item:
-    textColor: '{colors.graphit}'
-    rounded: '{rounded.lg}'
-    padding: '10px 12px'
-    height: '60px'
-  input:
-    textColor: '{colors.graphit}'
-    typography: '{typography.ui}'
-    rounded: '{rounded.lg}'
-    padding: '4px 10px'
-    height: '32px'
-  badge:
-    backgroundColor: '{colors.petrolschleier}'
-    textColor: '{colors.tiefpetrol}'
-    rounded: '{rounded.pill}'
-    padding: '2px 8px'
-    height: '20px'
-  viertel-tile:
-    textColor: '{colors.graphit}'
-    rounded: '{rounded.none}'
-    padding: '28px'
-    width: '416px'
-    height: '340px'
-  zentrum-tile:
-    backgroundColor: '{colors.petrol}'
-    textColor: '#ffffff'
-    rounded: '{rounded.none}'
-    padding: '28px'
-    width: '416px'
-    height: '340px'
+type: reference
+title: Kartei design system
+description: The rules of the Kartei style that no token carries — colour roles, type hierarchy, layout, elevation, shapes, illustrations, components, do's and don'ts, and the open deviations in the Figma screens.
+tags: [design, design-system, kartei, figma, colors, typography, layout, illustrations]
+status: stable
+last_reviewed: 2026-11-24
+authoritative: true
 ---
 
-# Design System: Xenia · Städte des Wissens
+# Kartei design system
+
+Token values live in the Kartei mode of the Figma file `ms4MqN4CJhsLTMTKqTSC8p` and in code in `src/lib/styles/variables-kartei.css` and `src/lib/styles/fonts/kartei.ts` ([Design tokens](../css/design-tokens.md), [Font system](../css/font-system.md)). This doc holds the decisions those values don't carry: which colour does which job, which face sets which text, how pages are laid out, and what the screens deliberately avoid. The hex values below name the colours; when they disagree with Figma or the token files, Figma and the token files win.
 
 ## Overview
 
-**Creative North Star: "Die Kartei im Lesesaal"**
+### Creative North Star: "Die Kartei im Lesesaal"
 
 The site is the Xenia research archive of 1996, reopened today. It is stone-grey archive paper with index cards on it, graphite type, and one ink colour taken from the Siemens research labs: petrol. A second colour, coral, appears in a single role: the mark that says "Sie sind hier". The Stadtplan is still a real grid of districts set around a petrol centre. Every Viertel has a small line-drawn building on a pale petrol disc. A Rundgang is a row of those buildings you step along. The paper is warm, quiet and exact: hairline rules, precise mono labels, big serif numerals for years and sequences.
 
@@ -235,7 +73,7 @@ These tokens exist in the Kartei theme but no screen uses them yet:
 
 - **Viertel-Reiter** (`--viertel-*`): one index-tab tint per Viertel, Light and Dark: Annäherung `#e4dcef`, Märkte `#d9e3f1`, Kontexte `#d3e9e7`, Inszenierung `#e9e1c9`, Zukunft `#f3e6b8`, Wertschöpfung `#f6d8cc`, Potenziale `#f1d4dc`, Führung `#dde6d2`.
 
-### Named Rules
+### Colour rules
 
 **The Petrol Rule.** Petrol marks what moves the visitor forward and the centre of the city: primary buttons ("Rundgang starten", "Kapitel 3 weiterlesen"), the Zentrum, completed progress, links and focus. It's never a section background.
 
@@ -254,7 +92,7 @@ These tokens exist in the Kartei theme but no screen uses them yet:
 
 **Character:** Instrument Serif is the large, condensed face of an archive's title page. Literata is the text face of a well-set research report. Schibsted Grotesk is the plain signage. DM Mono is the shelf mark and stamp on every card.
 
-In Figma these come from the `Style` collection: `font/family/heading` is Instrument Serif, `font/family/serif` is Literata, `font/family/sans` is Schibsted Grotesk, `font/family/mono` is DM Mono (see Open Deviations for the library state).
+In Figma these come from the `Style` collection: `font/family/heading` is Instrument Serif, `font/family/serif` is Literata, `font/family/sans` is Schibsted Grotesk, `font/family/mono` is DM Mono (see Open deviations for the library state).
 
 ### Hierarchy
 
@@ -273,7 +111,7 @@ Sizes are desktop / mobile; where only one size is given, both use it. The sizes
 - **Label** (DM Mono 500, 12px, 16px line height, no tracking): uppercase as typed ("VIERTEL 03", "PROZESSANSATZ", "GANGART WECHSELN"). Mono 400 at 12px carries mixed-case meta lines, counts and routes ("5 Stationen · 15 Min.", "März 1995 · Hannover", "Annäherung → Kontexte → Zukunft"). The K1–K8 chapter chips use 11–13px.
 - **Wordmark**: "Xenia" in Instrument Serif 400 28px (1.0, −1%) with "Städte des Wissens" in DM Mono 400 12px in Bleigrau. Instrument Serif has no medium weight.
 
-### Named Rules
+### Typography rules
 
 **The Source Text Rule.** Original Xenia texts are always set in Literata at 18px or larger, and interface copy never is. A reader can tell at a glance what is source and what is site.
 
@@ -309,19 +147,19 @@ Flat paper. Surfaces and controls sit at rest with no shadow: the kit's `shadow/
 - **Popover** (`box-shadow: 0 1px 3px rgba(0,0,0,0.10), 0 2px 4px -1px rgba(0,0,0,0.10)`): menus, popovers and select lists.
 - **Overlay**: sheets and drawers have no shadow in the kit (`shadow/overlay` is zero). A proposal of `0 8px 24px` in Graphit at 12% is not in the Kartei theme; it stays provisional.
 
-### Named Rules
+### Elevation rules
 
 **The Paper Rule.** Anything that's part of the page is flat. Only something that floats above the page (menu, popover, sheet, drawer) may cast a shadow. A border and a shadow never appear on the same element.
 
 ## Shapes
 
 - **Controls:** buttons, inputs, selects, list items and nav items have barely rounded corners (4px). Small buttons, tab triggers and menu items have 2px.
-- **Cards, dialogs and the Gangart box:** 8px. The Thema-Karte is drawn with 12px (see Open Deviations).
+- **Cards, dialogs and the Gangart box:** 8px. The Thema-Karte is drawn with 12px (see Open deviations).
 - **Badges:** pills.
 - **Stadtplan tiles and Rundgang cards:** square-cornered, so the grid reads as one continuous map rather than a set of cards.
 - **Illustrations:** each sits on a full circle of Petrolschleier (184px in the 240px component) with a thin horizon line and a flat shadow at its base. Line art is Graphit at 2px with round caps and joins (3–4px only for load-bearing parts); surfaces are painted Karteikarte, Petrol and Schieferblau. Sizes: 420px in a page hero, 128px on a tile, 44 × 64px as a station stop. The Figma page `Illustrationen` holds the catalogue and the reasoning.
 
-### Named Rules
+### Shape rules
 
 **The One Object Rule.** Each Viertel, Thema and the Stadtplatz is one object that could stand in a city, chosen because it tells the place's focus at a glance. Viertel are objects seen from the front, the Zentrum is the only piece of architecture, Themen are abstract sculptures, Rundgänge are floor plans seen from above. One place, one object, one statement.
 
@@ -383,7 +221,7 @@ Quiet signage: small, barely rounded, never louder than the heading they serve.
 
 ## Do's and Don'ts
 
-### Do:
+### Do
 
 - **Do** set every original Xenia text in Literata at 18px or larger, in a column no wider than 608px.
 - **Do** use Petrol for what moves the visitor forward and Petrolschleier for the guided way. Nothing else gets those colours.
@@ -391,7 +229,7 @@ Quiet signage: small, barely rounded, never louder than the heading they serve.
 - **Do** bind every colour to the Style and Mode variables, so every style mode and Light and Dark all work.
 - **Do** name places by their glossary names ("das Viertel der Kontexte"), and use numbers only where the sequence matters.
 
-### Don't:
+### Don't
 
 - **Don't** stack more than one label row above a heading.
 - **Don't** use DM Mono for prose or button labels.
@@ -401,9 +239,9 @@ Quiet signage: small, barely rounded, never louder than the heading they serve.
 - **Don't** use a one-sided bar or border to highlight a quote or note. Use italics, a tint or a full border.
 - **Don't** number things that aren't a sequence, such as nav items.
 
-## Open Deviations
+## Open deviations
 
-Places where the screens break their own system. They're recorded here, not adopted as rules:
+Places where the screens break their own system. They are recorded here, not adopted as rules:
 
 - The published kit library (`4EJ76bQptCoMzeCin5ZeOM`) had `font/family/serif` and `font/family/heading` set to Newsreader in the Kartei mode. The kit's `Style` collection now says Literata and Instrument Serif, but the library has to be republished and the app file updated before its pages render them. Then re-check title sizes and line heights against Instrument Serif, which is narrower than Newsreader.
 - On mobile, the Station and Abschnitt titles are set in Schibsted Grotesk ExtraBold 36px instead of the display serif.

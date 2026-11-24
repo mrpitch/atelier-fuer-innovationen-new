@@ -39,7 +39,7 @@ Everything left of `out/` runs at build time. The browser gets HTML, CSS and the
 
 ```mermaid
 flowchart TB
-  design["DESIGN.md<br/>Kartei, from the Figma file"] --> tokens["Tokens<br/>variables-kartei.css, fonts/kartei.ts"]
+  design["Figma file<br/>Kartei style mode"] --> tokens["Tokens<br/>variables-kartei.css, fonts/kartei.ts"]
   tokens --> theme["Tailwind theme<br/>theme.css"]
   theme --> ui["shadcn primitives (base-nova)<br/>components/ui"]
   theme --> blocks["Pro Blocks<br/>components/pro-blocks"]
@@ -50,7 +50,7 @@ flowchart TB
 
 Each layer only knows the one above it. A primitive reads `bg-primary`, not Petrol's value, so a token change in `variables-kartei.css` reaches every component without touching one. Primitives and blocks are installed by the shadcn CLI and then owned by the repository: the icon swap and the Kartei rules in [Design tokens](../reference/css/design-tokens.md) apply to them like to any project component.
 
-The style choice follows DESIGN.md: `base-nova` installs 32px buttons and inputs and 24px small buttons, the control sizes the Kartei screens use. Its primitives come from Base UI, so composition goes through Base UI's `render` prop.
+The style choice follows the [Kartei design system](../reference/design/kartei-design-system.md): `base-nova` installs 32px buttons and inputs and 24px small buttons, the control sizes the Kartei screens use. Its primitives come from Base UI, so composition goes through Base UI's `render` prop.
 
 ## Where to go next
 

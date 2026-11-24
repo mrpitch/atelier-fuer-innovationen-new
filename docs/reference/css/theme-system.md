@@ -10,7 +10,7 @@ authoritative: true
 
 # Theme system
 
-One theme is active per build. Kartei is the active theme; its source is DESIGN.md.
+One theme is active per build. Kartei is the active theme; its source is the Kartei mode of the Figma file, and its rules are in the [Kartei design system](../design/kartei-design-system.md).
 
 ## Files
 
@@ -64,11 +64,11 @@ Values and naming rules: [Design tokens](./design-tokens.md).
 
 ## Switching the active theme
 
-| What      | Change                                                                                                                                                                                                                          |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tokens    | Copy `design/<name>.tweakcn.css` to `src/lib/styles/variables-<name>.css` without its `--font-*` lines and import it in `globals.css` instead of `variables-kartei.css`. The exports already carry `--signal` and `--viertel-*` |
-| Fonts     | Add `src/lib/styles/fonts/<name>.ts` with the families from the export's `--font-*` lines and re-export it from `fonts/index.ts`                                                                                                |
-| DESIGN.md | Describes Kartei. A theme switch is a design decision and updates DESIGN.md with it                                                                                                                                             |
+| What         | Change                                                                                                                                                                                                                          |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tokens       | Copy `design/<name>.tweakcn.css` to `src/lib/styles/variables-<name>.css` without its `--font-*` lines and import it in `globals.css` instead of `variables-kartei.css`. The exports already carry `--signal` and `--viertel-*` |
+| Fonts        | Add `src/lib/styles/fonts/<name>.ts` with the families from the export's `--font-*` lines and re-export it from `fonts/index.ts`                                                                                                |
+| Design rules | The [Kartei design system](../design/kartei-design-system.md) describes Kartei. A theme switch is a design decision and updates that doc with it                                                                                |
 
 ## Related
 

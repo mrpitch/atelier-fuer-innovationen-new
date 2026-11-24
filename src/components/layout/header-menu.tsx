@@ -28,7 +28,7 @@ function isCurrentMenuLink(url: string, currentPath: string): boolean {
 	return url === currentPath || (url !== '/' && currentPath.startsWith(`${url}/`))
 }
 
-// The header Menu as a NavigationMenu (DESIGN.md, Navigation): a flat list
+// The header Menu as a NavigationMenu (Kartei design system, Navigation): a flat list
 // of areas (menu.ts's FLAT_MENU_NAMES guarantees the header Menu never
 // groups), with the current one marked. Takes `currentPath` as a prop
 // instead of reading the router itself, so it stays usable from a Server
