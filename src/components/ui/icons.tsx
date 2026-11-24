@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 
 // The only file that imports lucide-react: docs/reference/components/icon-registry.md.
-// The arrows mark movement on buttons and links (DESIGN.md, Buttons).
+// The arrows mark movement on buttons and links (Kartei design system, Buttons).
 const icons = {
 	arrowDown: ArrowDown,
 	arrowLeft: ArrowLeft,

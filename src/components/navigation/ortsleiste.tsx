@@ -42,7 +42,7 @@ function NeighbourLink({
 }
 
 // The breadcrumb on the left and the neighbouring places on the right
-// (DESIGN.md, Place bar), replacing the separate Breadcrumbs and
+// (Kartei design system, Place bar), replacing the separate Breadcrumbs and
 // PreviousNext on the Viertel, Zentrum, Rundgang and Thema pages (issue
 // #82). Stacked on mobile and tablet (768), a row from 1024 up (Figma).
 function Ortsleiste({ breadcrumbs, previous, next, className, ...props }: OrtsleisteProps) {

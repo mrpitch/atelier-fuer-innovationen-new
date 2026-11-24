@@ -16,7 +16,7 @@ interface FooterProps extends React.ComponentProps<'footer'> {
 	legalMenu: readonly MenuLink[]
 }
 
-// A footer link is a Button link instance, size sm (DESIGN.md, Navigation;
+// A footer link is a Button link instance, size sm (Kartei design system, Navigation;
 // Figma 36694:29802), in the muted foreground the Figma footer sets.
 function FooterLink({ url, label }: { url: string; label: string }) {
 	return (

@@ -1,6 +1,6 @@
 import { DM_Mono, Instrument_Serif, Literata, Schibsted_Grotesk } from 'next/font/google'
 
-// Weights and styles follow DESIGN.md's typography. Schibsted Grotesk and Literata
+// Weights and styles follow the Kartei design system's typography. Schibsted Grotesk and Literata
 // are variable fonts, so they load their whole weight axis.
 
 // Interface: body copy, controls, navigation.
@@ -27,7 +27,7 @@ export const heading = Instrument_Serif({
 	variable: '--font-heading',
 })
 
-// Labels, counts and measurements (DESIGN.md `label` uses 500).
+// Labels, counts and measurements (the Kartei design system's Label uses 500).
 export const mono = DM_Mono({
 	weight: ['400', '500'],
 	subsets: ['latin'],

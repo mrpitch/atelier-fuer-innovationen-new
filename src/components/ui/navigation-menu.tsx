@@ -43,7 +43,7 @@ function NavigationMenuLink({ className, ...props }: NavigationMenuPrimitive.Lin
 			data-slot="navigation-menu-link"
 			className={cn(
 				// The current area's Pappe pill is the same bg-muted the kit already
-				// uses for Hover (DESIGN.md, Open Deviations): Figma draws the active
+				// uses for Hover (Kartei design system, Open deviations): Figma draws the active
 				// item as its own Hover variant, with no separate active state.
 				"flex items-center gap-2 rounded-lg p-2 text-sm font-medium transition-all outline-none hover:bg-muted focus:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-1 data-active:bg-muted data-active:hover:bg-muted data-active:focus:bg-muted [&_svg:not([class*='size-'])]:size-4",
 				className,

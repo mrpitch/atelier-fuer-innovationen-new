@@ -10,7 +10,7 @@ interface WortmarkeProps extends Omit<React.ComponentProps<typeof Link>, 'href'>
 }
 
 // Xenia / Site / Wortmarke (Figma 36577:16140): the site name over its
-// tagline, linking to the Startseite. Its own component (DESIGN.md,
+// tagline, linking to the Startseite. Its own component (Kartei design system,
 // Navigation) so the header, the footer and the mobile header (#84) share
 // one implementation instead of each restating the two-line brand mark. The
 // name's 28px is Figma's own size, between the scale's text-2xl and text-3xl.

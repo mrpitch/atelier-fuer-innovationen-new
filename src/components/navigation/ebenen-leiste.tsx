@@ -12,7 +12,7 @@ import { formatTwoDigits } from '@/lib/utils/format-two-digits'
 interface EbenenLeisteProps extends React.ComponentProps<'div'> {
 	// The Viertel a Kapitel and its Abschnitte are set in (ADR-0003, "Kapitel n
 	// = Viertel n"): shown as the current place with "Sie sind hier"
-	// (DESIGN.md, Place bar). The caller renders its own illustration — the
+	// (Kartei design system, Place bar). The caller renders its own illustration — the
 	// one lookup keyed by a real Viertel ID (icon-registry.md's pattern) —
 	// rather than this component importing it, so a fixture graph can still
 	// render the rest (content-layer.md's content-graph boundary).
@@ -56,7 +56,7 @@ function EbenenLeiste({
 						})}
 					</ItemTitle>
 					<ItemDescription className="flex items-center gap-2">
-						{/* The Signal Rule (DESIGN.md): Koralle is a mark beside the text, never the text or a fill behind it; one per view. */}
+						{/* The Signal Rule (Kartei design system): Koralle is a mark beside the text, never the text or a fill behind it; one per view. */}
 						<span
 							data-slot="sie-sind-hier-mark"
 							aria-hidden="true"
