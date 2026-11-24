@@ -1,10 +1,13 @@
 import type * as React from 'react'
 
 import { Annaeherung } from '@/components/ui/illustrations/annaeherung'
+import { EineWeltFuerMorgen } from '@/components/ui/illustrations/eine-welt-fuer-morgen'
 import { Fuehrung } from '@/components/ui/illustrations/fuehrung'
+import { Futursysteme } from '@/components/ui/illustrations/futursysteme'
 import { Inszenierung } from '@/components/ui/illustrations/inszenierung'
 import { Kontexte } from '@/components/ui/illustrations/kontexte'
 import { MaerkteKooperation } from '@/components/ui/illustrations/maerkte-kooperation'
+import { NetzwerkDerInnovatoren } from '@/components/ui/illustrations/netzwerk-der-innovatoren'
 import { Potenziale } from '@/components/ui/illustrations/potenziale'
 import { Wertschoepfung } from '@/components/ui/illustrations/wertschoepfung'
 import { Zentrum } from '@/components/ui/illustrations/zentrum'
@@ -39,9 +42,9 @@ const illustrations = {
 	'stadt/potenziale': Potenziale,
 	'stadt/fuehrung': Fuehrung,
 	'stadt/zentrum': Zentrum,
-	'themen/eine-welt-fuer-morgen': Placeholder,
-	'themen/futursysteme': Placeholder,
-	'themen/netzwerk-der-innovatoren': Placeholder,
+	'themen/eine-welt-fuer-morgen': EineWeltFuerMorgen,
+	'themen/futursysteme': Futursysteme,
+	'themen/netzwerk-der-innovatoren': NetzwerkDerInnovatoren,
 	'rundgaenge/besuch-im-zentrum': Placeholder,
 	'rundgaenge/durch-die-viertel': Placeholder,
 } satisfies Record<string, React.ComponentType<{ label: string } & React.ComponentProps<'svg'>>>
