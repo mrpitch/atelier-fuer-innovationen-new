@@ -47,6 +47,7 @@ const restrictions = {
 		'as-child-syntax': builtinRules.get('no-restricted-syntax'),
 		'button-anchor-syntax': builtinRules.get('no-restricted-syntax'),
 		'html-attributes-syntax': builtinRules.get('no-restricted-syntax'),
+		'ui-string-syntax': builtinRules.get('no-restricted-syntax'),
 		'default-exports-syntax': builtinRules.get('no-restricted-syntax'),
 		'component-export-syntax': builtinRules.get('no-restricted-syntax'),
 		'template-literal-syntax': builtinRules.get('no-restricted-syntax'),
@@ -706,6 +707,28 @@ const eslintConfig = defineConfig([
 					selector: 'ExportNamedDeclaration:not([declaration]) ~ :not(ExportNamedDeclaration)',
 					message:
 						'The export { … } list goes at the bottom of the file, after every declaration. See docs/reference/components/component-blueprint.md.',
+				},
+			],
+		},
+	},
+	{
+		// UI strings come from the German dictionary (dictionary.md), so no component carries
+		// inline text. Pro Blocks keep their upstream copy; tests assert on rendered markup.
+		files: ['src/components/**/*.tsx', 'src/app/**/*.tsx'],
+		ignores: ['src/components/pro-blocks/**', '**/*.test.tsx'],
+		rules: {
+			'restrictions/ui-string-syntax': [
+				'error',
+				{
+					selector:
+						'JSXAttribute[name.name=/^(aria-label|aria-description|alt|title|placeholder)$/] > Literal[value=/[A-Za-z]{2}/]',
+					message:
+						"Read user-facing attribute text from the dictionary: t('key'). See docs/reference/i18n/dictionary.md.",
+				},
+				{
+					selector: 'JSXText[value=/[A-Za-z\\u00C0-\\u024F]{2}/]',
+					message:
+						"Read visible text from the dictionary: {t('key')}. See docs/reference/i18n/dictionary.md.",
 				},
 			],
 		},

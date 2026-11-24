@@ -196,3 +196,28 @@ describe('content-graph boundaries', () => {
 		expect(fromGraph).not.toContain('restrictions/content-url-literals')
 	})
 })
+
+describe('UI strings', () => {
+	const ids = (code: string, file = 'src/components/foo/foo.tsx') => ruleIdsFor(code, file)
+
+	it('fails an inline aria-label', async () => {
+		expect(await ids(`export function A() { return <nav aria-label="breadcrumb" /> }\n`)).toContain(
+			'restrictions/ui-string-syntax',
+		)
+	})
+
+	it('fails inline visible text, umlauts included', async () => {
+		expect(await ids(`export function A() { return <p>Zurück</p> }\n`)).toContain(
+			'restrictions/ui-string-syntax',
+		)
+	})
+
+	it('passes dictionary text and a test file', async () => {
+		expect(await ids(`export function A() { return <p>{t('a.b')}</p> }\n`)).not.toContain(
+			'restrictions/ui-string-syntax',
+		)
+		expect(
+			await ids(`export function A() { return <p>Hallo</p> }\n`, 'src/components/foo/foo.test.tsx'),
+		).not.toContain('restrictions/ui-string-syntax')
+	})
+})

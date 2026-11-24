@@ -17,7 +17,7 @@ import {
 	validateBodyImages,
 } from './loader'
 import { parentId, STADT_DIR } from './locations'
-import type { MenuLink } from './menu'
+import type { FlatMenuName, GroupedMenuName, MenuGroupLink, MenuLink, ResolvedMenu } from './menu'
 import { resolveMenus } from './menu'
 import { buildNavigation } from './navigation'
 import { summarizeRundgang } from './rundgang'
@@ -111,18 +111,26 @@ export interface ContentGraph {
 	// Start › Rundgänge › Rundgang › Station), the document itself last.
 	// Empty for an unknown or hidden ID.
 	getBreadcrumbs(id: string): readonly NavigationLink[]
-	// Seiten walk Navigation; Abschnitte all Abschnitte in Kapitel number order,
-	// across Kapitel; Kapitel all Kapitel in number order; Stationen their own
-	// Rundgang's. Undefined at either end of a sequence and for every other
-	// type.
+	// Seiten walk Navigation; Viertel their stadt/meta.json number order (with
+	// a neighbour's `number` set, issue #82); Abschnitte all Abschnitte in
+	// Kapitel number order, across Kapitel; Kapitel all Kapitel in number
+	// order; Stationen their own Rundgang's; Rundgänge and Themen their own
+	// resolved list order. Undefined at either end of a sequence, for the
+	// Zentrum, and for every other type.
 	getPrevious(id: string): NavigationLink | undefined
 	getNext(id: string): NavigationLink | undefined
 
 	readonly site: Site
 	// name is the Menu file's basename (header, footer, …). An unlisted Menu
 	// returns an empty list rather than throwing. An entry's ID may name a
-	// published document of any type.
-	getMenu(name: string): readonly MenuLink[]
+	// published document of any type. A grouped Menu resolves to labelled
+	// groups of links instead of a flat list (glossary: Menu group).
+	// The names RootLayout reads resolve to a known shape (menu.ts's
+	// FLAT_MENU_NAMES/GROUPED_MENU_NAMES, checked while the graph is built), so
+	// they type as that shape; any other name stays a ResolvedMenu.
+	getMenu(name: FlatMenuName): readonly MenuLink[]
+	getMenu(name: GroupedMenuName): readonly MenuGroupLink[]
+	getMenu(name: string): ResolvedMenu
 
 	// The Viertel (glossary), ordered and numbered by stadt/meta.json.
 	readonly viertel: readonly Viertel[]
@@ -388,7 +396,7 @@ export function buildContentGraph(
 		getPrevious: trail.getPrevious,
 		getNext: trail.getNext,
 		site,
-		getMenu: (name) => menus.get(name) ?? [],
+		getMenu: ((name: string) => menus.get(name) ?? []) as ContentGraph['getMenu'],
 		viertel,
 		getViertel: (id, locale) => find('viertel', id, locale),
 		zentrum,

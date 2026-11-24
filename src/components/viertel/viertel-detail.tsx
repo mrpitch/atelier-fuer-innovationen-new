@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type * as React from 'react'
 
 import { AufsaetzeListe } from '@/components/aufsatz/aufsaetze-liste'
-import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
+import { Ortsleiste } from '@/components/navigation/ortsleiste'
 import { StationenListe } from '@/components/rundgang/stationen-liste'
 import { Illustration } from '@/components/ui/illustration'
 import type { Viertel } from '@/lib/content'
@@ -30,7 +30,11 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 
 	return (
 		<div data-slot="viertel-detail" {...props}>
-			<Breadcrumbs items={graph.getBreadcrumbs(viertel.id)} />
+			<Ortsleiste
+				breadcrumbs={graph.getBreadcrumbs(viertel.id)}
+				previous={graph.getPrevious(viertel.id)}
+				next={graph.getNext(viertel.id)}
+			/>
 			<Illustration id={viertel.id} label={viertel.title} />
 			<h1>{viertel.title}</h1>
 			<Steckbrief leitsatz={viertel.leitsatz} steckbrief={viertel.steckbrief} />

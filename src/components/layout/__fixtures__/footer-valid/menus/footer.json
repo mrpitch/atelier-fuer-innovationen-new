@@ -1,0 +1,4 @@
+[
+	{ "label": "Entdecken", "entries": [{ "id": "idee" }, { "id": "ueber" }] },
+	{ "label": "Lesen", "entries": [{ "id": "buch" }] }
+]

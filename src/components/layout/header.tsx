@@ -1,30 +1,35 @@
-import Link from 'next/link'
+import { cn } from 'cn'
 import type * as React from 'react'
 
-import type { MenuLink, Site } from '@/lib/content'
-import { siteWordmark } from '@/lib/content'
-import { t } from '@/lib/dictionary'
+import { Container } from '@/components/layout/container'
+import { HeaderNav } from '@/components/layout/header-nav'
+import { MobileHeader } from '@/components/layout/mobile-header'
+import type { MenuLink } from '@/lib/content'
 
 interface HeaderProps extends React.ComponentProps<'header'> {
-	site: Site
-	homeUrl: string
+	wortmarke: React.ReactNode
 	menu: readonly MenuLink[]
 }
 
-function Header({ site, homeUrl, menu, ...props }: HeaderProps) {
+// Xenia / Site / Header (Figma 36577:16643): the Wortmarke and the header
+// Menu, with the reader's current area marked. Stays a Server Component —
+// HeaderNav is the only part that needs the router, for the current path.
+// From 1024px up (`lg`); below it the mobile header takes over.
+function Header({ wortmarke, menu, className, ...props }: HeaderProps) {
 	return (
-		<header data-slot="header" {...props}>
-			<Link href={homeUrl}>{siteWordmark(site)}</Link>
-			<nav data-slot="header-menu" aria-label={t('layout.headerMenu')}>
-				<ul>
-					{menu.map((item) => (
-						<li key={item.url}>
-							<Link href={item.url}>{item.label}</Link>
-						</li>
-					))}
-				</ul>
-			</nav>
-		</header>
+		<>
+			<header
+				data-slot="header"
+				className={cn('hidden h-16 items-center bg-background lg:flex', className)}
+				{...props}
+			>
+				<Container className="flex items-center justify-between gap-12">
+					{wortmarke}
+					<HeaderNav menu={menu} />
+				</Container>
+			</header>
+			<MobileHeader wortmarke={wortmarke} menu={menu} className="lg:hidden" />
+		</>
 	)
 }
 

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type * as React from 'react'
 
-import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
+import { Ortsleiste } from '@/components/navigation/ortsleiste'
 import { Illustration } from '@/components/ui/illustration'
 import type { Thema } from '@/lib/content'
 import { contentGraph, shortTitleOrTitle } from '@/lib/content'
@@ -25,7 +25,11 @@ async function ThemaDetail({ thema, locale, ...props }: ThemaDetailProps) {
 
 	return (
 		<div data-slot="thema-detail" {...props}>
-			<Breadcrumbs items={graph.getBreadcrumbs(thema.id)} />
+			<Ortsleiste
+				breadcrumbs={graph.getBreadcrumbs(thema.id)}
+				previous={graph.getPrevious(thema.id)}
+				next={graph.getNext(thema.id)}
+			/>
 			<Illustration id={thema.id} label={thema.title} />
 			<h1>{thema.title}</h1>
 			<Body components={bodyImageComponents(thema.id)} />

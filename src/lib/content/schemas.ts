@@ -46,7 +46,33 @@ const menuExternalEntrySchema = z.strictObject({ url: z.url(), label: z.string()
 export const menuEntrySchema = z.union([menuContentEntrySchema, menuExternalEntrySchema])
 export type MenuEntry = z.infer<typeof menuEntrySchema>
 
-export const menuSchema = z.array(menuEntrySchema)
+// A Menu group (glossary: Menu group): a label with its own ordered,
+// non-empty list of Menu entries, such as a footer column (issue #79). A
+// Menu holds either entries or groups, never both — menuSchema's superRefine
+// below is what enforces that, since the two shapes don't otherwise overlap.
+export const menuGroupSchema = z.strictObject({
+	label: z.string().min(1),
+	entries: z.array(menuEntrySchema).min(1, 'menu group has no entries'),
+})
+export type MenuGroup = z.infer<typeof menuGroupSchema>
+
+const menuItemSchema = z.union([menuEntrySchema, menuGroupSchema])
+export type MenuItem = z.infer<typeof menuItemSchema>
+
+export function isMenuGroup(item: MenuItem): item is MenuGroup {
+	return 'entries' in item
+}
+
+export function isMenuEntry(item: MenuItem): item is MenuEntry {
+	return !isMenuGroup(item)
+}
+
+export const menuSchema = z.array(menuItemSchema).superRefine((items, ctx) => {
+	const groupCount = items.filter(isMenuGroup).length
+	if (groupCount > 0 && groupCount < items.length) {
+		ctx.addIssue({ code: 'custom', message: 'menu mixes Menu entries and Menu groups' })
+	}
+})
 
 // A Viertel's short profile (glossary: Steckbrief). Structured fields, not
 // prose, so the Viertel page can render each one under its own label

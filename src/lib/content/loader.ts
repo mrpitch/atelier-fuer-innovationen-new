@@ -24,7 +24,7 @@ import {
 	translationLocale,
 } from './locations'
 import type { Meta } from './order'
-import type { MenuEntry, Site, TranslationFrontmatter } from './schemas'
+import type { MenuItem, Site, TranslationFrontmatter } from './schemas'
 import {
 	abschnittFrontmatterSchema,
 	aufsatzFrontmatterSchema,
@@ -256,7 +256,7 @@ const MENUS_DIR_NAME = 'menus'
 export interface RawMenu {
 	// The Menu file's path relative to the content directory, for error messages.
 	readonly file: string
-	readonly entries: readonly MenuEntry[]
+	readonly items: readonly MenuItem[]
 }
 
 function listMenuFiles(contentDir: string): string[] {
@@ -286,7 +286,7 @@ export function loadMenus(contentDir: string): ReadonlyMap<string, RawMenu> {
 		}
 
 		const name = path.basename(relativePath, '.json')
-		result.set(name, { file: relativePath, entries: parsed.data })
+		result.set(name, { file: relativePath, items: parsed.data })
 	}
 
 	return result
