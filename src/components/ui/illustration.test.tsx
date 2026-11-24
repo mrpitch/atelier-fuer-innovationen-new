@@ -27,6 +27,15 @@ const EXPORTED_DRAWINGS: ReadonlyArray<{
 	{ id: 'stadt/potenziale', resolve: (graph) => graph.getViertel('stadt/potenziale') },
 	{ id: 'stadt/fuehrung', resolve: (graph) => graph.getViertel('stadt/fuehrung') },
 	{ id: 'stadt/zentrum', resolve: (graph) => graph.zentrum },
+	{
+		id: 'themen/eine-welt-fuer-morgen',
+		resolve: (graph) => graph.getThema('themen/eine-welt-fuer-morgen'),
+	},
+	{ id: 'themen/futursysteme', resolve: (graph) => graph.getThema('themen/futursysteme') },
+	{
+		id: 'themen/netzwerk-der-innovatoren',
+		resolve: (graph) => graph.getThema('themen/netzwerk-der-innovatoren'),
+	},
 ]
 
 describe('Illustration registry', () => {
@@ -53,11 +62,11 @@ describe('Illustration registry', () => {
 
 	it('still renders the placeholder for an ID whose drawing is not exported yet', () => {
 		const html = renderToStaticMarkup(
-			<Illustration id="themen/futursysteme" label="Futursysteme" />,
+			<Illustration id="rundgaenge/besuch-im-zentrum" label="Besuch im Zentrum" />,
 		)
 
 		expect(html).toContain('data-slot="illustration-placeholder"')
-		expect(html).toContain('aria-label="Futursysteme"')
+		expect(html).toContain('aria-label="Besuch im Zentrum"')
 	})
 
 	it('throws naming the ID when nothing is registered for it', () => {
