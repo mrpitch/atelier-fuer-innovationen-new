@@ -26,10 +26,10 @@ describe('BreadcrumbTrail', () => {
 		expect(html).toContain('aria-current="page"')
 	})
 
-	it('falls back to the "Sie sind hier" aria-label when none is given', () => {
+	it('falls back to the "Brotkrumen" aria-label when none is given', () => {
 		const html = renderToStaticMarkup(<BreadcrumbTrail breadcrumbs={trail} />)
 
-		expect(html).toContain('aria-label="Sie sind hier"')
+		expect(html).toContain('aria-label="Brotkrumen"')
 	})
 
 	it('lets a caller override the aria-label', () => {
@@ -38,6 +38,6 @@ describe('BreadcrumbTrail', () => {
 		)
 
 		expect(html).toContain('aria-label="Eigenes Label"')
-		expect(html).not.toContain('aria-label="Sie sind hier"')
+		expect(html).not.toContain('aria-label="Brotkrumen"')
 	})
 })

@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from 'cn'
+import { usePathname } from 'next/navigation'
 import type * as React from 'react'
 import { useEffect, useId, useRef, useState } from 'react'
 
@@ -15,25 +16,18 @@ interface MobileHeaderProps extends React.ComponentProps<'header'> {
 	site: Site
 	homeUrl: string
 	menu: readonly MenuLink[]
-	currentPath: string
 }
 
 // Xenia / Site / Header (Mobile) (Figma 36622:8752): a 64px navbar with the
 // Wortmarke and a menu button; the open panel (36622:10621) drops down under
 // it with the header Menu, the current area marked as on desktop. Takes
-// `currentPath` as a prop like HeaderMenu does; MobileHeaderNav supplies it.
+// the current path from the router and hands it to HeaderMenu.
 //
 // The panel stays in the markup and is hidden while closed, so the button's
 // aria-controls always resolves. The panel is open only for the path it was
 // opened on: following a link changes the path and closes it, with no effect.
-function MobileHeader({
-	site,
-	homeUrl,
-	menu,
-	currentPath,
-	className,
-	...props
-}: MobileHeaderProps) {
+function MobileHeader({ site, homeUrl, menu, className, ...props }: MobileHeaderProps) {
+	const currentPath = usePathname()
 	const [openedAt, setOpenedAt] = useState<string | null>(null)
 	const open = openedAt === currentPath
 	const panelId = useId()
@@ -81,7 +75,13 @@ function MobileHeader({
 				hidden={!open}
 				className="absolute inset-x-0 top-full z-50 border-b border-border bg-background px-6 pb-4"
 			>
-				<HeaderMenu menu={menu} currentPath={currentPath} stacked />
+				<HeaderMenu
+					menu={menu}
+					currentPath={currentPath}
+					className="max-w-none"
+					listClassName="flex-col items-stretch justify-start"
+					linkClassName="w-full"
+				/>
 			</div>
 		</header>
 	)

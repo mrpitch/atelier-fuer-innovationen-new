@@ -2,28 +2,27 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-import { asFlatMenu, buildContentGraph } from '@/lib/content'
+import { buildContentGraph } from '@/lib/content'
 
 import { MobileHeader } from './mobile-header'
+
+const pathname = vi.hoisted(() => ({ current: '/' }))
+vi.mock('next/navigation', () => ({ usePathname: () => pathname.current }))
 
 const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '__fixtures__')
 
 describe('MobileHeader', () => {
 	it('lists every header Menu entry in the panel and marks only the current area', () => {
 		const graph = buildContentGraph(path.join(fixturesDir, 'header-valid'))
-		const menu = asFlatMenu(graph.getMenu('header'))
+		const menu = graph.getMenu('header')
 		const rundgaenge = menu.find((item) => item.label === 'Rundgänge')
 		if (!rundgaenge) throw new Error('fixture header Menu is missing Rundgänge')
 
+		pathname.current = rundgaenge.url
 		const html = renderToStaticMarkup(
-			<MobileHeader
-				site={graph.site}
-				homeUrl={graph.navigation.url}
-				menu={menu}
-				currentPath={rundgaenge.url}
-			/>,
+			<MobileHeader site={graph.site} homeUrl={graph.navigation.url} menu={menu} />,
 		)
 
 		for (const item of menu) expect(html).toContain(`href="${item.url}"`)
@@ -35,12 +34,12 @@ describe('MobileHeader', () => {
 
 	it('starts with the panel closed', () => {
 		const graph = buildContentGraph(path.join(fixturesDir, 'header-valid'))
+		pathname.current = '/'
 		const html = renderToStaticMarkup(
 			<MobileHeader
 				site={graph.site}
 				homeUrl={graph.navigation.url}
-				menu={asFlatMenu(graph.getMenu('header'))}
-				currentPath="/"
+				menu={graph.getMenu('header')}
 			/>,
 		)
 

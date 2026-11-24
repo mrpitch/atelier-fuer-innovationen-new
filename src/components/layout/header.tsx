@@ -1,8 +1,9 @@
 import { cn } from 'cn'
 import type * as React from 'react'
 
+import { Container } from '@/components/layout/container'
 import { HeaderNav } from '@/components/layout/header-nav'
-import { MobileHeaderNav } from '@/components/layout/mobile-header-nav'
+import { MobileHeader } from '@/components/layout/mobile-header'
 import { Wortmarke } from '@/components/layout/wortmarke'
 import type { MenuLink, Site } from '@/lib/content'
 
@@ -24,12 +25,12 @@ function Header({ site, homeUrl, menu, className, ...props }: HeaderProps) {
 				className={cn('hidden h-16 items-center bg-background lg:flex', className)}
 				{...props}
 			>
-				<div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-12 px-6">
+				<Container className="flex items-center justify-between gap-12">
 					<Wortmarke site={site} homeUrl={homeUrl} />
 					<HeaderNav menu={menu} />
-				</div>
+				</Container>
 			</header>
-			<MobileHeaderNav site={site} homeUrl={homeUrl} menu={menu} className="lg:hidden" />
+			<MobileHeader site={site} homeUrl={homeUrl} menu={menu} className="lg:hidden" />
 		</>
 	)
 }

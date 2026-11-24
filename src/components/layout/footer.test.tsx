@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { asFlatMenu, asGroupedMenu, buildContentGraph } from '@/lib/content'
+import { buildContentGraph } from '@/lib/content'
 
 import { Footer } from './footer'
 
@@ -17,8 +17,8 @@ function buildFixtureGraph() {
 describe('Footer', () => {
 	it('renders each group label with its links in order, and the legal row', () => {
 		const graph = buildFixtureGraph()
-		const groups = asGroupedMenu(graph.getMenu('footer'))
-		const legalMenu = asFlatMenu(graph.getMenu('footer-legal'))
+		const groups = graph.getMenu('footer')
+		const legalMenu = graph.getMenu('footer-legal')
 
 		const html = renderToStaticMarkup(
 			<Footer

@@ -2,6 +2,7 @@ import { cn } from 'cn'
 import type * as React from 'react'
 
 import { BreadcrumbTrail } from '@/components/navigation/breadcrumb-trail'
+import { PlaceBar } from '@/components/navigation/place-bar'
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/components/ui/item'
 import type { NavigationLink, Viertel } from '@/lib/content'
 import { shortTitleOrTitle } from '@/lib/content'
@@ -55,14 +56,7 @@ function EbenenLeiste({
 			}
 
 	return (
-		<div
-			data-slot="ebenen-leiste"
-			className={cn(
-				'flex flex-col gap-3 border-b border-border px-5 py-3 lg:flex-row lg:items-center lg:gap-6 lg:px-24',
-				className,
-			)}
-			{...props}
-		>
+		<PlaceBar data-slot="ebenen-leiste" className={cn('lg:gap-6', className)} {...props}>
 			<Item size="sm" className="w-fit">
 				<ItemMedia className="size-11">{illustration}</ItemMedia>
 				<ItemContent>
@@ -98,7 +92,7 @@ function EbenenLeiste({
 					))}
 				</div>
 			</div>
-		</div>
+		</PlaceBar>
 	)
 }
 

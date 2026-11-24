@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { asFlatMenu, buildContentGraph } from '@/lib/content'
+import { buildContentGraph } from '@/lib/content'
 
 import { HeaderMenu } from './header-menu'
 
@@ -15,7 +15,7 @@ function buildFixtureGraph() {
 }
 
 function headerMenu(graph: ReturnType<typeof buildFixtureGraph>) {
-	return asFlatMenu(graph.getMenu('header'))
+	return graph.getMenu('header')
 }
 
 // The <a> for one Menu entry, so a test can check its aria-current without

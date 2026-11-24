@@ -1,7 +1,6 @@
 import type * as React from 'react'
 
-import { EbenenLeiste } from '@/components/navigation/ebenen-leiste'
-import { Illustration } from '@/components/ui/illustration'
+import { KapitelEbenenLeiste } from '@/components/navigation/kapitel-ebenen-leiste'
 import type { Abschnitt } from '@/lib/content'
 import { contentGraph } from '@/lib/content'
 import { t } from '@/lib/dictionary'
@@ -21,20 +20,10 @@ async function AbschnittDetail({ abschnitt, locale, ...props }: AbschnittDetailP
 	const Body = await graph.getBody(abschnitt.id, locale)
 	const kapitel = graph.getKapitel(abschnitt.kapitelId)
 	if (!kapitel) throw new Error(`AbschnittDetail: unknown Kapitel ID: ${abschnitt.kapitelId}`)
-	const ort = graph.getViertel(kapitel.viertelId)
-	if (!ort) throw new Error(`AbschnittDetail: unknown Viertel ID: ${kapitel.viertelId}`)
-	const abschnitteTotal = graph.getAbschnitteByKapitel(kapitel.id).length
 
 	return (
 		<div data-slot="abschnitt-detail" {...props}>
-			<EbenenLeiste
-				ort={ort}
-				illustration={<Illustration id={ort.id} label={ort.title} />}
-				breadcrumbs={graph.getBreadcrumbs(abschnitt.id)}
-				// The Viertel count, not graph.kapitel.length: see kapitel-detail.tsx.
-				kapitel={{ number: kapitel.number, total: graph.viertel.length }}
-				abschnitt={{ position: abschnitt.position, total: abschnitteTotal }}
-			/>
+			<KapitelEbenenLeiste kapitel={kapitel} abschnitt={abschnitt} />
 			<h1>{t('abschnitt.numberedTitle', { number: abschnitt.number, title: abschnitt.title })}</h1>
 			<p>{t('abschnitt.readingTime', { n: abschnitt.readingTimeMinutes })}</p>
 			<Body components={bodyImageComponents(abschnitt.id)} />

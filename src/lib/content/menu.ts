@@ -29,18 +29,6 @@ export function isGroupedMenu(menu: ResolvedMenu): menu is readonly MenuGroupLin
 	return menu.length > 0 && 'links' in menu[0]
 }
 
-// assertKnownMenuShape (below) already guarantees a Menu named in
-// FLAT_MENU_NAMES/GROUPED_MENU_NAMES resolves to the matching shape; these
-// just restate that guarantee to the type checker at the call site, instead
-// of each caller repeating its own `as` cast and comment.
-export function asFlatMenu(menu: ResolvedMenu): readonly MenuLink[] {
-	return menu as readonly MenuLink[]
-}
-
-export function asGroupedMenu(menu: ResolvedMenu): readonly MenuGroupLink[] {
-	return menu as readonly MenuGroupLink[]
-}
-
 // Every document a Menu entry may name, by ID (issue #23): any content type's
 // published document resolves, with its URL and label. `known` holds the ID of
 // every document that exists, Draft or not; `visible` only those the graph
@@ -98,16 +86,22 @@ function resolveItems(
 // footer-legal must resolve flat, footer grouped (glossary: Menu group).
 // Checked here, during graph building, so a Menu file edited into the wrong
 // shape fails `content:check` instead of only crashing the Next.js build.
-const FLAT_MENU_NAMES: ReadonlySet<string> = new Set(['header', 'footer-legal'])
-const GROUPED_MENU_NAMES: ReadonlySet<string> = new Set(['footer'])
+export const FLAT_MENU_NAMES = ['header', 'footer-legal'] as const
+export const GROUPED_MENU_NAMES = ['footer'] as const
+export type FlatMenuName = (typeof FLAT_MENU_NAMES)[number]
+export type GroupedMenuName = (typeof GROUPED_MENU_NAMES)[number]
+
+function isIn(names: readonly string[], name: string): boolean {
+	return names.includes(name)
+}
 
 function assertKnownMenuShape(name: string, file: string, resolved: ResolvedMenu): void {
 	if (resolved.length === 0) return
 	const grouped = isGroupedMenu(resolved)
-	if (FLAT_MENU_NAMES.has(name) && grouped) {
+	if (isIn(FLAT_MENU_NAMES, name) && grouped) {
 		throw new ContentValidationError(file, MENU_FIELD, `menu "${name}" must be flat, not grouped`)
 	}
-	if (GROUPED_MENU_NAMES.has(name) && !grouped) {
+	if (isIn(GROUPED_MENU_NAMES, name) && !grouped) {
 		throw new ContentValidationError(file, MENU_FIELD, `menu "${name}" must be grouped, not flat`)
 	}
 }

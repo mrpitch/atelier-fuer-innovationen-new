@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type * as React from 'react'
 
 import { BreadcrumbTrail } from '@/components/navigation/breadcrumb-trail'
+import { PlaceBar } from '@/components/navigation/place-bar'
 import { buttonVariants } from '@/components/ui/button'
 import type { NavigationLink } from '@/lib/content'
 import { t } from '@/lib/dictionary'
@@ -26,36 +27,35 @@ function neighbourLabel(link: NavigationLink): string {
 		: t('ortsleiste.numberedLabel', { number: formatTwoDigits(link.number), title: link.title })
 }
 
+function NeighbourLink({
+	link,
+	direction,
+}: {
+	link: NavigationLink
+	direction: 'previous' | 'next'
+}) {
+	return (
+		<Link href={link.url} className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
+			{t(`ortsleiste.${direction}`, { label: neighbourLabel(link) })}
+		</Link>
+	)
+}
+
 // The breadcrumb on the left and the neighbouring places on the right
 // (DESIGN.md, Place bar), replacing the separate Breadcrumbs and
 // PreviousNext on the Viertel, Zentrum, Rundgang and Thema pages (issue
 // #82). Stacked on mobile and tablet (768), a row from 1024 up (Figma).
 function Ortsleiste({ breadcrumbs, previous, next, className, ...props }: OrtsleisteProps) {
 	return (
-		<div
-			data-slot="ortsleiste"
-			className={cn(
-				'flex flex-col gap-3 border-b border-border px-5 py-3 lg:flex-row lg:items-center lg:justify-between lg:px-24',
-				className,
-			)}
-			{...props}
-		>
+		<PlaceBar data-slot="ortsleiste" className={cn('lg:justify-between', className)} {...props}>
 			<BreadcrumbTrail breadcrumbs={breadcrumbs} />
 			{(previous !== undefined || next !== undefined) && (
 				<div className="flex items-center gap-2">
-					{previous && (
-						<Link href={previous.url} className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
-							{t('ortsleiste.previous', { label: neighbourLabel(previous) })}
-						</Link>
-					)}
-					{next && (
-						<Link href={next.url} className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
-							{t('ortsleiste.next', { label: neighbourLabel(next) })}
-						</Link>
-					)}
+					{previous && <NeighbourLink link={previous} direction="previous" />}
+					{next && <NeighbourLink link={next} direction="next" />}
 				</div>
 			)}
-		</div>
+		</PlaceBar>
 	)
 }
 

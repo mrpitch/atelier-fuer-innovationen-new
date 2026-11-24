@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import { ThemeProvider } from '@/components/utils/theme-provider'
-import { asFlatMenu, asGroupedMenu, contentGraph, siteWordmark } from '@/lib/content'
+import { contentGraph, siteWordmark } from '@/lib/content'
 import { heading, mono, sans, serif } from '@/lib/styles/fonts'
 
 export function generateMetadata(): Metadata {
@@ -22,12 +22,9 @@ export function generateMetadata(): Metadata {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
 	const graph = contentGraph()
-	// menu.ts's resolveMenus guarantees header and footer-legal resolve flat,
-	// footer grouped (content:check fails otherwise); asFlatMenu/asGroupedMenu
-	// just restate that guarantee to the type checker.
-	const headerMenu = asFlatMenu(graph.getMenu('header'))
-	const footerMenu = asGroupedMenu(graph.getMenu('footer'))
-	const footerLegalMenu = asFlatMenu(graph.getMenu('footer-legal'))
+	const headerMenu = graph.getMenu('header')
+	const footerMenu = graph.getMenu('footer')
+	const footerLegalMenu = graph.getMenu('footer-legal')
 
 	return (
 		<html

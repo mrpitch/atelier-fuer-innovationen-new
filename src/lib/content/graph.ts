@@ -17,7 +17,7 @@ import {
 	validateBodyImages,
 } from './loader'
 import { parentId, STADT_DIR } from './locations'
-import type { ResolvedMenu } from './menu'
+import type { FlatMenuName, GroupedMenuName, MenuGroupLink, MenuLink, ResolvedMenu } from './menu'
 import { resolveMenus } from './menu'
 import { buildNavigation } from './navigation'
 import { summarizeRundgang } from './rundgang'
@@ -125,6 +125,11 @@ export interface ContentGraph {
 	// returns an empty list rather than throwing. An entry's ID may name a
 	// published document of any type. A grouped Menu resolves to labelled
 	// groups of links instead of a flat list (glossary: Menu group).
+	// The names RootLayout reads resolve to a known shape (menu.ts's
+	// FLAT_MENU_NAMES/GROUPED_MENU_NAMES, checked while the graph is built), so
+	// they type as that shape; any other name stays a ResolvedMenu.
+	getMenu(name: FlatMenuName): readonly MenuLink[]
+	getMenu(name: GroupedMenuName): readonly MenuGroupLink[]
 	getMenu(name: string): ResolvedMenu
 
 	// The Viertel (glossary), ordered and numbered by stadt/meta.json.
@@ -391,7 +396,7 @@ export function buildContentGraph(
 		getPrevious: trail.getPrevious,
 		getNext: trail.getNext,
 		site,
-		getMenu: (name) => menus.get(name) ?? [],
+		getMenu: ((name: string) => menus.get(name) ?? []) as ContentGraph['getMenu'],
 		viertel,
 		getViertel: (id, locale) => find('viertel', id, locale),
 		zentrum,

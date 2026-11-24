@@ -2,7 +2,9 @@ import { cn } from 'cn'
 import Link from 'next/link'
 import type * as React from 'react'
 
+import { Container } from '@/components/layout/container'
 import { Wortmarke } from '@/components/layout/wortmarke'
+import { buttonVariants } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import type { MenuGroupLink, MenuLink, Site } from '@/lib/content'
 import { t } from '@/lib/dictionary'
@@ -14,7 +16,21 @@ interface FooterProps extends React.ComponentProps<'footer'> {
 	legalMenu: readonly MenuLink[]
 }
 
-const footerLinkClassName = 'text-muted-foreground transition-colors hover:text-foreground'
+// A footer link is a Button link instance, size sm (DESIGN.md, Navigation;
+// Figma 36694:29802), in the muted foreground the Figma footer sets.
+function FooterLink({ url, label }: { url: string; label: string }) {
+	return (
+		<Link
+			href={url}
+			className={cn(
+				buttonVariants({ variant: 'link', size: 'sm' }),
+				'text-muted-foreground hover:text-foreground',
+			)}
+		>
+			{label}
+		</Link>
+	)
+}
 
 // Xenia / Site / Footer (Figma 36622:8814): the Wortmarke, a Separator, the
 // footer Menu's groups as labelled columns and footer-legal as the bottom
@@ -29,7 +45,7 @@ function Footer({ site, homeUrl, groups, legalMenu, className, ...props }: Foote
 			className={cn('section-padding-y bg-background text-sm', className)}
 			{...props}
 		>
-			<div className="mx-auto flex max-w-7xl flex-col gap-12 px-6 lg:gap-16">
+			<Container className="flex flex-col gap-12 lg:gap-16">
 				<div className="flex flex-col items-center gap-12 text-center lg:flex-row lg:items-start lg:justify-between lg:text-left">
 					<Wortmarke site={site} homeUrl={homeUrl} />
 					<nav
@@ -47,9 +63,7 @@ function Footer({ site, homeUrl, groups, legalMenu, className, ...props }: Foote
 								<ul className="flex flex-col items-center gap-4 lg:items-start">
 									{group.links.map((item) => (
 										<li key={item.url}>
-											<Link href={item.url} className={footerLinkClassName}>
-												{item.label}
-											</Link>
+											<FooterLink url={item.url} label={item.label} />
 										</li>
 									))}
 								</ul>
@@ -68,15 +82,13 @@ function Footer({ site, homeUrl, groups, legalMenu, className, ...props }: Foote
 						<ul className="flex flex-col items-center gap-4 lg:flex-row lg:gap-8">
 							{legalMenu.map((item) => (
 								<li key={item.url}>
-									<Link href={item.url} className={footerLinkClassName}>
-										{item.label}
-									</Link>
+									<FooterLink url={item.url} label={item.label} />
 								</li>
 							))}
 						</ul>
 					</nav>
 				</div>
-			</div>
+			</Container>
 		</footer>
 	)
 }

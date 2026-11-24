@@ -2,6 +2,7 @@
 // goes here, by key, instead of inline in the component.
 export const de = {
 	'navigation.youAreHere': 'Sie sind hier',
+	'navigation.breadcrumb': 'Brotkrumen',
 	'navigation.previousLink': 'Vorherige Seite: {title}',
 	'navigation.nextLink': 'Nächste Seite: {title}',
 	'layout.headerMenu': 'Hauptnavigation',

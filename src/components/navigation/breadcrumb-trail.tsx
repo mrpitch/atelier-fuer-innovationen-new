@@ -11,10 +11,9 @@ import {
 	BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import type { NavigationLink } from '@/lib/content'
-import { t } from '@/lib/dictionary'
 
 interface BreadcrumbTrailProps extends React.ComponentProps<typeof Breadcrumb> {
-	// graph.getBreadcrumbs's own trail, root Seite included — it never shows
+	// graph.getBreadcrumbs's own trail, root Seite first (graph.ts) — it never shows
 	// here (issue #82, Figma): the Ortsleiste and the Ebenen-Leiste both start
 	// their breadcrumb at the area's own hub Seite (Stadtplan, Rundgänge,
 	// Themen), not at the root.
@@ -24,12 +23,12 @@ interface BreadcrumbTrailProps extends React.ComponentProps<typeof Breadcrumb> {
 // The breadcrumb trail shared by the Ortsleiste (issue #82) and the
 // Ebenen-Leiste (issue #85): the last item plain text, every other item a
 // link, separated by a chevron.
-function BreadcrumbTrail({ breadcrumbs, 'aria-label': ariaLabel, ...props }: BreadcrumbTrailProps) {
-	const trail = breadcrumbs.filter((item) => item.id !== '')
+function BreadcrumbTrail({ breadcrumbs, ...props }: BreadcrumbTrailProps) {
+	const trail = breadcrumbs.slice(1)
 	const current = trail.at(-1)
 
 	return (
-		<Breadcrumb aria-label={ariaLabel ?? t('navigation.youAreHere')} {...props}>
+		<Breadcrumb {...props}>
 			<BreadcrumbList>
 				{trail.map((item, index) => (
 					<Fragment key={item.id}>
