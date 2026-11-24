@@ -4,10 +4,10 @@ import { Annaeherung } from '@/components/ui/illustrations/annaeherung'
 import { Fuehrung } from '@/components/ui/illustrations/fuehrung'
 import { Inszenierung } from '@/components/ui/illustrations/inszenierung'
 import { Kontexte } from '@/components/ui/illustrations/kontexte'
-import { MaerkteKooperation } from '@/components/ui/illustrations/maerktekooperation'
+import { MaerkteKooperation } from '@/components/ui/illustrations/maerkte-kooperation'
 import { Potenziale } from '@/components/ui/illustrations/potenziale'
-import { Stadtplatz } from '@/components/ui/illustrations/stadtplatz'
 import { Wertschoepfung } from '@/components/ui/illustrations/wertschoepfung'
+import { Zentrum } from '@/components/ui/illustrations/zentrum'
 import { Zukunft } from '@/components/ui/illustrations/zukunft'
 
 // Placeholder visual until an entry's real illustration is exported from the
@@ -38,7 +38,7 @@ const illustrations = {
 	'stadt/wertschoepfung': Wertschoepfung,
 	'stadt/potenziale': Potenziale,
 	'stadt/fuehrung': Fuehrung,
-	'stadt/zentrum': Stadtplatz,
+	'stadt/zentrum': Zentrum,
 	'themen/eine-welt-fuer-morgen': Placeholder,
 	'themen/futursysteme': Placeholder,
 	'themen/netzwerk-der-innovatoren': Placeholder,

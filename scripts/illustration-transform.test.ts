@@ -22,7 +22,7 @@ const FIXTURE_SVG = `<svg width="240" height="240" viewBox="0 0 240 240" fill="n
 
 describe('transformIllustrationSvg', () => {
 	it('keeps only the Illustration group, dropping the parent section background and border', () => {
-		const { source } = transformIllustrationSvg(FIXTURE_SVG)
+		const { source } = transformIllustrationSvg(FIXTURE_SVG, 'stadt/testviertel')
 
 		expect(source).not.toContain('Section-Hintergrund')
 		expect(source).not.toContain('Section-Rahmen')
@@ -30,7 +30,7 @@ describe('transformIllustrationSvg', () => {
 	})
 
 	it('maps every one of the seven tokens to its token class', () => {
-		const { source } = transformIllustrationSvg(FIXTURE_SVG)
+		const { source } = transformIllustrationSvg(FIXTURE_SVG, 'stadt/testviertel')
 
 		expect(source).toContain('className="fill-secondary"') // #DCEBE9
 		expect(source).toContain('className="fill-primary stroke-foreground"') // #00676B / #1F2421
@@ -41,7 +41,7 @@ describe('transformIllustrationSvg', () => {
 	})
 
 	it('maps fill and stroke on the same path to both classes, in fill-then-stroke order', () => {
-		const { source } = transformIllustrationSvg(FIXTURE_SVG)
+		const { source } = transformIllustrationSvg(FIXTURE_SVG, 'stadt/testviertel')
 
 		expect(source).toContain(
 			'd="M1 1H2V2H1Z" strokeWidth="2" className="fill-primary stroke-foreground"',
@@ -51,48 +51,32 @@ describe('transformIllustrationSvg', () => {
 	it('throws naming the node and the value for an unknown colour', () => {
 		const svgWithUnknownColor = FIXTURE_SVG.replace('#DCEBE9', '#123456')
 
-		expect(() => transformIllustrationSvg(svgWithUnknownColor)).toThrow(
+		expect(() => transformIllustrationSvg(svgWithUnknownColor, 'stadt/testviertel')).toThrow(
 			/Scheibe.*#123456|#123456.*Scheibe/,
 		)
 	})
 
 	it('strips every id from the output', () => {
-		const { source } = transformIllustrationSvg(FIXTURE_SVG)
+		const { source } = transformIllustrationSvg(FIXTURE_SVG, 'stadt/testviertel')
 
 		expect(source).not.toMatch(/\sid="/)
 	})
 
-	it('derives the component name from the group id, not a caller-supplied name', () => {
-		const { name, slug, source } = transformIllustrationSvg(FIXTURE_SVG)
-
-		expect(name).toBe('Testviertel')
-		expect(slug).toBe('testviertel')
-		expect(source).toContain('function Testviertel(')
-		expect(source).toContain('export { Testviertel }')
-	})
-
-	it('repairs a mis-encoded umlaut in the group id and transliterates it', () => {
-		const svgWithMojibakeUmlaut = FIXTURE_SVG.replace(
-			'Illustration / Viertel / Testviertel',
-			'Illustration / Viertel / AnnÃ¤herung',
+	it('names the module after the content ID, not the Figma layer', () => {
+		const { name, slug, source } = transformIllustrationSvg(
+			FIXTURE_SVG,
+			'stadt/maerkte-kooperation',
 		)
-
-		const { name, slug } = transformIllustrationSvg(svgWithMojibakeUmlaut)
-
-		expect(name).toBe('Annaeherung')
-		expect(slug).toBe('annaeherung')
-	})
-
-	it('joins a multi-word group name with an ampersand into one valid identifier', () => {
-		const svgWithAmpersand = FIXTURE_SVG.replace(
-			'Illustration / Viertel / Testviertel',
-			'Illustration / Viertel / M&#195;&#164;rkte &#38; Kooperation',
-		)
-
-		const { name, slug, source } = transformIllustrationSvg(svgWithAmpersand)
 
 		expect(name).toBe('MaerkteKooperation')
-		expect(slug).toBe('maerktekooperation')
+		expect(slug).toBe('maerkte-kooperation')
 		expect(source).toContain('function MaerkteKooperation(')
+		expect(source).toContain('data-slot="illustration-maerkte-kooperation"')
+		expect(source).toContain('export { MaerkteKooperation }')
+		expect(source).not.toContain('Testviertel')
+	})
+
+	it('throws naming the content ID when it does not end in a kebab-case slug', () => {
+		expect(() => transformIllustrationSvg(FIXTURE_SVG, 'stadt/Märkte')).toThrow(/stadt\/Märkte/)
 	})
 })

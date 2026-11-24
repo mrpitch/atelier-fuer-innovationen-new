@@ -1,18 +1,18 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { Stadtplatz } from './stadtplatz'
+import { MaerkteKooperation } from './maerkte-kooperation'
 
 const TOKEN_CLASS =
 	/^(?:fill|stroke)-(?:secondary|foreground|card|primary|chart-4|border|primary-foreground)$/
 
-describe('Stadtplatz', () => {
+describe('MaerkteKooperation', () => {
 	it('renders the drawing as an accessible, token-coloured svg', () => {
-		const html = renderToStaticMarkup(<Stadtplatz label="Stadtplatz" />)
+		const html = renderToStaticMarkup(<MaerkteKooperation label="Märkte & Kooperation" />)
 
-		expect(html).toContain('data-slot="illustration-stadtplatz"')
+		expect(html).toContain('data-slot="illustration-maerkte-kooperation"')
 		expect(html).toContain('role="img"')
-		expect(html).toContain('aria-label="Stadtplatz"')
+		expect(html).toContain('aria-label="Märkte &amp; Kooperation"')
 		expect(html).toContain('viewBox="0 0 240 240"')
 		expect(html).not.toMatch(/\sid="/)
 		expect(html).not.toMatch(/(?:fill|stroke)="(?:#|white)/i)
@@ -27,7 +27,9 @@ describe('Stadtplatz', () => {
 	})
 
 	it('passes extra svg props through to the root element', () => {
-		const html = renderToStaticMarkup(<Stadtplatz label="Stadtplatz" data-testid="probe" />)
+		const html = renderToStaticMarkup(
+			<MaerkteKooperation label="Märkte & Kooperation" data-testid="probe" />,
+		)
 
 		expect(html).toContain('data-testid="probe"')
 	})

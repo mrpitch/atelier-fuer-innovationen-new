@@ -1,9 +1,9 @@
 import type * as React from 'react'
 
-function Stadtplatz({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
+function Zentrum({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
 	return (
 		<svg
-			data-slot="illustration-stadtplatz"
+			data-slot="illustration-zentrum"
 			role="img"
 			aria-label={label}
 			viewBox="0 0 240 240"
@@ -91,4 +91,4 @@ function Stadtplatz({ label, ...props }: { label: string } & React.ComponentProp
 	)
 }
 
-export { Stadtplatz }
+export { Zentrum }

@@ -4,7 +4,7 @@
 // neither the network nor the file system, so a test can feed it a fixture
 // string.
 
-// DESIGN.md "Illustration": the seven colours every drawing is built from,
+// docs/reference/design/kartei-design-system.md, Colors → Illustration: the seven colours every drawing is built from,
 // mapped to the Kartei theme tokens (theme.css). A path's `fill`/`stroke`
 // becomes a `fill-`/`stroke-` class for the matching token; `none` stays
 // literal; anything else is a design error the export must not paper over.
@@ -154,47 +154,19 @@ function kebabToCamel(name: string): string {
 	return name.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase())
 }
 
-// Figma's `/v1/images` export sometimes writes an umlaut in an `id` as
-// mojibake: the name's UTF-8 bytes, decoded a second time as Latin-1 (see
-// illustration-transform.test.ts). Reversing that — bytes-as-Latin-1, then
-// decoded as UTF-8 — is a no-op on plain ASCII and on a correctly-encoded
-// name it produces U+FFFD, which is the signal to leave the value alone.
-function fixMojibake(value: string): string {
-	const repaired = Buffer.from(value, 'latin1').toString('utf8')
-	return repaired.includes('�') ? value : repaired
-}
-
-const GERMAN_TRANSLITERATION: Record<string, string> = {
-	ä: 'ae',
-	Ä: 'Ae',
-	ö: 'oe',
-	Ö: 'Oe',
-	ü: 'ue',
-	Ü: 'Ue',
-	ß: 'ss',
-}
-
-function transliterateGerman(value: string): string {
-	return value.replace(/[äÄöÖüÜß]/g, (char) => GERMAN_TRANSLITERATION[char]!)
-}
-
-// The module's name comes from the exported group's own Figma layer name —
-// its `id` is "Illustration / <section> / <Name>" — not from anything typed
-// on the command line, so re-running the export on the same node reproduces
-// the same module.
-function deriveName(groupId: string): string {
-	const label = groupId.split('/').pop()?.trim()
-	if (!label) {
-		throw new Error(`Illustration export: cannot derive a name from group id "${groupId}"`)
+// The module is named after the content ID it's registered under (issue #87:
+// "each in its own module named after the ID"), never after the Figma layer:
+// `stadt/maerkte-kooperation` becomes maerkte-kooperation.tsx exporting
+// MaerkteKooperation.
+function moduleNames(contentId: string): { name: string; slug: string } {
+	const slug = contentId.split('/').pop() ?? ''
+	if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+		throw new Error(
+			`Illustration export: content ID "${contentId}" doesn't end in a kebab-case slug`,
+		)
 	}
-	// Multi-word names ("Märkte & Kooperation") become one identifier.
-	const words = transliterateGerman(fixMojibake(label))
-		.split(/[^A-Za-z0-9]+/)
-		.filter(Boolean)
-	if (words.length === 0) {
-		throw new Error(`Illustration export: cannot derive a name from group id "${groupId}"`)
-	}
-	return words.join('')
+	const camel = kebabToCamel(slug)
+	return { name: camel[0]!.toUpperCase() + camel.slice(1), slug }
 }
 
 function colorToken(value: string): string | undefined {
@@ -257,23 +229,22 @@ function serializeElement(node: XmlElement, indent: string): string {
 }
 
 interface TransformedIllustration {
-	/** The component's and the module's name, e.g. "Annaeherung". */
+	/** The component's name, e.g. "MaerkteKooperation". */
 	name: string
-	/** The output file's base name, e.g. "annaeherung". */
+	/** The output file's base name, e.g. "maerkte-kooperation". */
 	slug: string
 	/** The module source, ready to format and write. */
 	source: string
 }
 
-function transformIllustrationSvg(svgSource: string): TransformedIllustration {
+function transformIllustrationSvg(svgSource: string, contentId: string): TransformedIllustration {
 	const root = parseXml(svgSource)
 	const group = findIllustrationGroup(root)
 	if (!group) {
 		throw new Error('Illustration export: no "Illustration / …" group found in the SVG')
 	}
 
-	const name = deriveName(group.attrs.id!)
-	const slug = name.toLowerCase()
+	const { name, slug } = moduleNames(contentId)
 	const groupJsx = serializeElement(group, '\t\t\t')
 
 	const source = `import type * as React from 'react'

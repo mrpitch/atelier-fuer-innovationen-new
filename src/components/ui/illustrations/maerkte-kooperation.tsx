@@ -3,7 +3,7 @@ import type * as React from 'react'
 function MaerkteKooperation({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
 	return (
 		<svg
-			data-slot="illustration-maerktekooperation"
+			data-slot="illustration-maerkte-kooperation"
 			role="img"
 			aria-label={label}
 			viewBox="0 0 240 240"

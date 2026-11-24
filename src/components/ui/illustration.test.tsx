@@ -51,6 +51,15 @@ describe('Illustration registry', () => {
 		}
 	})
 
+	it('still renders the placeholder for an ID whose drawing is not exported yet', () => {
+		const html = renderToStaticMarkup(
+			<Illustration id="themen/futursysteme" label="Futursysteme" />,
+		)
+
+		expect(html).toContain('data-slot="illustration-placeholder"')
+		expect(html).toContain('aria-label="Futursysteme"')
+	})
+
 	it('throws naming the ID when nothing is registered for it', () => {
 		expect(() =>
 			renderToStaticMarkup(<Illustration id="stadt/nichtvorhanden" label="Nichtvorhanden" />),

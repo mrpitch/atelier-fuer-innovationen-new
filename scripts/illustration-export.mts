@@ -5,12 +5,11 @@
 //
 //   FIGMA_TOKEN=… pnpm illustration:export <node-id>...
 //
-// Each <node-id> is a Figma node, e.g. 36474:7249. One module is written per
-// node, named after that node's own `Illustration / <section> / <Name>`
-// group id — transformIllustrationSvg derives the name, so re-running the
-// export on the same node reproduces the same module. Registering the
-// result under a content ID is a separate, manual step in illustration.tsx:
-// this script doesn't know which document an illustration belongs to.
+// Each <node-id> is a Figma node, e.g. 36474:7249, and must be in
+// ILLUSTRATION_NODES below. The module is named after the node's content ID
+// (stadt/maerkte-kooperation → maerkte-kooperation.tsx), so re-running the
+// export on the same node reproduces the same module. Registering the result
+// in illustration.tsx is a separate, manual step.
 import fs from 'node:fs'
 import { register } from 'node:module'
 import path from 'node:path'
@@ -25,6 +24,25 @@ const { transformIllustrationSvg } = await import('./illustration-transform')
 // agents.yaml: figma.app.fileKey.
 const FIGMA_FILE_KEY = 'ms4MqN4CJhsLTMTKqTSC8p'
 
+// The epic's node table (issue #87): page Illustrationen, 240 × 240 components.
+const ILLUSTRATION_NODES: Record<string, string> = {
+	'36474:7249': 'stadt/annaeherung',
+	'36474:7262': 'stadt/maerkte-kooperation',
+	'36474:7276': 'stadt/kontexte',
+	'36474:7294': 'stadt/inszenierung',
+	'36474:7306': 'stadt/zukunft',
+	'36474:7319': 'stadt/wertschoepfung',
+	'36474:7334': 'stadt/potenziale',
+	'36474:7350': 'stadt/fuehrung',
+	'36474:7364': 'stadt/zentrum',
+	'36474:7374': 'themen/eine-welt-fuer-morgen',
+	'36474:7385': 'themen/futursysteme',
+	'36474:7400': 'themen/netzwerk-der-innovatoren',
+	'36515:10960': 'rundgaenge/erste-annaeherung',
+	'36515:10973': 'rundgaenge/besuch-im-zentrum',
+	'36515:10986': 'rundgaenge/besuch-in-der-umgebung',
+}
+
 const scriptsDir = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(scriptsDir, '..')
 const outDir = path.join(repoRoot, 'src/components/ui/illustrations')
@@ -32,6 +50,14 @@ const outDir = path.join(repoRoot, 'src/components/ui/illustrations')
 const nodeIds = process.argv.slice(2)
 if (nodeIds.length === 0) {
 	console.error('illustration:export: usage: node scripts/illustration-export.mts <node-id>...')
+	process.exit(1)
+}
+
+const unknownNodes = nodeIds.filter((nodeId) => !ILLUSTRATION_NODES[nodeId])
+if (unknownNodes.length > 0) {
+	console.error(
+		`illustration:export: no content ID for node(s) ${unknownNodes.join(', ')}; add them to ILLUSTRATION_NODES`,
+	)
 	process.exit(1)
 }
 
@@ -69,7 +95,8 @@ for (const nodeId of nodeIds) {
 	}
 	const svgSource = await svgResponse.text()
 
-	const { slug, source } = transformIllustrationSvg(svgSource)
+	const contentId = ILLUSTRATION_NODES[nodeId]!
+	const { slug, source } = transformIllustrationSvg(svgSource, contentId)
 
 	const outFile = path.join(outDir, `${slug}.tsx`)
 	const prettierConfig = await prettier.resolveConfig(outFile)
@@ -77,6 +104,6 @@ for (const nodeId of nodeIds) {
 	fs.writeFileSync(outFile, formatted)
 
 	console.log(
-		`illustration:export: wrote ${path.relative(repoRoot, outFile)} from node "${nodeId}"`,
+		`illustration:export: wrote ${path.relative(repoRoot, outFile)} for ${contentId} from node "${nodeId}"`,
 	)
 }
