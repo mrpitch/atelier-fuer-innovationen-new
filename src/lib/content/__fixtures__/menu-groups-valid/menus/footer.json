@@ -1,0 +1,10 @@
+[
+	{
+		"label": "Entdecken",
+		"entries": [
+			{ "id": "mit-kurztitel" },
+			{ "url": "https://extern.example.com", "label": "Extern" }
+		]
+	},
+	{ "label": "Lesen", "entries": [{ "id": "ohne-kurztitel" }] }
+]

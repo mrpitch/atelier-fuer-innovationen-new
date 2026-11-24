@@ -12,6 +12,8 @@ authoritative: true
 
 The site is German-only today ([ADR-0001](../../adr/adr-0001-unprefixed-default-locale-urls.md)), but UI copy still goes through one dictionary instead of sitting inline in components, so every string is in one place and ready for a later locale. `src/lib/dictionary/` is the domain folder ([Folder structure](../global/folder-structure.md)), with `index.ts` as its public API.
 
+Lint enforces this: `restrictions/ui-string-syntax` fails visible text and `aria-label`, `alt`, `title` and `placeholder` literals in `src/components/` and `src/app/`. Pro Blocks and test files are exempt.
+
 ## Keys
 
 `src/lib/dictionary/de.ts` exports `de`, a flat object of dot-namespaced keys to German strings:

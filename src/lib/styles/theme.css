@@ -34,7 +34,7 @@
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-ring: var(--sidebar-ring);
 
-	/* Koralle: the "Sie sind hier" mark only, never text or a fill (DESIGN.md). */
+	/* Koralle: the "Sie sind hier" mark only, never text or a fill (Kartei design system). */
 	--color-signal: var(--signal);
 
 	/* Viertel-Reiter: one index-tab tint per Viertel. */
@@ -52,7 +52,7 @@
 	--font-heading: var(--font-heading);
 	--font-mono: var(--font-mono);
 
-	/* DESIGN.md `rounded`: sm 2px, md 2px, lg 4px, xl 8px at --radius 0.25rem.
+	/* Kartei design system, Shapes: sm 2px, md 2px, lg 4px, xl 8px at --radius 0.25rem.
 	   2xl to 4xl keep Tailwind's defaults. */
 	--radius-sm: calc(var(--radius) * 0.5);
 	--radius-md: calc(var(--radius) * 0.5);

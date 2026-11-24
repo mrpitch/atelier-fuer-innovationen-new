@@ -2,10 +2,14 @@
 // goes here, by key, instead of inline in the component.
 export const de = {
 	'navigation.youAreHere': 'Sie sind hier',
+	'navigation.breadcrumb': 'Brotkrumen',
 	'navigation.previousLink': 'Vorherige Seite: {title}',
 	'navigation.nextLink': 'Nächste Seite: {title}',
 	'layout.headerMenu': 'Hauptnavigation',
+	'layout.openMenu': 'Menü öffnen',
+	'layout.closeMenu': 'Menü schließen',
 	'layout.footerMenu': 'Fußzeilen-Navigation',
+	'layout.footerLegalMenu': 'Rechtliche Hinweise',
 	'navigation.sitemap': 'Sitemap',
 	'stadt.navigation': 'Viertel und Zentrum der Wissensstadt',
 	'stadt.zentrumHeading': 'Zentrum',
@@ -33,6 +37,11 @@ export const de = {
 	'ort.stationenHeading': 'Stationen an diesem Ort',
 	'themen.navigation': 'Die drei Themen',
 	'thema.kapitelHeading': 'Kapitel',
+	'ortsleiste.previous': '← {label}',
+	'ortsleiste.next': '{label} →',
+	'ebenenLeiste.ortTitle': 'Viertel {number} · {title}',
+	'ebenenLeiste.kapitelPosition': 'THEMA · KAPITEL {number} VON {total}',
+	'ebenenLeiste.abschnittPosition': 'KAPITEL {kapitel} · {position} VON {total}',
 } as const
 
 export type DictionaryKey = keyof typeof de

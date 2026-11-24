@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import type * as React from 'react'
 
-import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
-import { PreviousNext } from '@/components/navigation/previous-next'
+import { KapitelEbenenLeiste } from '@/components/navigation/kapitel-ebenen-leiste'
 import type { Kapitel } from '@/lib/content'
 import { contentGraph, shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
@@ -26,7 +25,7 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 
 	return (
 		<div data-slot="kapitel-detail" {...props}>
-			<Breadcrumbs items={graph.getBreadcrumbs(kapitel.id)} />
+			<KapitelEbenenLeiste kapitel={kapitel} />
 			<p>{t('kapitel.number', { n: kapitel.number })}</p>
 			<h1>{kapitel.title}</h1>
 			<Body components={bodyImageComponents(kapitel.id)} />
@@ -57,7 +56,6 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 					</ul>
 				</nav>
 			)}
-			<PreviousNext previous={graph.getPrevious(kapitel.id)} next={graph.getNext(kapitel.id)} />
 		</div>
 	)
 }

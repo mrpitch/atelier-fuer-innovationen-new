@@ -11,7 +11,7 @@ export type { SplitDocument } from './frontmatter'
 export { splitDocument } from './frontmatter'
 export type { ContentGraph, ContentGraphOptions } from './graph'
 export { buildContentGraph, contentGraph } from './graph'
-export type { MenuLink } from './menu'
+export type { FlatMenuName, GroupedMenuName, MenuGroupLink, MenuLink, ResolvedMenu } from './menu'
 export { shortTitleOrTitle, siteWordmark } from './presentation'
 export { flattenNavigation } from './sitemap'
 export type {

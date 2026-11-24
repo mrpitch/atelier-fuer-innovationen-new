@@ -1,11 +1,23 @@
-import { ArrowDown, ArrowLeft, ArrowRight, type LucideIcon, type LucideProps } from 'lucide-react'
+import {
+	ArrowDown,
+	ArrowLeft,
+	ArrowRight,
+	ChevronRight,
+	type LucideIcon,
+	type LucideProps,
+	Menu,
+	X,
+} from 'lucide-react'
 
 // The only file that imports lucide-react: docs/reference/components/icon-registry.md.
-// The arrows mark movement on buttons and links (DESIGN.md, Buttons).
+// The arrows mark movement on buttons and links (Kartei design system, Buttons).
 const icons = {
 	arrowDown: ArrowDown,
 	arrowLeft: ArrowLeft,
 	arrowRight: ArrowRight,
+	chevronRight: ChevronRight,
+	menu: Menu,
+	x: X,
 } satisfies Record<string, LucideIcon>
 
 type IconType = keyof typeof icons

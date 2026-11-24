@@ -32,6 +32,10 @@ re-run `docs index` after adding or moving files.
 - [Tailwind conventions](reference/css/tailwind-conventions.md)
 - [Theme system](reference/css/theme-system.md)
 
+### Design
+
+- [Kartei design system](reference/design/kartei-design-system.md)
+
 ### Global
 
 - [Docs tooling](reference/global/docs-tooling.md)

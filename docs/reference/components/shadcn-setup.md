@@ -12,16 +12,16 @@ authoritative: true
 
 ## components.json
 
-| Key             | Value                        | Why                                                                                                      |
-| --------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `style`         | `base-nova`                  | Base UI primitives at the Kartei control sizes: 32px buttons and inputs, 24px `xs` buttons (DESIGN.md)   |
-| `tailwind.css`  | `src/lib/styles/globals.css` | The CLI writes CSS here; move what it adds into the right file in `src/lib/styles/`                      |
-| `iconLibrary`   | `lucide`                     | Installed files import lucide; the imports get swapped for `<Icon>`: [Icon registry](./icon-registry.md) |
-| `rtl`           | `false`                      | German only                                                                                              |
-| `aliases.ui`    | `@/components/ui`            | Primitives land in `src/components/ui/`                                                                  |
-| `aliases.hooks` | `@/lib/hooks`                | Hooks from the registry land with the project's hooks                                                    |
-| `aliases.utils` | `@/lib/utils/cn`             | Pro Blocks import `cn` through this alias; `src/lib/utils/cn.ts` re-exports the `cn` package             |
-| `registries`    | `@shadcndesign`              | Pro Blocks, see below                                                                                    |
+| Key             | Value                        | Why                                                                                                                                                             |
+| --------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`         | `base-nova`                  | Base UI primitives at the Kartei control sizes: 32px buttons and inputs, 24px `xs` buttons ([Kartei design system](../design/kartei-design-system.md), Buttons) |
+| `tailwind.css`  | `src/lib/styles/globals.css` | The CLI writes CSS here; move what it adds into the right file in `src/lib/styles/`                                                                             |
+| `iconLibrary`   | `lucide`                     | Installed files import lucide; the imports get swapped for `<Icon>`: [Icon registry](./icon-registry.md)                                                        |
+| `rtl`           | `false`                      | German only                                                                                                                                                     |
+| `aliases.ui`    | `@/components/ui`            | Primitives land in `src/components/ui/`                                                                                                                         |
+| `aliases.hooks` | `@/lib/hooks`                | Hooks from the registry land with the project's hooks                                                                                                           |
+| `aliases.utils` | `@/lib/utils/cn`             | Pro Blocks import `cn` through this alias; `src/lib/utils/cn.ts` re-exports the `cn` package                                                                    |
+| `registries`    | `@shadcndesign`              | Pro Blocks, see below                                                                                                                                           |
 
 `baseColor` only shapes the CSS that `shadcn init` writes, and the Kartei tokens replace that CSS: [Theme system](../css/theme-system.md). `menuColor` and `menuAccent` keep the CLI defaults.
 

@@ -80,7 +80,7 @@ A reference to a missing document fails naming the referring file, the field and
 Order lives in one place per folder: a `meta.json` that is a bare JSON array of child IDs and nothing else, with full IDs (`eltern/erstes`, not `erstes`).
 
 ```json
-["idee", "kontakt", "impressum", "datenschutz"]
+["idee", "impressum", "datenschutz"]
 ```
 
 - **Strict.** When a `meta.json` exists, every child appears exactly once. A duplicate, an unknown ID or an unlisted child fails, naming the `meta.json` and the ID, so order can't drift silently. One reconciliation function handles every order file.
@@ -100,7 +100,7 @@ Numbers are assigned after Drafts are left out, so a production graph has no gap
 
 - The **Navigation** tree is the Seite folder hierarchy in `meta.json` order, rooted at the start Seite. Only Seiten are in it.
 - **Breadcrumbs** cover every type: Seite ancestors, then type ancestors, the document last. A Kapitel is read inside its Viertel, an Abschnitt inside its Kapitel, a Station inside its Rundgang (Start › Stadt › Viertel › Kapitel › Abschnitt).
-- **Previous/next** walks one sequence per type: Seiten their Navigation siblings; Kapitel in number order; Abschnitte in number order across Kapitel boundaries; Stationen within their own Rundgang. Other types have none.
+- **Previous/next** walks one sequence per type: Seiten their Navigation siblings; Viertel their `stadt/meta.json` number order; Kapitel in number order; Abschnitte in number order across Kapitel boundaries; Stationen within their own Rundgang; Rundgänge and Themen in the order their files are read, since neither folder takes a `meta.json` (issue #82). The Zentrum and every other type have none: a one-document "sequence" never has a previous or a next.
 - A link's label is the target's Short title, else its title. The page's own `<h1>` is always the full title.
 
 ## Drafts
@@ -141,8 +141,9 @@ Each Viertel, the Zentrum, each Thema and each Rundgang has an illustration, loo
 ## Site data and Menus
 
 - `src/content/site.json` holds the site-wide facts: `name`, `tagline`, `baseUrl`, `copyright`. Header, footer and metadata read them from `graph.site`. `baseUrl` is a placeholder until the production domain is decided.
-- A Menu is one JSON file under `src/content/menus/` (`header.json`, `footer.json`): an ordered list of entries, each a content ID (`{ "id": "idee" }`) or an external link with its own label (`{ "url": "…", "label": "…" }`).
-- A content entry may name any type. Its label is never written in the Menu: it is the target's Short title, else its title, so renaming a document updates every Menu. An unknown ID fails, naming the Menu file and the ID.
+- A Menu is one JSON file under `src/content/menus/` (`header.json`, `footer.json`, `footer-legal.json`): either a flat, ordered list of entries, or an ordered list of Menu groups (glossary: Menu group) — never both in the same file. An entry is a content ID (`{ "id": "idee" }`) or an external link with its own label (`{ "url": "…", "label": "…" }`). A group is a `label` and its own non-empty, ordered list of entries in that same shape. Mixing entries and groups in one Menu file, or a group with no entries, fails validation the same way other Menu problems do.
+- A content entry may name any type. Its label is never written in the Menu: it is the target's Short title, else its title, so renaming a document updates every Menu. An unknown ID fails, naming the Menu file and the ID — the same whether the entry sits flat in the Menu or inside a group.
+- `header` and `footer-legal` must resolve flat; `footer` must resolve grouped (RootLayout's own convention, not something a Menu file states about itself) — a Menu edited into the other shape fails validation the same way, naming the Menu file, rather than only crashing the Next.js build.
 
 ## Sitemap and page metadata
 
