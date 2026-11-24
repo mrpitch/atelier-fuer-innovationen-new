@@ -1,16 +1,8 @@
 import { cn } from 'cn'
 import Link from 'next/link'
 import type * as React from 'react'
-import { Fragment } from 'react'
 
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
+import { BreadcrumbTrail } from '@/components/navigation/breadcrumb-trail'
 import { buttonVariants } from '@/components/ui/button'
 import type { NavigationLink } from '@/lib/content'
 import { t } from '@/lib/dictionary'
@@ -39,9 +31,6 @@ function neighbourLabel(link: NavigationLink): string {
 // PreviousNext on the Viertel, Zentrum, Rundgang and Thema pages (issue
 // #82). Stacked on mobile and tablet (768), a row from 1024 up (Figma).
 function Ortsleiste({ breadcrumbs, previous, next, className, ...props }: OrtsleisteProps) {
-	const trail = breadcrumbs.filter((item) => item.id !== '')
-	const current = trail.at(-1)
-
 	return (
 		<div
 			data-slot="ortsleiste"
@@ -51,22 +40,7 @@ function Ortsleiste({ breadcrumbs, previous, next, className, ...props }: Ortsle
 			)}
 			{...props}
 		>
-			<Breadcrumb aria-label={t('navigation.youAreHere')}>
-				<BreadcrumbList>
-					{trail.map((item, index) => (
-						<Fragment key={item.id}>
-							{index > 0 && <BreadcrumbSeparator />}
-							<BreadcrumbItem>
-								{item.id === current?.id ? (
-									<BreadcrumbPage>{item.title}</BreadcrumbPage>
-								) : (
-									<BreadcrumbLink render={<Link href={item.url} />}>{item.title}</BreadcrumbLink>
-								)}
-							</BreadcrumbItem>
-						</Fragment>
-					))}
-				</BreadcrumbList>
-			</Breadcrumb>
+			<BreadcrumbTrail breadcrumbs={breadcrumbs} />
 			{(previous !== undefined || next !== undefined) && (
 				<div className="flex items-center gap-2">
 					{previous && (

@@ -39,6 +39,9 @@ export const de = {
 	'ortsleiste.previous': '← {label}',
 	'ortsleiste.next': '{label} →',
 	'ortsleiste.numberedLabel': '{number} {title}',
+	'ebenenLeiste.ortTitle': 'Viertel {number} · {title}',
+	'ebenenLeiste.kapitelPosition': 'THEMA · KAPITEL {number} VON {total}',
+	'ebenenLeiste.abschnittPosition': 'KAPITEL {kapitel} · {position} VON {total}',
 } as const
 
 export type DictionaryKey = keyof typeof de
