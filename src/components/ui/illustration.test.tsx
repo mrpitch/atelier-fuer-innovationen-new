@@ -8,9 +8,9 @@ import { Illustration } from './illustration'
 const TOKEN_CLASS =
 	/^(?:fill|stroke)-(?:secondary|foreground|card|primary|chart-4|border|primary-foreground)$/
 
-// One entry per exported drawing (issue #88, #89) — stadt/annaeherung is the
-// first. A later slice that exports another illustration adds its own
-// resolver here rather than a new test file.
+// One entry per Viertel, the Zentrum, every Thema and every Rundgang with
+// content (issue #88, #89, #90, #91). rundgaenge/besuch-in-der-umgebung has
+// no content yet, so it's covered by name below instead of a table entry.
 const EXPORTED_DRAWINGS: ReadonlyArray<{
 	id: string
 	resolve: (graph: ReturnType<typeof contentGraph>) => { id: string; title: string } | undefined
@@ -36,6 +36,14 @@ const EXPORTED_DRAWINGS: ReadonlyArray<{
 		id: 'themen/netzwerk-der-innovatoren',
 		resolve: (graph) => graph.getThema('themen/netzwerk-der-innovatoren'),
 	},
+	{
+		id: 'rundgaenge/erste-annaeherung',
+		resolve: (graph) => graph.getRundgang('rundgaenge/erste-annaeherung'),
+	},
+	{
+		id: 'rundgaenge/besuch-im-zentrum',
+		resolve: (graph) => graph.getRundgang('rundgaenge/besuch-im-zentrum'),
+	},
 ]
 
 describe('Illustration registry', () => {
@@ -60,13 +68,25 @@ describe('Illustration registry', () => {
 		}
 	})
 
-	it('still renders the placeholder for an ID whose drawing is not exported yet', () => {
+	it('renders the real drawing for rundgaenge/besuch-in-der-umgebung, which has no content yet', () => {
 		const html = renderToStaticMarkup(
-			<Illustration id="rundgaenge/besuch-im-zentrum" label="Besuch im Zentrum" />,
+			<Illustration id="rundgaenge/besuch-in-der-umgebung" label="Besuch in der Umgebung" />,
 		)
 
-		expect(html).toContain('data-slot="illustration-placeholder"')
-		expect(html).toContain('aria-label="Besuch im Zentrum"')
+		expect(html).toContain('data-slot="illustration-besuch-in-der-umgebung"')
+		expect(html).toContain('role="img"')
+		expect(html).toContain('aria-label="Besuch in der Umgebung"')
+		expect(html).toContain('viewBox="0 0 240 240"')
+		expect(html).not.toMatch(/\sid="/)
+		expect(html).not.toMatch(/(?:fill|stroke)="(?:#|white)/i)
+
+		const classAttributes = [...html.matchAll(/class="([^"]+)"/g)]
+		expect(classAttributes.length).toBeGreaterThan(0)
+		for (const [, classValue] of classAttributes) {
+			for (const className of classValue!.split(' ')) {
+				expect(className).toMatch(TOKEN_CLASS)
+			}
+		}
 	})
 
 	it('throws naming the ID when nothing is registered for it', () => {
