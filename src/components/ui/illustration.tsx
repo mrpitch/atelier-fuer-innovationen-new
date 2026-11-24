@@ -1,9 +1,10 @@
 import type * as React from 'react'
 
-// Placeholder visual until the real illustrations are built from the Figma
-// file (PRODUCT.md, Evidence on Hand). Every entry maps to this same
-// placeholder for now; swapping one entry for its real illustration later
-// won't touch any caller (issue #28).
+import { Annaeherung } from '@/components/ui/illustrations/annaeherung'
+
+// Placeholder visual until an entry's real illustration is exported from the
+// Figma file (scripts/illustration-export.mts, issue #88). Swapping an entry
+// for its real illustration doesn't touch any caller (issue #28).
 function Placeholder({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
 	return (
 		<svg
@@ -21,7 +22,7 @@ function Placeholder({ label, ...props }: { label: string } & React.ComponentPro
 // Looked up by the owning document's ID (8 Viertel, Zentrum, 3 Themen,
 // 3 Rundgänge), so content never names an illustration file (issue #28).
 const illustrations = {
-	'stadt/annaeherung': Placeholder,
+	'stadt/annaeherung': Annaeherung,
 	'stadt/maerkte-kooperation': Placeholder,
 	'stadt/kontexte': Placeholder,
 	'stadt/inszenierung': Placeholder,
