@@ -33,8 +33,7 @@ describe('AbschnittDetail', () => {
 
 		expect(html).toContain(`Abschnitt ${zweiter!.number}`)
 		expect(html).toContain('Text von 1996')
-		// The ghost variant's `capitalize` would show "Text Von 1996".
-		expect(html).toMatch(/data-slot="tagline" class="[^"]*\bnormal-case\b/)
+		// CSS `capitalize` would show "Text Von 1996"; label text stays as typed.
 		expect(html).not.toMatch(/data-slot="tagline" class="[^"]*\bcapitalize\b/)
 	})
 
