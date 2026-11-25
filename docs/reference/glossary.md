@@ -51,8 +51,12 @@ A Viertel's optional link to one other document, of any type, resolved to that d
 _Avoid_: hint, tip, cross-reference
 
 **Stadtplan**
-The `/stadt` hub page: a grid of tiles for the eight Viertel and the Zentrum, the map view into the Wissensstadt.
+The arrangement of the Zentrum and the eight Viertel on a 3×3 grid, the Zentrum in the middle. The Stadtplan, its small Mini-Stadtplan and the Weg-Leiste all draw it.
 _Avoid_: map, city map
+
+**Stadtplan-Hub**
+The `/stadt` page: the Stadtplan with its overview table, the landing page of the Stadt area. Not the Stadtplan itself (code: `StadtplanHub` vs `Stadtplan`).
+_Avoid_: Stadtplan (for the page)
 
 **Leitsatz**
 The one-sentence motto of a Viertel, e.g. "Erweiterte, kontextuelle Orientierungen haben konsensstiftende Wirkung."
