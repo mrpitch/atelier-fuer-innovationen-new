@@ -1,6 +1,6 @@
 {
 	"name": "atelier-fuer-innovationen-new",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
@@ -15,6 +15,7 @@
 		"test": "vitest run",
 		"content:check": "node scripts/content-check.mts",
 		"content:images": "node scripts/content-images.mts",
+		"illustration:export": "node scripts/illustration-export.mts",
 		"docs:check": "node scripts/docs-check.mts",
 		"pages:check": "node scripts/pages-check.mts",
 		"links:check": "lychee --offline --no-progress --root-dir \"$PWD/out\" 'out/**/*.html'",

@@ -1,40 +1,39 @@
 import type * as React from 'react'
 
-// Placeholder visual until the real illustrations are built from the Figma
-// file (PRODUCT.md, Evidence on Hand). Every entry maps to this same
-// placeholder for now; swapping one entry for its real illustration later
-// won't touch any caller (issue #28).
-function Placeholder({ label, ...props }: { label: string } & React.ComponentProps<'svg'>) {
-	return (
-		<svg
-			data-slot="illustration-placeholder"
-			role="img"
-			aria-label={label}
-			viewBox="0 0 64 64"
-			{...props}
-		>
-			<rect width="64" height="64" rx="4" />
-		</svg>
-	)
-}
+import { Annaeherung } from '@/components/ui/illustrations/annaeherung'
+import { BesuchImZentrum } from '@/components/ui/illustrations/besuch-im-zentrum'
+import { BesuchInDerUmgebung } from '@/components/ui/illustrations/besuch-in-der-umgebung'
+import { EineWeltFuerMorgen } from '@/components/ui/illustrations/eine-welt-fuer-morgen'
+import { ErsteAnnaeherung } from '@/components/ui/illustrations/erste-annaeherung'
+import { Fuehrung } from '@/components/ui/illustrations/fuehrung'
+import { Futursysteme } from '@/components/ui/illustrations/futursysteme'
+import { Inszenierung } from '@/components/ui/illustrations/inszenierung'
+import { Kontexte } from '@/components/ui/illustrations/kontexte'
+import { MaerkteKooperation } from '@/components/ui/illustrations/maerkte-kooperation'
+import { NetzwerkDerInnovatoren } from '@/components/ui/illustrations/netzwerk-der-innovatoren'
+import { Potenziale } from '@/components/ui/illustrations/potenziale'
+import { Wertschoepfung } from '@/components/ui/illustrations/wertschoepfung'
+import { Zentrum } from '@/components/ui/illustrations/zentrum'
+import { Zukunft } from '@/components/ui/illustrations/zukunft'
 
 // Looked up by the owning document's ID (8 Viertel, Zentrum, 3 Themen,
 // 3 Rundgänge), so content never names an illustration file (issue #28).
 const illustrations = {
-	'stadt/annaeherung': Placeholder,
-	'stadt/maerkte-kooperation': Placeholder,
-	'stadt/kontexte': Placeholder,
-	'stadt/inszenierung': Placeholder,
-	'stadt/zukunft': Placeholder,
-	'stadt/wertschoepfung': Placeholder,
-	'stadt/potenziale': Placeholder,
-	'stadt/fuehrung': Placeholder,
-	'stadt/zentrum': Placeholder,
-	'themen/eine-welt-fuer-morgen': Placeholder,
-	'themen/futursysteme': Placeholder,
-	'themen/netzwerk-der-innovatoren': Placeholder,
-	'rundgaenge/besuch-im-zentrum': Placeholder,
-	'rundgaenge/durch-die-viertel': Placeholder,
+	'stadt/annaeherung': Annaeherung,
+	'stadt/maerkte-kooperation': MaerkteKooperation,
+	'stadt/kontexte': Kontexte,
+	'stadt/inszenierung': Inszenierung,
+	'stadt/zukunft': Zukunft,
+	'stadt/wertschoepfung': Wertschoepfung,
+	'stadt/potenziale': Potenziale,
+	'stadt/fuehrung': Fuehrung,
+	'stadt/zentrum': Zentrum,
+	'themen/eine-welt-fuer-morgen': EineWeltFuerMorgen,
+	'themen/futursysteme': Futursysteme,
+	'themen/netzwerk-der-innovatoren': NetzwerkDerInnovatoren,
+	'rundgaenge/erste-annaeherung': ErsteAnnaeherung,
+	'rundgaenge/besuch-im-zentrum': BesuchImZentrum,
+	'rundgaenge/besuch-in-der-umgebung': BesuchInDerUmgebung,
 } satisfies Record<string, React.ComponentType<{ label: string } & React.ComponentProps<'svg'>>>
 
 type IllustrationId = keyof typeof illustrations

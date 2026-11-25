@@ -1,0 +1,124 @@
+// Turns one or more Figma `Illustration / …` components into drawing modules
+// under src/components/ui/illustrations/ (issue #88). Run by hand or by an
+// agent, never at build time — the committed module is what ships, not this
+// script.
+//
+//   FIGMA_TOKEN=… pnpm illustration:export <node-id>...
+//
+// Each <node-id> is a Figma node, e.g. 36474:7249, and must be in
+// ILLUSTRATION_NODES below. The module is named after the node's content ID
+// (stadt/maerkte-kooperation → maerkte-kooperation.tsx), so re-running the
+// export on the same node reproduces the same module. Registering the result
+// in illustration.tsx is the one manual step; the per-drawing test is written
+// next to the module.
+import fs from 'node:fs'
+import { register } from 'node:module'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import prettier from 'prettier'
+import { parse as parseYaml } from 'yaml'
+
+register('./ts-extension-loader.mjs', import.meta.url)
+
+const { transformIllustrationSvg } = await import('./illustration-transform')
+
+// The epic's node table (issue #87): page Illustrationen, 240 × 240 components.
+const ILLUSTRATION_NODES: Record<string, string> = {
+	'36474:7249': 'stadt/annaeherung',
+	'36474:7262': 'stadt/maerkte-kooperation',
+	'36474:7276': 'stadt/kontexte',
+	'36474:7294': 'stadt/inszenierung',
+	'36474:7306': 'stadt/zukunft',
+	'36474:7319': 'stadt/wertschoepfung',
+	'36474:7334': 'stadt/potenziale',
+	'36474:7350': 'stadt/fuehrung',
+	'36474:7364': 'stadt/zentrum',
+	'36474:7374': 'themen/eine-welt-fuer-morgen',
+	'36474:7385': 'themen/futursysteme',
+	'36474:7400': 'themen/netzwerk-der-innovatoren',
+	'36515:10960': 'rundgaenge/erste-annaeherung',
+	'36515:10973': 'rundgaenge/besuch-im-zentrum',
+	'36515:10986': 'rundgaenge/besuch-in-der-umgebung',
+}
+
+const scriptsDir = path.dirname(fileURLToPath(import.meta.url))
+const repoRoot = path.resolve(scriptsDir, '..')
+const outDir = path.join(repoRoot, 'src/components/ui/illustrations')
+
+// agents.yaml: figma.app.fileKey.
+const agentsConfig = parseYaml(fs.readFileSync(path.join(repoRoot, 'agents.yaml'), 'utf8')) as {
+	figma?: { app?: { fileKey?: string } }
+}
+const FIGMA_FILE_KEY = agentsConfig.figma?.app?.fileKey
+if (!FIGMA_FILE_KEY) {
+	console.error('illustration:export: agents.yaml has no figma.app.fileKey')
+	process.exit(1)
+}
+
+const nodeIds = process.argv.slice(2)
+if (nodeIds.length === 0) {
+	console.error('illustration:export: usage: node scripts/illustration-export.mts <node-id>...')
+	process.exit(1)
+}
+
+const unknownNodes = nodeIds.filter((nodeId) => !ILLUSTRATION_NODES[nodeId])
+if (unknownNodes.length > 0) {
+	console.error(
+		`illustration:export: no content ID for node(s) ${unknownNodes.join(', ')}; add them to ILLUSTRATION_NODES`,
+	)
+	process.exit(1)
+}
+
+const figmaToken = process.env.FIGMA_TOKEN
+if (!figmaToken) {
+	console.error('illustration:export: FIGMA_TOKEN is not set')
+	process.exit(1)
+}
+
+async function fetchJson(url: string): Promise<unknown> {
+	const response = await fetch(url, { headers: { 'X-Figma-Token': figmaToken! } })
+	if (!response.ok) {
+		throw new Error(`illustration:export: Figma API request failed (${response.status}): ${url}`)
+	}
+	return response.json()
+}
+
+const idsParam = nodeIds.map(encodeURIComponent).join(',')
+const imagesResponse = await fetchJson(
+	`https://api.figma.com/v1/images/${FIGMA_FILE_KEY}?ids=${idsParam}&format=svg&svg_include_id=true`,
+)
+const imageUrls = (imagesResponse as { images?: Record<string, string | null> }).images ?? {}
+
+fs.mkdirSync(outDir, { recursive: true })
+
+for (const nodeId of nodeIds) {
+	const imageUrl = imageUrls[nodeId]
+	if (!imageUrl) {
+		throw new Error(`illustration:export: Figma returned no SVG for node "${nodeId}"`)
+	}
+
+	const svgResponse = await fetch(imageUrl)
+	if (!svgResponse.ok) {
+		throw new Error(`illustration:export: failed to download the SVG for node "${nodeId}"`)
+	}
+	const svgSource = await svgResponse.text()
+
+	const contentId = ILLUSTRATION_NODES[nodeId]!
+	const { slug, source, testSource } = transformIllustrationSvg(svgSource, contentId)
+
+	const written: string[] = []
+	for (const [file, text] of [
+		[`${slug}.tsx`, source],
+		[`${slug}.test.tsx`, testSource],
+	] as const) {
+		const outFile = path.join(outDir, file)
+		const prettierConfig = await prettier.resolveConfig(outFile)
+		fs.writeFileSync(outFile, await prettier.format(text, { ...prettierConfig, filepath: outFile }))
+		written.push(path.relative(repoRoot, outFile))
+	}
+
+	console.log(
+		`illustration:export: wrote ${written.join(' and ')} for ${contentId} from node "${nodeId}"`,
+	)
+}
