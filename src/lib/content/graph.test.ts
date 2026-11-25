@@ -857,6 +857,24 @@ describe('buildContentGraph', () => {
 		})
 	})
 
+	describe('Schauen Station (issue #100)', () => {
+		it("is the Ort's own Station in its Schauen Rundgang", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'schauen-rundgang-valid'))
+
+			// mit-erstem's Schauen Rundgang is rundgang-a (earlier in order), so
+			// its Station there, not rundgang-b's, is the Schauen Station.
+			expect(graph.getSchauenStation('stadt/mit-erstem')?.id).toBe(
+				'rundgaenge/rundgang-a/station-erstem',
+			)
+		})
+
+		it('is undefined for an Ort no Rundgang visits', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'schauen-rundgang-valid'))
+
+			expect(graph.getSchauenStation('stadt/ohne')).toBeUndefined()
+		})
+	})
+
 	describe('Thema', () => {
 		it('resolves the Leitthema and a Themen-Ort to their ID and URL', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'thema-valid'))

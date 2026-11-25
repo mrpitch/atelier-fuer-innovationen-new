@@ -34,11 +34,7 @@ async function StadtplanHub({ seite, locale, className, ...props }: StadtplanHub
 	// Schauen Rundgang — the Rundgang every Stadtrundgang starts from, since
 	// Station numbering counts from 0 only when it stands at the Zentrum
 	// (urls.ts, ADR-0003).
-	const schauenRundgang = zentrum && graph.getSchauenRundgang(zentrum.id)
-	const ersteStation =
-		zentrum &&
-		schauenRundgang &&
-		graph.getStationenByOrt(zentrum.id).find((station) => station.rundgangId === schauenRundgang.id)
+	const ersteStation = zentrum && graph.getSchauenStation(zentrum.id)
 	// "Themen-Weg beginnen" goes to Kapitel 1 (ADR-0003: "Kapitel n = Viertel n").
 	const erstesKapitel = graph.kapitel.find((kapitel) => kapitel.number === 1)
 

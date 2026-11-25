@@ -171,6 +171,10 @@ export interface ContentGraph {
 	// An Ort can stand in several Rundgänge; this is the one the Stadtplan
 	// Übersicht shows alongside the Ort's Kapitel in the Leitthema.
 	getSchauenRundgang(ortId: string): Rundgang | undefined
+	// The Ort's own Station in its Schauen Rundgang (issue #100's Gangart-Box):
+	// undefined wherever getSchauenRundgang is, since neither exists without
+	// the other.
+	getSchauenStation(ortId: string): Station | undefined
 	// The three Themen (issue #31, ADR-0003): the Leitthema and each
 	// Themen-Ort, both documents at src/content/themen/<slug>/. The Leitthema
 	// has no kapitelId and lists every Kapitel on its own landing page; a
@@ -398,6 +402,16 @@ export function buildContentGraph(
 		return documents.filter((document) => !document.draft)
 	}
 
+	// The Schauen Rundgang of an Ort (issue #95), factored out so
+	// getSchauenStation below can reuse the same lookup instead of re-finding
+	// it (issue #100's Gangart-Box needs both the Rundgang and its Station at
+	// the same Ort).
+	function schauenRundgangOf(ortId: string): Rundgang | undefined {
+		return rundgaenge.find((rundgang) =>
+			(stationenByRundgang.get(rundgang.id) ?? []).some((station) => station.ortId === ortId),
+		)
+	}
+
 	return {
 		locales,
 		seiten,
@@ -443,10 +457,14 @@ export function buildContentGraph(
 		getStationenByRundgang: (rundgangId) => stationenByRundgang.get(rundgangId) ?? [],
 		getStation: (id, locale) => find('station', id, locale),
 		getStationenByOrt: (ortId) => stationen.filter((station) => station.ortId === ortId),
-		getSchauenRundgang: (ortId) =>
-			rundgaenge.find((rundgang) =>
-				(stationenByRundgang.get(rundgang.id) ?? []).some((station) => station.ortId === ortId),
-			),
+		getSchauenRundgang: schauenRundgangOf,
+		getSchauenStation: (ortId) => {
+			const rundgang = schauenRundgangOf(ortId)
+			return (
+				rundgang &&
+				(stationenByRundgang.get(rundgang.id) ?? []).find((station) => station.ortId === ortId)
+			)
+		},
 		themen,
 		getThema: (id, locale) => find('thema', id, locale),
 		getThemenByKapitel: (kapitelId) => themen.filter((item) => item.kapitelId === kapitelId),
