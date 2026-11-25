@@ -45,8 +45,7 @@ function KapitelRandspalte({ graph, viertel, className, ...props }: KapitelRands
 										<ItemContent>
 											<ItemTitle>{shortTitleOrTitle(aufsatz)}</ItemTitle>
 											<ItemDescription>
-												{t('aufsatz.type')} ·{' '}
-												{t('aufsatz.readingTime', { n: aufsatz.readingTimeMinutes })}
+												{t('aufsatz.typeReadingTime', { n: aufsatz.readingTimeMinutes })}
 											</ItemDescription>
 										</ItemContent>
 									</Item>
