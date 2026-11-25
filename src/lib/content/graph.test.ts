@@ -433,6 +433,15 @@ describe('buildContentGraph', () => {
 			expect(graph.getViertel('stadt/zweite-viertel')?.hinweis).toBeUndefined()
 		})
 
+		it('resolves the same Hinweis on graph.viertel, not only on getViertel (issue #95)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			expect(graph.viertel.find((item) => item.id === 'stadt/erste-viertel')?.hinweis).toEqual({
+				shortTitle: 'Idee',
+				url: '/idee',
+			})
+		})
+
 		it('loads the Zentrum as its own type, not a Viertel and with no number', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
 
@@ -822,6 +831,29 @@ describe('buildContentGraph', () => {
 				expect(validationError.field).toBe('rundgaenge/einziger-rundgang/zweite-station')
 				expect(validationError.reason).toMatch(/missing/i)
 			}
+		})
+	})
+
+	describe('Schauen Rundgang (issue #95)', () => {
+		it('picks the first Rundgang, in rundgaenge order, with a Station at that Ort', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'schauen-rundgang-valid'))
+
+			// mit-erstem has a Station in both rundgang-a and rundgang-b; the
+			// earlier one in `rundgaenge` order wins.
+			expect(graph.getSchauenRundgang('stadt/mit-erstem')?.id).toBe('rundgaenge/rundgang-a')
+		})
+
+		it('skips a Rundgang without a matching Station and picks the next one that has it', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'schauen-rundgang-valid'))
+
+			// mit-zweitem has no Station in rundgang-a, only in rundgang-b.
+			expect(graph.getSchauenRundgang('stadt/mit-zweitem')?.id).toBe('rundgaenge/rundgang-b')
+		})
+
+		it('is undefined for an Ort no Rundgang visits', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'schauen-rundgang-valid'))
+
+			expect(graph.getSchauenRundgang('stadt/ohne')).toBeUndefined()
 		})
 	})
 

@@ -136,7 +136,7 @@ export type ResolvedDocument = ContentDocument & { readonly locale?: string }
 // Breadcrumbs and previous/next are views of this hierarchy, not written down
 // separately. `number` is only ever set on a previous/next neighbour whose
 // own type carries one (a Viertel); a caller formats it, the same way
-// viertel-liste.tsx formats a Viertel's own number — this is data, not a
+// ortsleiste.tsx formats a Viertel's own number — this is data, not a
 // formatted string.
 export interface NavigationLink {
 	readonly id: string
