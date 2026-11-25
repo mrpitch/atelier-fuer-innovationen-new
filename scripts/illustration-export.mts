@@ -17,13 +17,11 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import prettier from 'prettier'
+import { parse as parseYaml } from 'yaml'
 
 register('./ts-extension-loader.mjs', import.meta.url)
 
 const { transformIllustrationSvg } = await import('./illustration-transform')
-
-// agents.yaml: figma.app.fileKey.
-const FIGMA_FILE_KEY = 'ms4MqN4CJhsLTMTKqTSC8p'
 
 // The epic's node table (issue #87): page Illustrationen, 240 × 240 components.
 const ILLUSTRATION_NODES: Record<string, string> = {
@@ -47,6 +45,16 @@ const ILLUSTRATION_NODES: Record<string, string> = {
 const scriptsDir = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(scriptsDir, '..')
 const outDir = path.join(repoRoot, 'src/components/ui/illustrations')
+
+// agents.yaml: figma.app.fileKey.
+const agentsConfig = parseYaml(fs.readFileSync(path.join(repoRoot, 'agents.yaml'), 'utf8')) as {
+	figma?: { app?: { fileKey?: string } }
+}
+const FIGMA_FILE_KEY = agentsConfig.figma?.app?.fileKey
+if (!FIGMA_FILE_KEY) {
+	console.error('illustration:export: agents.yaml has no figma.app.fileKey')
+	process.exit(1)
+}
 
 const nodeIds = process.argv.slice(2)
 if (nodeIds.length === 0) {
