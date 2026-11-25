@@ -440,7 +440,7 @@ const eslintConfig = defineConfig([
 							pattern:
 								'(?:^|:)!?(?:rounded(?:-(?:s|e|t|r|b|l|ss|se|ee|es|tl|tr|br|bl))?-\\[|\\[[a-z-]*radius:)',
 							message:
-								'Arbitrary radii bypass the theme. Use the radius scale: rounded-sm, rounded-lg (4px), rounded-xl (8px) or rounded-none. See docs/reference/design/kartei-design-system.md.',
+								'Arbitrary radii bypass the theme. Use the radius scale: rounded-sm, rounded-lg (4px), rounded-xl (8px) or rounded-none. See docs/reference/design/theme-system.md for the scale and docs/reference/design/kartei-design-system.md (Shapes) for which element gets which.',
 						},
 					],
 				},

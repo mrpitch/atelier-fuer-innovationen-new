@@ -31,7 +31,7 @@ function PlanFeld({ nummer, status = 'offen', className, ...props }: PlanFeldPro
 		<div
 			data-slot="plan-feld"
 			data-status={status}
-			// 26px: the Plan-Feld size (Figma, Plan-Feld component).
+			// 26px: the Plan-Feld size (Figma Plan-Feld 36585:8629).
 			// eslint-disable-next-line restrictions/arbitrary-size-classes
 			className={cn('size-[26px]', planFeldVariants({ status }), className)}
 			{...props}

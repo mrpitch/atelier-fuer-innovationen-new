@@ -11,7 +11,7 @@ last_reviewed: 2026-11-25
 
 The Sandcastle runner can't open Figma, so every mismatch between the Figma file and the specs reaches a ticket as a `spec_conflict` after the run. Run this check in a session with the Figma MCP before writing an epic spec. Issue #110 ran it on the whole file; #109 on the Stadt templates.
 
-Prerequisites: a session with the Figma MCP (`create_session` on `ms4MqN4CJhsLTMTKqTSC8p` first, `figma-use` loaded), and the spec side open: [Kartei design system](../reference/design/kartei-design-system.md), `src/lib/styles/variables-kartei.css`, `PRODUCT.md`, the [glossary](../reference/glossary.md) and the epic's issue.
+Prerequisites: a session with the Figma MCP (`create_session` on `ms4MqN4CJhsLTMTKqTSC8p` first, `figma-use` loaded), and the spec side open: [Kartei design system](../reference/design/kartei-design-system.md), `src/lib/styles/variables-kartei.css`, `PRODUCT.md`, the [glossary](../reference/glossary.md) and the epic's issue. The Kartei design system holds rules, not measurements: widths, margins and sizes are checked against the epic's spec and the Figma components it names, not against the doc.
 
 ## Steps
 
@@ -31,7 +31,7 @@ const vis = (n) => {
 }
 ```
 
-1. **Layout: overflow and clipping.** A frame is a layout reference only when its content fits it (Kartei design system, Breakpoints). Report every visible node that leaves its screen frame, and every text clipped by any ancestor with `clipsContent`:
+1. **Layout: overflow and clipping.** A frame is a layout reference only when its content fits it (Kartei design system, Layout rules). Report every visible node that leaves its screen frame, and every text clipped by any ancestor with `clipsContent`:
 
    ```js
    const out = []
@@ -100,7 +100,7 @@ const vis = (n) => {
 
 3. **Tokens: Figma values against `variables-kartei.css`.** Resolve each `Mode` colour variable under the `Style` collection's Kartei mode (follow `VARIABLE_ALIAS` values, using the Kartei mode for `Style` and Light/Dark for `Mode`), then convert the CSS `oklch()` values to hex and compare; a difference above 2/255 per channel is drift. Check the radii the same way (`radius/lg` = `--radius`).
 
-4. **Rules: unbound paints, Koralle, Petrol, Schieferblau, type.** Per screen frame, list solid fills and strokes without `boundVariables.color` (skip illustrations, icons and Pro Blocks), more than one `signal` use per frame (Signal Rule), `primary` fills larger than a card (Petrol Rule), and `chart-4` outside an illustration. For type, read `getStyledTextSegments(['fontName', 'fontSize'])` and flag families other than Instrument Serif, Literata, Schibsted Grotesk and DM Mono; DM Mono outside 11–13px or longer than 70 characters (Legend Rule); Literata below 17px (Source Text Rule).
+4. **Rules: unbound paints, Koralle, Petrol, Schieferblau, type.** Per screen frame, list solid fills and strokes without `boundVariables.color` (skip illustrations, icons and Pro Blocks), more than one `signal` use per frame (Signal Rule), `primary` fills larger than a card (Petrol Rule), and `chart-4` outside an illustration. For type, read `getStyledTextSegments(['fontName', 'fontSize'])` and flag families other than Instrument Serif, Literata, Schibsted Grotesk and DM Mono; DM Mono outside 11–13px or longer than 70 characters (Legend Rule); Literata below 17px (Source Text Rule: 18px for original texts, 17px for teasers).
 
 5. **Content: props against what is visible, and copy.** For every instance, a `BOOLEAN` property like `Show Media` that is `false` while an illustration inside it is visible, and a `TEXT` property whose bound text node is hidden or reads differently. Then search the visible text for glossary spellings ("Potentiale" → "Potenziale") and for features the specs exclude: `Lesezeichen|gelesen|gesehen|besucht|✓|zuletzt|Fortschritt|Konto|Anmeld|Merkliste`.
 

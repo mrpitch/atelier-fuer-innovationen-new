@@ -49,7 +49,7 @@ async function StadtplanHub({ seite, locale, className, ...props }: StadtplanHub
 						<Illustration
 							id={zentrum.id}
 							label={zentrum.title}
-							// 420px: the Bild-Hero illustration size (Figma, Bild-Hero component).
+							// 420px: the Bild-Hero illustration size (Figma Bild-Hero 36584:15357).
 							// eslint-disable-next-line restrictions/arbitrary-size-classes
 							className="size-[420px]"
 						/>

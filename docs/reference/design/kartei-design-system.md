@@ -11,7 +11,7 @@ authoritative: true
 
 # Kartei design system
 
-This doc holds only what Figma and the code don't say: which colour does which job, which face sets which text, where a layout switches, and what the screens deliberately avoid. Values live elsewhere, and are not repeated here:
+This doc holds only what Figma and the code don't say: which colour does which job, which face sets which text, where a layout switches, and what the screens deliberately avoid. The only numbers here are rule thresholds (a minimum text size, a maximum column width, a contrast ratio); every other value lives in one of these sources and is not repeated:
 
 | What                                                      | Source                                                                                                                                  |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
@@ -61,7 +61,9 @@ The Kartei names are the vocabulary of the rules below. Each names one token; it
 | Schieferblau   | `chart-4`              | illustrations only, never UI                                                                                                 |
 | Viertel-Reiter | `viertel-<slug>`       | one index-tab tint per Viertel. Reserved: no screen uses them yet                                                            |
 
-The eight `viertel-*` slugs: `annaeherung`, `maerkte`, `kontexte`, `inszenierung`, `zukunft`, `wertschoepfung`, `potenziale`, `fuehrung`. In Dark, Petrol lightens and takes near-black text; the rules don't change.
+The eight `viertel-*` slugs: `annaeherung`, `maerkte`, `kontexte`, `inszenierung`, `zukunft`, `wertschoepfung`, `potenziale`, `fuehrung`.
+
+In Dark the rules don't change; the names do: Lesesaal (`background`), Karteikarte Dark (`card`), Graphit Dark (`foreground`), Bleigrau Dark (`muted-foreground`), Petrol hell (`primary`, with near-black text), Petrolschleier Dark (`secondary`) with Tiefpetrol Dark (`secondary-foreground`), Haarlinie Dark (`border`).
 
 ### Illustration
 
@@ -75,7 +77,7 @@ Every drawing is built from seven colours, which the export maps to theme tokens
 
 **The Signal Rule.** Koralle appears once per view at most, and only as a mark for the current place. Never text, never a fill behind text, never a button: at 3.4:1 on Archivstein it fails text contrast.
 
-**The Ink Rule.** Text and line art are Graphit. Grey text is Bleigrau, never lighter. On Petrolschleier, text is Tiefpetrol; on Petrol, text is white. One exception: the current Stopp on the Weg-Leiste sets its number in Petrol on its Petrolschleier fill.
+**The Ink Rule.** Text and line art are Graphit. Grey text is Bleigrau, never lighter: it is the lightest grey that passes AA (5.6:1 on Archivstein, 6.2:1 on Karteikarte). On Petrolschleier, text is Tiefpetrol (8.6:1); on Petrol, text is white. One exception: the current Stopp on the Weg-Leiste sets its number in Petrol on its Petrolschleier fill.
 
 **The Token Rule.** Components use token utilities only (`bg-card`, `text-muted-foreground`), never palette or arbitrary colours; lint enforces it. A new token goes into `variables-kartei.css` for light and dark, gets a `--color-*` line in `theme.css`, and a row in the table above.
 
@@ -90,7 +92,7 @@ Sizes per screen are in Figma; the roles decide which face a text gets.
 - **Display, Headline, Heading, Title** (Instrument Serif 400): page titles, the statement heading of a Startseite section, section headings on inner pages, and the names on tiles, cards and list entries. The Stadtplatz and the subtitle under a page title are Italic.
 - **Numerals** (Instrument Serif 400): sequence numbers and years shown large: Rundgang cards, Bibliothek lists, Chronik years, station lists, Dossier pages.
 - **Quotes and lead** (Literata, Italic for the lead paragraph): pull quotes, station and Rundgang quotes, the lead of a reading page.
-- **Text** (Literata 400): the original Xenia texts and teasers.
+- **Text** (Literata 400): the original Xenia texts, and teasers, which may go down to 17px.
 - **Body** (Schibsted Grotesk 400): introductions and interface prose.
 - **UI** (Schibsted Grotesk 500): nav items, buttons, section labels and list item titles; meta lines in 400. The Themen-Weg sidebar lists chapters in SemiBold.
 - **Label** (DM Mono 500, 12px, uppercase as typed): eyebrows such as "VIERTEL 03", "PROZESSANSATZ", "GANGART WECHSELN". Mono 400 carries mixed-case meta lines, counts and routes ("5 Stationen · 15 Min.", "Annäherung → Kontexte → Zukunft").
@@ -146,6 +148,9 @@ The Ortsleiste and the Bild-Hero switch at `xl` because their desktop rows don't
 - **Reading pages (Kapitel, Abschnitt):** at `xl` three columns: the Themen-Weg sidebar, the text column and a right column with the "Gangart wechseln" box and "Im Viertel außerdem". At `lg` the sidebar becomes the Themen-Weg button, because three columns would leave the text too narrow (the Text Leads Rule). Below `lg` the right-column content follows the text.
 - **Rundgang station pages:** on mobile the illustration stage and the text stack, and the bottom bar keeps only the previous and next buttons, without their stop illustrations.
 - **Inhaltsseite** (Dossier, Mosaik-Baustein, Aufsatz, Ereignis, Idee and Menschen pages): three columns aligned with the header and the Ortsleiste. The left column is always navigation, in one of two forms: the sections of the page as jump links ("Inhalt") on long texts, or the siblings of a collection entry with the current one active ("Alle Dossiers · 4"). The right column holds links to related places as outline list items under a section label ("Zum Dossier"). The content column opens with the Seitenkopf and then carries only the blocks the page needs: Steckbrief, Fließtext, Inhaltsliste.
+- **Seitenkopf (Übersicht, Inhaltsseite, Chronik):** the uppercase mono eyebrow in Petrol, the page title, then a Schibsted Grotesk introduction on an Übersicht or the Chronik, or an Italic subtitle and an optional mono meta line on an Inhaltsseite.
+- **Übersicht** (`/bibliothek`, `/bibliothek/[typ]`): the Seitenkopf, a filter row with tabs and search, then the Bibliothek entries across the full content column.
+- **Chronik** (`/chronik`): the Seitenkopf, the Zeitleiste of milestones (year, line with dot, entry), then the Arbeitsschwerpunkte list.
 
 **The Text Leads Rule.** On a reading page the text column is the widest thing on screen. When navigation competes with it, collapse the navigation.
 
@@ -238,7 +243,7 @@ Places where the screens break their own system. They are recorded here, not ado
 - On mobile, the pull quotes on the Startseite and Thema-Seite are set in Schibsted Grotesk 500, which breaks the Source Text Rule.
 - The Thema-Karte uses a raw 12px corner radius instead of `rounded-xl`.
 - Input borders are below 3:1 contrast (see Inputs).
-- Sheets and drawers: a proposed overlay shadow is not in the Kartei theme; it stays provisional.
+- Sheets and drawers have no shadow in the kit (`shadow/overlay` is zero). A proposal of `0 8px 24px` in Graphit at 12% is not in the Kartei theme; it stays provisional.
 - Reading state is drawn but not decided (issue #64): T01 Wiederkehr ("Hier waren Sie zuletzt", "Kapitel 1–2 gelesen"), T05 ("✓ Besucht" on visited stations), T07 ("Sie waren zuletzt hier", "Ihr Fortschritt bleibt gespeichert") and the Datenschutz page ("Lesezeichen auf diesem Gerät"). The specs of the Startseite, Rundgang and Seiten epics (#72, #70, #74) decide per screen once #64 is settled; until then these screens are not a reference for that copy.
 - The Zentrum page (`/stadt/zentrum`) has no Figma frame. Epic #92 specs it as the Viertel composition (T02) without Steckbrief and Aufsätze; the code follows that.
 - The desktop header's current area (issue #81) has no dedicated active state in Figma: the screens draw it as the NavigationMenu item's `State=Hover` variant, the same Pappe pill a pointer hover shows. The code gives the current entry a real active state (`aria-current="page"`, `data-active`), which happens to render identically to Hover since both map to `bg-muted`.
