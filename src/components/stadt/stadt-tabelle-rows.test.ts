@@ -14,12 +14,25 @@ function graph() {
 }
 
 describe('buildStadtTabelle', () => {
-	it("names the Zentrum's Schauen Rundgang and the Leitthema in the headings", () => {
+	it('names the Leitthema in the heading, and the Rundgang only when one covers every Ort', () => {
 		const current = graph()
 		const { headings } = buildStadtTabelle(current, current.viertel, current.zentrum)
 
-		expect(headings.station).toBe('Rundgang „Testrundgang A“')
+		// Two Rundgänge here (A: Zentrum, Mit Allem; B: Ohne Kapitel).
+		expect(headings.station).toBe('Rundgang')
 		expect(headings.kapitel).toBe('Themen-Weg „Testleitthema“')
+
+		const einzeln = buildContentGraph(
+			path.join(fixturesDir, '..', '..', 'zentrum', '__fixtures__', 'zentrum-detail-valid'),
+		)
+		const { headings: einzelnHeadings, rows } = buildStadtTabelle(
+			einzeln,
+			einzeln.viertel,
+			einzeln.zentrum,
+		)
+
+		expect(einzelnHeadings.station).toBe('Rundgang „Testrundgang A“')
+		expect(rows[0].station.label).toBe('Station 0 · Station am Zentrum')
 	})
 
 	it('builds the Zentrum row with "Einführung" linking to the Leitthema, and no Themen-Ort', () => {
@@ -32,7 +45,7 @@ describe('buildStadtTabelle', () => {
 		const zentrumRow = rows[0]
 
 		expect(zentrumRow.ort).toEqual({ label: 'Testzentrum', href: current.zentrum.url })
-		expect(zentrumRow.station.label).toBe('Station 0 · Station am Zentrum')
+		expect(zentrumRow.station.label).toBe('Station 0 · Station am Zentrum (Testrundgang A)')
 		expect(zentrumRow.kapitel).toEqual({ label: 'Einführung', href: leitthema.url })
 		expect(zentrumRow.themenOrt).toEqual({ label: '–' })
 	})
@@ -49,7 +62,7 @@ describe('buildStadtTabelle', () => {
 		const mitAllemRow = rows[1]
 
 		expect(mitAllemRow.ort).toEqual({ label: 'Viertel 01 · Mit Allem', href: mitAllem.url })
-		expect(mitAllemRow.station.label).toBe('Station 1 · Station bei Mit Allem')
+		expect(mitAllemRow.station.label).toBe('Station 1 · Station bei Mit Allem (Testrundgang A)')
 		expect(mitAllemRow.kapitel).toEqual({
 			label: 'Kapitel 1 · Kapitel mit Allem',
 			href: kapitel.url,
@@ -60,10 +73,11 @@ describe('buildStadtTabelle', () => {
 		})
 	})
 
-	it('uses "–" for a Viertel with no Kapitel or Themen-Ort, and whose only Station is in a Rundgang the header does not name', () => {
+	it("shows a Viertel's Station from its own Schauen Rundgang, named in the cell, even when the Zentrum's Rundgang is another", () => {
 		const current = graph()
 		const ohneKapitel = current.getViertel('stadt/ohne-kapitel')
-		if (!ohneKapitel) throw new Error('fixture is missing stadt/ohne-kapitel')
+		const station = current.getStation('rundgaenge/rundgang-b/station-ohne-kapitel')
+		if (!ohneKapitel || !station) throw new Error('fixture is missing stadt/ohne-kapitel')
 
 		const { rows } = buildStadtTabelle(current, current.viertel, current.zentrum)
 		const ohneKapitelRow = rows[2]
@@ -72,8 +86,21 @@ describe('buildStadtTabelle', () => {
 			label: 'Viertel 02 · Ohne Kapitel',
 			href: ohneKapitel.url,
 		})
-		expect(ohneKapitelRow.station).toEqual({ label: '–' })
+		expect(ohneKapitelRow.station).toEqual({
+			label: `Station ${station.number} · ${station.title} (Testrundgang B)`,
+			href: station.url,
+		})
 		expect(ohneKapitelRow.kapitel).toEqual({ label: '–' })
 		expect(ohneKapitelRow.themenOrt).toEqual({ label: '–' })
+	})
+
+	it('uses "–" for an Ort no Rundgang visits', () => {
+		const einzeln = buildContentGraph(
+			path.join(fixturesDir, '..', '..', 'zentrum', '__fixtures__', 'zentrum-detail-valid'),
+		)
+		const { rows } = buildStadtTabelle(einzeln, einzeln.viertel, einzeln.zentrum)
+		const fuehrung = rows.find((row) => row.key === 'stadt/fuehrung')
+
+		expect(fuehrung?.station).toEqual({ label: '–' })
 	})
 })

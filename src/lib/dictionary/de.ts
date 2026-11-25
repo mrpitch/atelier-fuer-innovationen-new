@@ -97,6 +97,7 @@ export const de = {
 	'stadt.hub.tabelleEinfuehrung': 'Einführung',
 	'stadt.hub.tabelleZweigtAb': '{title} – zweigt bei Kapitel {number} ab',
 	'stadt.hub.tabelleStation': 'Station {number} · {title}',
+	'stadt.hub.tabelleStationRundgang': 'Station {number} · {title} ({rundgang})',
 	'stadt.hub.tabelleKapitel': 'Kapitel {number} · {title}',
 	'stadt.hub.tabelleOrt': 'Viertel {number} · {title}',
 	'weg.leiste.label': 'DER WEG',
