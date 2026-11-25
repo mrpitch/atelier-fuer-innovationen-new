@@ -55,10 +55,10 @@ async function AbschnittDetail({ abschnitt, locale, ...props }: AbschnittDetailP
 	const viertel = graph.getViertel(kapitel.viertelId)
 	if (!viertel) throw new Error(`AbschnittDetail: unknown Viertel ID: ${kapitel.viertelId}`)
 
-	const geschwister = graph.getAbschnitteByKapitel(kapitel.id)
-	const index = geschwister.findIndex((candidate) => candidate.id === abschnitt.id)
-	const previous = index > 0 ? geschwister[index - 1] : undefined
-	const next = index >= 0 && index < geschwister.length - 1 ? geschwister[index + 1] : undefined
+	const previousLink = graph.getPrevious(abschnitt.id)
+	const previous = previousLink && graph.getAbschnitt(previousLink.id)
+	const nextLink = graph.getNext(abschnitt.id)
+	const next = nextLink && graph.getAbschnitt(nextLink.id)
 
 	const tagline = abschnitt.jahr
 		? t('abschnitt.tagline', {

@@ -21,6 +21,7 @@ const { AbschnittDetail } = await import('./abschnitt-detail')
 
 const abschnitte = graph.getAbschnitteByKapitel('leitthema/mein-kapitel')
 const [erster, zweiter, dritter] = abschnitte
+const [ersterDesZweitenKapitels] = graph.getAbschnitteByKapitel('leitthema/zweites-kapitel')
 
 async function render(abschnitt: (typeof abschnitte)[number]) {
 	return renderToStaticMarkup(await AbschnittDetail({ abschnitt }))
@@ -49,12 +50,12 @@ describe('AbschnittDetail', () => {
 		expect(html).toContain(`href="${zweiter!.url}"`)
 	})
 
-	it('shows only the previous Item on the last Abschnitt', async () => {
-		const html = await render(dritter!)
+	it('shows only the previous Item on the last Abschnitt overall', async () => {
+		const html = await render(ersterDesZweitenKapitels!)
 
 		expect(html).toContain('Vorheriger Abschnitt')
 		expect(html).not.toContain('Nächster Abschnitt')
-		expect(html).toContain(`href="${zweiter!.url}"`)
+		expect(html).toContain(`href="${dritter!.url}"`)
 	})
 
 	it('shows both Items on a middle Abschnitt', async () => {
@@ -64,6 +65,13 @@ describe('AbschnittDetail', () => {
 		expect(html).toContain('Nächster Abschnitt')
 		expect(html).toContain(`href="${erster!.url}"`)
 		expect(html).toContain(`href="${dritter!.url}"`)
+	})
+
+	it("crosses into the next Kapitel's first Abschnitt for a Kapitel's own last Abschnitt", async () => {
+		const html = await render(dritter!)
+
+		expect(html).toContain('Nächster Abschnitt')
+		expect(html).toContain(`href="${ersterDesZweitenKapitels!.url}"`)
 	})
 
 	it("reuses the Kapitel page's Randspalte for the Abschnitt's own Viertel", async () => {
