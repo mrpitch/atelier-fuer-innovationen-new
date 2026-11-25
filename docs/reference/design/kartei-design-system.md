@@ -71,7 +71,7 @@ Every drawing is built from seven colours, which the export maps to theme tokens
 
 ### Colour rules
 
-**The Petrol Rule.** Petrol marks what moves the visitor forward and the centre of the city: primary buttons ("Rundgang starten", "Kapitel 3 weiterlesen"), the Zentrum, the current place on the Mini-Stadtplan (a Petrol Plan-Feld with white text), completed progress, links and focus. It's never a section background.
+**The Petrol Rule.** Petrol marks what moves the visitor forward and the centre of the city: primary buttons ("Rundgang starten", "Kapitel 3 lesen"), the Zentrum, the current place on the Mini-Stadtplan (a Petrol Plan-Feld with white text), completed progress, links and focus. It's never a section background.
 
 **The Mist Rule.** Petrolschleier marks the guided way: illustration discs, the Stadtrundgänge band, the "Gangart wechseln" box, the current station, secondary buttons and badges. It's never used as a decorative background outside those roles.
 
@@ -194,7 +194,7 @@ What a component looks like is in Figma. This section holds when to use which va
 
 Quiet signage, never louder than the heading they serve.
 
-- **Primary:** for the action that moves the visitor forward ("Rundgang starten", "Kapitel 3 weiterlesen").
+- **Primary:** for the action that moves the visitor forward ("Rundgang starten", "Kapitel 3 lesen").
 - **Secondary:** for a step that leads somewhere else in the city.
 - **Outline / Ghost / Link:** ghost for in-page jumps ("Wege durch dieses Viertel ↓"), link for small text links. An arrow (→, ↓, ←) marks movement.
 - **Hover / Focus:** not designed yet. Focus is the `ring` (Petrol).
