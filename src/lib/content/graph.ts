@@ -180,6 +180,11 @@ export interface ContentGraph {
 	// A Kapitel's Themen-Ort(e), derived from each Thema's Kapitel reference
 	// — never listed by hand on the Kapitel itself.
 	getThemenByKapitel(kapitelId: string): readonly Thema[]
+	// The Leitthema itself (the one Thema with no kapitelId), looked up once
+	// instead of each caller re-deriving it from `themen` (issue #95's
+	// zentrumRow/headings did; issue #96's Viertel Bild-Hero badge is the
+	// third). Undefined only while no Leitthema is published.
+	readonly leitthema: Thema | undefined
 
 	// Every relative image a published document's body references (translations
 	// included), resolved to its path under the content directory (body.ts) —
@@ -266,6 +271,7 @@ export function buildContentGraph(
 	)
 	const abschnitte = kapitel.flatMap((item) => abschnitteByKapitel.get(item.id) ?? [])
 	const themen = resolveThemen(loaded.thema, loaded.kapitel, isVisible)
+	const leitthema = themen.find((thema) => thema.kapitelId === undefined)
 
 	const orte = [...loaded.viertel, ...loaded.zentrum]
 	const stationDocuments = groupByParent(loaded.station)
@@ -444,6 +450,7 @@ export function buildContentGraph(
 		themen,
 		getThema: (id, locale) => find('thema', id, locale),
 		getThemenByKapitel: (kapitelId) => themen.filter((item) => item.kapitelId === kapitelId),
+		leitthema,
 		bodyImages: [...bodyImages],
 	}
 }
