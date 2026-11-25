@@ -1,4 +1,4 @@
-import type { ContentGraph, Viertel, Zentrum } from '@/lib/content'
+import type { ContentGraph, Rundgang, Viertel, Zentrum } from '@/lib/content'
 import { shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 import { formatTwoDigits } from '@/lib/utils/format-two-digits'
@@ -28,10 +28,14 @@ interface StadtTabelleData {
 
 const LEER: StadtTabelleCell = { label: t('stadt.hub.tabelleLeer') }
 
-// The Station cell for an Ort (issue #95): the Station its own Schauen
-// Rundgang (graph.getSchauenRundgang) stands at, "–" when it has none.
-function stationCell(graph: ContentGraph, ortId: string): StadtTabelleCell {
-	const schauenRundgang = graph.getSchauenRundgang(ortId)
+// The Station cell for an Ort (issue #95): the Station it stands at in the
+// Schauen Rundgang the column header names (the Zentrum's, see headings) —
+// "–" when it has none there, so every row reads against the same Rundgang.
+function stationCell(
+	graph: ContentGraph,
+	ortId: string,
+	schauenRundgang: Rundgang | undefined,
+): StadtTabelleCell {
 	if (!schauenRundgang) return LEER
 
 	const station = graph
@@ -51,13 +55,17 @@ function stationCell(graph: ContentGraph, ortId: string): StadtTabelleCell {
 // The Kapitel and Themen-Ort cells for the Zentrum row: "Einführung" links
 // to the Leitthema's own page instead of a Kapitel, since the Zentrum has
 // none; there is no Themen-Ort to branch off either.
-function zentrumRow(graph: ContentGraph, zentrum: Zentrum): StadtTabelleRow {
+function zentrumRow(
+	graph: ContentGraph,
+	zentrum: Zentrum,
+	schauenRundgang: Rundgang | undefined,
+): StadtTabelleRow {
 	const leitthema = graph.themen.find((thema) => thema.kapitelId === undefined)
 
 	return {
 		key: zentrum.id,
 		ort: { label: shortTitleOrTitle(zentrum), href: zentrum.url },
-		station: stationCell(graph, zentrum.id),
+		station: stationCell(graph, zentrum.id, schauenRundgang),
 		kapitel: leitthema ? { label: t('stadt.hub.tabelleEinfuehrung'), href: leitthema.url } : LEER,
 		themenOrt: LEER,
 	}
@@ -65,7 +73,11 @@ function zentrumRow(graph: ContentGraph, zentrum: Zentrum): StadtTabelleRow {
 
 // A Viertel row: its Kapitel in the Leitthema (ADR-0003, "Kapitel n =
 // Viertel n") and that Kapitel's own Themen-Ort, if one branches off it.
-function viertelRow(graph: ContentGraph, viertel: Viertel): StadtTabelleRow {
+function viertelRow(
+	graph: ContentGraph,
+	viertel: Viertel,
+	schauenRundgang: Rundgang | undefined,
+): StadtTabelleRow {
 	const kapitel = graph.getKapitelByViertel(viertel.id)
 	const themenOrt = kapitel && graph.getThemenByKapitel(kapitel.id)[0]
 
@@ -78,7 +90,7 @@ function viertelRow(graph: ContentGraph, viertel: Viertel): StadtTabelleRow {
 			}),
 			href: viertel.url,
 		},
-		station: stationCell(graph, viertel.id),
+		station: stationCell(graph, viertel.id, schauenRundgang),
 		kapitel: kapitel
 			? {
 					label: t('stadt.hub.tabelleKapitel', {
@@ -104,8 +116,10 @@ function viertelRow(graph: ContentGraph, viertel: Viertel): StadtTabelleRow {
 // The table headings name the Schauen Rundgang of the Zentrum — the one
 // every Rundgang in the city starts from — and the Leitthema, by their own
 // titles (issue #95); a generic fallback covers the graph having neither.
-function headings(graph: ContentGraph, zentrum: Zentrum | undefined): StadtTabelleHeadings {
-	const schauenRundgang = zentrum && graph.getSchauenRundgang(zentrum.id)
+function headings(
+	graph: ContentGraph,
+	schauenRundgang: Rundgang | undefined,
+): StadtTabelleHeadings {
 	const leitthema = graph.themen.find((thema) => thema.kapitelId === undefined)
 
 	return {
@@ -127,11 +141,13 @@ function buildStadtTabelle(
 	viertel: readonly Viertel[],
 	zentrum: Zentrum | undefined,
 ): StadtTabelleData {
+	const schauenRundgang = zentrum && graph.getSchauenRundgang(zentrum.id)
+
 	return {
-		headings: headings(graph, zentrum),
+		headings: headings(graph, schauenRundgang),
 		rows: [
-			...(zentrum ? [zentrumRow(graph, zentrum)] : []),
-			...viertel.map((item) => viertelRow(graph, item)),
+			...(zentrum ? [zentrumRow(graph, zentrum, schauenRundgang)] : []),
+			...viertel.map((item) => viertelRow(graph, item, schauenRundgang)),
 		],
 	}
 }

@@ -60,7 +60,7 @@ describe('buildStadtTabelle', () => {
 		})
 	})
 
-	it('uses "–" for a Viertel with no Kapitel, no Themen-Ort and no Station', () => {
+	it('uses "–" for a Viertel with no Kapitel or Themen-Ort, and whose only Station is in a Rundgang the header does not name', () => {
 		const current = graph()
 		const ohneKapitel = current.getViertel('stadt/ohne-kapitel')
 		if (!ohneKapitel) throw new Error('fixture is missing stadt/ohne-kapitel')
