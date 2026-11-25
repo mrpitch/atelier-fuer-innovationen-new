@@ -1,7 +1,6 @@
 import type * as React from 'react'
 
 import { KapitelEbenenLeiste } from '@/components/navigation/kapitel-ebenen-leiste'
-import { KapitelThemenWeg } from '@/components/navigation/kapitel-themen-weg'
 import { ReadingLayout } from '@/components/navigation/reading-layout'
 import type { Abschnitt } from '@/lib/content'
 import { contentGraph } from '@/lib/content'
@@ -27,10 +26,7 @@ async function AbschnittDetail({ abschnitt, locale, ...props }: AbschnittDetailP
 	return (
 		<div data-slot="abschnitt-detail" {...props}>
 			<KapitelEbenenLeiste kapitel={kapitel} abschnitt={abschnitt} />
-			<ReadingLayout
-				themenWeg={<KapitelThemenWeg graph={graph} kapitel={kapitel} abschnitt={abschnitt} />}
-				themenWegKapitelCount={graph.kapitel.length}
-			>
+			<ReadingLayout graph={graph} kapitel={kapitel} abschnitt={abschnitt}>
 				<h1>
 					{t('abschnitt.numberedTitle', { number: abschnitt.number, title: abschnitt.title })}
 				</h1>

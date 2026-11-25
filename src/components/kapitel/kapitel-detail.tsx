@@ -2,7 +2,6 @@ import Link from 'next/link'
 import type * as React from 'react'
 
 import { KapitelEbenenLeiste } from '@/components/navigation/kapitel-ebenen-leiste'
-import { KapitelThemenWeg } from '@/components/navigation/kapitel-themen-weg'
 import { ReadingLayout } from '@/components/navigation/reading-layout'
 import type { Kapitel } from '@/lib/content'
 import { contentGraph, shortTitleOrTitle } from '@/lib/content'
@@ -29,10 +28,7 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 	return (
 		<div data-slot="kapitel-detail" {...props}>
 			<KapitelEbenenLeiste kapitel={kapitel} />
-			<ReadingLayout
-				themenWeg={<KapitelThemenWeg graph={graph} kapitel={kapitel} />}
-				themenWegKapitelCount={graph.kapitel.length}
-			>
+			<ReadingLayout graph={graph} kapitel={kapitel}>
 				<p>{t('kapitel.number', { n: kapitel.number })}</p>
 				<h1>{kapitel.title}</h1>
 				<Body components={bodyImageComponents(kapitel.id)} />

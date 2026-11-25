@@ -1,15 +1,15 @@
 import { cn } from 'cn'
 import type * as React from 'react'
 
+import { KapitelThemenWeg } from '@/components/navigation/kapitel-themen-weg'
 import { ThemenWegSheet } from '@/components/navigation/themen-weg-sheet'
+import type { Abschnitt, ContentGraph, Kapitel } from '@/lib/content'
 
 interface ReadingLayoutProps extends React.ComponentProps<'div'> {
-	// Rendered once, server-side, and placed in both the desktop column and
-	// the mobile Sheet (ThemenWegSheet) — passing it as children across that
-	// boundary keeps the content graph lookup out of the Client Component
-	// (static-export.md).
-	themenWeg: React.ReactNode
-	themenWegKapitelCount: number
+	graph: ContentGraph
+	kapitel: Kapitel
+	// Set on an Abschnitt page, see KapitelThemenWeg.
+	abschnitt?: Abschnitt
 	randspalte?: React.ReactNode
 	children: React.ReactNode
 }
@@ -20,13 +20,20 @@ interface ReadingLayoutProps extends React.ComponentProps<'div'> {
 // the text; below that it becomes the "Themen-Weg · N Kapitel" button and
 // Sheet, and the Randspalte stacks under the text.
 function ReadingLayout({
-	themenWeg,
-	themenWegKapitelCount,
+	graph,
+	kapitel,
+	abschnitt,
 	randspalte,
 	children,
 	className,
 	...props
 }: ReadingLayoutProps) {
+	// Rendered once, server-side, and placed in both the desktop column and
+	// the mobile Sheet (ThemenWegSheet) — passing it as children across that
+	// boundary keeps the content graph lookup out of the Client Component
+	// (static-export.md).
+	const themenWeg = <KapitelThemenWeg graph={graph} kapitel={kapitel} abschnitt={abschnitt} />
+
 	return (
 		<div
 			data-slot="reading-layout"
@@ -36,7 +43,7 @@ function ReadingLayout({
 			)}
 			{...props}
 		>
-			<ThemenWegSheet kapitelCount={themenWegKapitelCount} className="lg:hidden">
+			<ThemenWegSheet kapitelCount={graph.kapitel.length} className="lg:hidden">
 				{themenWeg}
 			</ThemenWegSheet>
 			<aside data-slot="themen-weg-column" className="hidden lg:block">

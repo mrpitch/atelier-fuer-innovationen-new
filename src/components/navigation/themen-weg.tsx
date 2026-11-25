@@ -2,7 +2,6 @@ import { cn } from 'cn'
 import Link from 'next/link'
 import * as React from 'react'
 
-import { Illustration } from '@/components/ui/illustration'
 import {
 	SidebarGroup,
 	SidebarGroupContent,
@@ -30,7 +29,9 @@ interface ThemenWegKapitelItem {
 	readonly url: string
 	readonly number: number
 	readonly title: string
-	readonly viertelId: string
+	// The Viertel's drawing, passed in as a node like EbenenLeiste's: the
+	// Illustration lookup by real Viertel ID stays in KapitelThemenWeg.
+	readonly illustration: React.ReactNode
 	readonly viertelNumber: number
 	readonly viertelTitle: string
 	readonly current: boolean
@@ -86,13 +87,9 @@ function ThemenWeg({ leitthemaTitle, kapitel, className, ...props }: ThemenWegPr
 									<SidebarMenuButton
 										render={<Link href={item.url} />}
 										isActive={item.current && item.abschnitte === undefined}
-										className="h-auto items-start gap-3 rounded-lg p-2.5"
+										className="h-15 items-center gap-3 rounded-lg border border-border px-3 py-2.5"
 									>
-										<Illustration
-											id={item.viertelId}
-											label={item.viertelTitle}
-											className="size-8 shrink-0"
-										/>
+										<span className="size-8 shrink-0">{item.illustration}</span>
 										<span className="flex min-w-0 flex-col gap-0.5">
 											<span className="truncate text-sm font-semibold">{item.title}</span>
 											<span className="truncate font-mono text-xs text-muted-foreground">

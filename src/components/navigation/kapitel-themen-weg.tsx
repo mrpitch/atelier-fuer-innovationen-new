@@ -3,6 +3,7 @@ import type {
 	ThemenWegKapitelItem,
 } from '@/components/navigation/themen-weg'
 import { ThemenWeg } from '@/components/navigation/themen-weg'
+import { Illustration } from '@/components/ui/illustration'
 import type { Abschnitt, ContentGraph, Kapitel } from '@/lib/content'
 import { shortTitleOrTitle } from '@/lib/content'
 
@@ -48,7 +49,7 @@ function KapitelThemenWeg({
 			url: item.url,
 			number: item.number,
 			title: shortTitleOrTitle(item),
-			viertelId: viertel.id,
+			illustration: <Illustration id={viertel.id} label={viertel.title} className="size-full" />,
 			viertelNumber: viertel.number,
 			viertelTitle: shortTitleOrTitle(viertel),
 			current,
