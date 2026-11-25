@@ -82,6 +82,18 @@ export const de = {
 	'stadt.hub.tabelleStation': 'Station {number} · {title}',
 	'stadt.hub.tabelleKapitel': 'Kapitel {number} · {title}',
 	'stadt.hub.tabelleOrt': 'Viertel {number} · {title}',
+	'weg.leiste.label': 'DER WEG',
+	'weg.leiste.titel': 'Stadtplatz · Viertel 01–08',
+	'weg.leiste.hinweis': 'Sie stehen bei {number}',
+	'viertel.wege.tagline': 'Wege durch dieses Viertel',
+	'viertel.wege.title': 'Ein Weg, zwei Gangarten',
+	'viertel.wege.description':
+		'Station {number} = Viertel {viertelNumber} = Kapitel {number}. Schauen mit dem Stadtführer oder lesen im Themen-Weg – am selben Ort.',
+	'viertel.wege.schauenBadge': 'Schauen · Rundgang „{title}“',
+	'viertel.wege.schauenAnsehen': 'Station {number} ansehen',
+	'viertel.wege.schauenVonVorn': 'Von vorn · Station {number}',
+	'viertel.wege.lesenBadge': 'Lesen · Themen-Weg „{title}“',
+	'viertel.wege.lesenAlle': 'Alle {count} Kapitel',
 } as const
 
 export type DictionaryKey = keyof typeof de

@@ -3,6 +3,7 @@ import type * as React from 'react'
 
 import { AufsaetzeListe } from '@/components/aufsatz/aufsaetze-liste'
 import { Ortsleiste } from '@/components/navigation/ortsleiste'
+import { WegLeiste } from '@/components/navigation/weg-leiste'
 import { MiniStadtplan } from '@/components/stadt/mini-stadtplan'
 import { PageSection } from '@/components/stadt/page-section'
 import { SectionTitle } from '@/components/stadt/section-title'
@@ -18,6 +19,8 @@ import { t } from '@/lib/dictionary'
 import { formatTwoDigits } from '@/lib/utils/format-two-digits'
 import { bodyImageComponents } from '@/mdx-components'
 
+import { GangartKarte } from './gangart-karte'
+import { buildLesenGangart, buildSchauenGangart } from './gangarten'
 import { Steckbrief } from './steckbrief'
 
 interface ViertelDetailProps extends React.ComponentProps<'div'> {
@@ -25,16 +28,16 @@ interface ViertelDetailProps extends React.ComponentProps<'div'> {
 	locale?: string
 }
 
-// Where "Wege durch dieses Viertel ↓" in the Bild-Hero scrolls to: the Weg
-// section the next ticket (the Wege section, issue #96's own notes) adds
-// below this page, matched by that section's own `id`.
+// Where "Wege durch dieses Viertel ↓" in the Bild-Hero scrolls to: the Wege
+// section below (issue #96's own notes), matched by that section's own `id`.
 const WEGE_ANCHOR = 'wege-durch-dieses-viertel'
 
-// A Viertel's own page content (Figma T02, issue #96): Bild-Hero, Steckbrief,
-// "Mehr aus dem Viertel" and "Weiter im Stadtplan", shared between its
-// dedicated German route (src/app/stadt/[viertel]/page.tsx) and the
-// catch-all route's prefixed, localized rendering (issue #36). Its Kapitel
-// and Aufsätze are the German document's related lists (content-layer.md).
+// A Viertel's own page content (Figma T02, issues #96, #97): Bild-Hero,
+// Steckbrief, "Mehr aus dem Viertel", "Wege durch dieses Viertel" and
+// "Weiter im Stadtplan", shared between its dedicated German route
+// (src/app/stadt/[viertel]/page.tsx) and the catch-all route's prefixed,
+// localized rendering (issue #36). Its Kapitel and Aufsätze are the German
+// document's related lists (content-layer.md).
 async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) {
 	const graph = contentGraph()
 	const Body = await graph.getBody(viertel.id, locale)
@@ -42,6 +45,8 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 	const { leitthema } = graph
 	const previous = graph.getPrevious(viertel.id)
 	const next = graph.getNext(viertel.id)
+	const schauenGangart = buildSchauenGangart(graph, viertel)
+	const lesenGangart = buildLesenGangart(graph, viertel)
 
 	return (
 		<div data-slot="viertel-detail" {...props}>
@@ -90,6 +95,31 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 			</PageSection>
 
 			<AufsaetzeListe aufsaetze={graph.getAufsaetzeByViertel(viertel.id)} />
+
+			{(schauenGangart ?? lesenGangart) !== undefined && (
+				<PageSection id={WEGE_ANCHOR} data-slot="wege-section">
+					<SectionTitle
+						tagline={t('viertel.wege.tagline')}
+						title={t('viertel.wege.title')}
+						description={t('viertel.wege.description', {
+							number: viertel.number,
+							viertelNumber: formatTwoDigits(viertel.number),
+						})}
+						className="mb-10"
+					/>
+					<WegLeiste
+						viertel={graph.viertel}
+						zentrum={graph.zentrum}
+						aktuellId={viertel.id}
+						aktuellNummer={viertel.number}
+						className="mb-6"
+					/>
+					<div className="flex flex-col gap-6 md:flex-row">
+						{schauenGangart && <GangartKarte {...schauenGangart} />}
+						{lesenGangart && <GangartKarte {...lesenGangart} />}
+					</div>
+				</PageSection>
+			)}
 
 			<PageSection data-slot="weiter-im-stadtplan-section">
 				<div className="mb-10 flex flex-wrap items-center gap-6">
