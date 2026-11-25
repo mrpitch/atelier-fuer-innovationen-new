@@ -14,9 +14,11 @@ interface KapitelHeroProps extends React.ComponentProps<'section'> {
 	viertel: Viertel
 	leitthema: Thema | undefined
 	// graph.viertel.length: ADR-0003's "Kapitel n = Viertel n" makes "VON n"
-	// range over every Viertel, the same count KapitelEbenenLeiste uses, not
-	// graph.kapitel.length.
+	// the length of the way, the same count KapitelEbenenLeiste uses.
 	viertelCount: number
+	// graph.kapitel.length: "Alle n Kapitel" counts the published Kapitel the
+	// Leitthema page lists, like the Viertel page's Lesen card (issue #109).
+	kapitelCount: number
 	firstAbschnitt: Abschnitt | undefined
 	children?: React.ReactNode
 }
@@ -38,6 +40,7 @@ function KapitelHero({
 	viertel,
 	leitthema,
 	viertelCount,
+	kapitelCount,
 	firstAbschnitt,
 	children,
 	className,
@@ -48,11 +51,16 @@ function KapitelHero({
 			<div className="flex flex-col-reverse gap-5 @lg:flex-row @lg:items-center @lg:gap-8">
 				<div className="flex flex-col gap-3.5">
 					<MonoLabel>
-						{t('kapitel.heroOverline', {
-							number: kapitel.number,
-							total: viertelCount,
-							leitthema: leitthema ? shortTitleOrTitle(leitthema) : '',
-						})}
+						{leitthema
+							? t('kapitel.heroOverline', {
+									number: kapitel.number,
+									total: viertelCount,
+									leitthema: shortTitleOrTitle(leitthema),
+								})
+							: t('kapitel.heroOverlineOhneLeitthema', {
+									number: kapitel.number,
+									total: viertelCount,
+								})}
 					</MonoLabel>
 					<h1 className="font-heading text-[48px] leading-none tracking-[-0.02em] text-foreground">
 						{kapitel.title}
@@ -69,7 +77,7 @@ function KapitelHero({
 						)}
 						{leitthema && (
 							<Link href={leitthema.url} className={buttonVariants({ variant: 'ghost' })}>
-								{t('kapitel.heroAlleKapitel', { total: viertelCount })}
+								{t('kapitel.heroAlleKapitel', { total: kapitelCount })}
 							</Link>
 						)}
 					</div>

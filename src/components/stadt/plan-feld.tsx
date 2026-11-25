@@ -8,14 +8,11 @@ const planFeldVariants = cva('flex items-center justify-center rounded-none font
 		// yet: the Mini-Stadtplan never tracks reading state (issue #96), so
 		// only the current place and every open one render.
 		//
-		// Koralle (bg-signal) marks the current place on a map or bar, but
-		// never as a fill behind text (Kartei design system, Signal Rule;
-		// theme.css's --color-signal comment) — the Figma component itself
-		// fills "aktuell" with Petrol, but that fill-behind-text reading
-		// conflicts with the design system, so "aktuell" keeps the Karteikarte
-		// fill and gets a Koralle ring instead.
+		// "aktuell" is the Figma fill: Petrol with white text (Kartei design
+		// system, Petrol Rule: the current place on the Mini-Stadtplan; issue
+		// #109).
 		status: {
-			aktuell: 'bg-card text-card-foreground ring-2 ring-signal ring-inset',
+			aktuell: 'bg-primary text-primary-foreground',
 			offen: 'bg-card text-card-foreground',
 		},
 	},
@@ -27,9 +24,8 @@ interface PlanFeldProps extends React.ComponentProps<'div'>, VariantProps<typeof
 }
 
 // Xenia / Stadt / Plan-Feld (Figma component set 36585:8629): one tile of
-// the Mini-Stadtplan — a 26px square naming its place's number, Karteikarte
-// with a Koralle ring when it's the current place, plain Karteikarte
-// otherwise.
+// the Mini-Stadtplan — a 26px square naming its place's number, Petrol when
+// it's the current place, Karteikarte otherwise.
 function PlanFeld({ nummer, status = 'offen', className, ...props }: PlanFeldProps) {
 	return (
 		<div

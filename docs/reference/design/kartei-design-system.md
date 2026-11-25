@@ -75,13 +75,13 @@ These tokens exist in the Kartei theme but no screen uses them yet:
 
 ### Colour rules
 
-**The Petrol Rule.** Petrol marks what moves the visitor forward and the centre of the city: primary buttons ("Rundgang starten", "Kapitel 3 weiterlesen"), the Zentrum, completed progress, links and focus. It's never a section background.
+**The Petrol Rule.** Petrol marks what moves the visitor forward and the centre of the city: primary buttons ("Rundgang starten", "Kapitel 3 weiterlesen"), the Zentrum, the current place on the Mini-Stadtplan (a Petrol Plan-Feld with white text), completed progress, links and focus. It's never a section background.
 
 **The Mist Rule.** Petrolschleier marks the guided way: illustration discs, the Stadtrundgänge band, the "Gangart wechseln" box, the current station, secondary buttons and badges. It's never used as a decorative background outside those roles.
 
 **The Signal Rule.** Koralle appears once per view at most, and only as a mark for the current place. Never text, never a fill behind text, never a button.
 
-**The Ink Rule.** Text and line art are Graphit. Grey text is Bleigrau, never lighter. On Petrolschleier, text is Tiefpetrol; on Petrol, text is white.
+**The Ink Rule.** Text and line art are Graphit. Grey text is Bleigrau, never lighter. On Petrolschleier, text is Tiefpetrol; on Petrol, text is white. One exception: the current Stopp on the Weg-Leiste sets its number in Petrol on its Petrolschleier fill.
 
 ## Typography
 
@@ -123,12 +123,27 @@ Sizes are desktop / mobile; where only one size is given, both use it. The sizes
 
 - **Desktop canvas:** 1440px. Content sits in a 1248px column with 96px side margins. The header is 64px tall with a 1280px container and 24px inner padding.
 - **Mobile canvas:** 390px. Content sits in a 350px column with 20px side margins.
-- **Tablet:** the Startseite and Viertel-Seite are also drawn at 768px and 1024px.
+- **Tablet:** every Stadt template (T02, T03, T04, T08) and the Startseite are also drawn at 768px and 1024px.
+- **Breakpoints:** the code switches at Tailwind's `sm` (640), `md` (768), `lg` (1024) and `xl` (1280), or at a container width. Figma draws one frame per width (1440, 1024, 768, 390) with a `Breakpoint` variant on each component. The table maps one to the other; a ticket spec names the row it relies on instead of restating "Desktop at 768".
+
+  | Component                                 | 390             | 768             | 1024                     | 1440          | Switch           |
+  | ----------------------------------------- | --------------- | --------------- | ------------------------ | ------------- | ---------------- |
+  | Header, Footer, Ebenen-Leiste, Ortsleiste | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Bild-Hero                                 | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Stadtplan                                 | 1 column        | 3 × 3           | 3 × 3                    | 3 × 3         | `sm`             |
+  | Steckbrief                                | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Weg-Leiste                                | Mobile          | Desktop         | Desktop                  | Desktop       | `md`             |
+  | Gangart cards                             | stacked         | stacked         | side by side             | side by side  | `lg`             |
+  | "Weiter im Stadtplan" Items               | stacked         | side by side    | side by side             | side by side  | `sm`             |
+  | Reading layout                            | 1 column, Sheet | 1 column, Sheet | text + Randspalte, Sheet | three columns | `lg`, `xl`       |
+  | Kapitel-Hero                              | Mobile          | Desktop         | Desktop                  | Desktop       | container, 512px |
+
+- **A frame is a layout reference only when its content fits it.** A responsive frame whose children are wider than its body, or are clipped by it, is a resized copy of the 1440 frame, not a design for that width. Use the table above, and correct the frame.
 - **Spacing:** on the Tailwind 4px scale. Sections have 64–80px of padding top and bottom (80px on the Startseite, 72px on the Viertel-Seite, 56–64px on hubs and inner pages) and 40px on mobile. A section's heading block sits 24–40px above its content; list items are 12–16px apart.
 - **Page hero (Bild-Hero):** a 748px text column and a 420px illustration, 80px apart, with 48px padding above and 80px below. On mobile the illustration comes first, then the text.
 - **Place bar:** Viertel, Rundgang and Thema pages and every Übersicht, Inhaltsseite and Chronik page have an Ortsleiste under the header: the breadcrumb on the left, the neighbouring places on the right, named after them ("← 02 Märkte", "04 Inszenierung →", "Xenia in Telepolis ’95 →"). Kapitel and Abschnitt pages use the Ebenen-Leiste instead: the current place with "Sie sind hier", the breadcrumb, and a progress count ("KAPITEL 4 · 3 VON 8").
 - **Stadtplan:** a 3 × 3 grid of square-cornered 416 × 340px tiles sharing Haarlinie borders. The eight Viertel run clockwise from top left, with the Zentrum in the middle. On mobile the tiles stack in one column in the desktop reading order (01, 02, 03, 08, Zentrum, 04, 07, 06, 05).
-- **Reading pages (Kapitel, Abschnitt):** three columns 56px apart: a 300px Themen-Weg sidebar, a 608px text column and a 260px right column, with 64px margin on the left and 96px on the right. The right column holds the "Gangart wechseln" box and an "Im Viertel außerdem" list of related material. On mobile a Themen-Weg button opens the sidebar, and the right-column content follows the text.
+- **Reading pages (Kapitel, Abschnitt):** at 1440 three columns 56px apart: a 300px Themen-Weg sidebar, a 608px text column and a 260px right column, with 64px margin on the left and 96px on the right. The right column holds the "Gangart wechseln" box and an "Im Viertel außerdem" list of related material. At 1024 the sidebar is the Themen-Weg button and the text column sits beside the right column, 48px margins on both sides: three columns would leave the text about 192px (the Text Leads Rule). Below 1024 the right-column content follows the text.
 - **Rundgang station pages:** the Rundgang-Leiste on top, then a 620px illustration stage on Pappe beside an 820px text area, and the station navigation along the bottom. On mobile they stack, and the bottom bar keeps only the previous and next buttons.
 - **Seitenkopf (Übersicht, Inhaltsseite, Chronik):** the uppercase mono eyebrow in Petrol, the page title, then a Schibsted Grotesk introduction on an Übersicht or the Chronik, or an Italic subtitle and an optional mono meta line on an Inhaltsseite. Items 24px apart.
 - **Übersicht** (`/bibliothek`, `/bibliothek/[typ]`): the Seitenkopf in a 608px column, a filter row with tabs and search, then the Bibliothek entries across the full 1248px column.
@@ -249,4 +264,3 @@ Places where the screens break their own system. They are recorded here, not ado
 - The Thema-Karte uses a raw 12px corner radius instead of the kit's 8px card radius.
 - Input borders are below 3:1 contrast (see Inputs).
 - The desktop header's current area (issue #81) has no dedicated active state in Figma: the screens draw it as the NavigationMenu item's `State=Hover` variant, the same Pappe pill a pointer hover shows. The code gives the current entry a real active state (`aria-current="page"`, `data-active`), which happens to render identically to Hover since both map to `bg-muted`.
-- The Weg-Leiste's current Stopp (issue #97) draws its Nummer in Petrol on the Petrolschleier fill. The code sets it in Tiefpetrol, following the Ink Rule (on Petrolschleier, text is Tiefpetrol).

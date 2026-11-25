@@ -33,7 +33,7 @@ function BildHero({
 		<section
 			data-slot="bild-hero"
 			className={cn(
-				'flex flex-col-reverse gap-10 px-5 pt-12 pb-20 md:flex-row md:items-center md:justify-between md:gap-20 md:px-24',
+				'flex flex-col-reverse gap-10 px-5 pt-12 pb-20 lg:flex-row lg:items-center lg:justify-between lg:gap-20 lg:px-24',
 				className,
 			)}
 			{...props}
@@ -45,10 +45,10 @@ function BildHero({
 					<p className="font-mono text-xs text-muted-foreground uppercase">{eyebrow}</p>
 					{badge}
 				</div>
-				<h1 className="font-heading text-[48px] leading-none tracking-[-0.02em] text-foreground md:text-[88px]">
+				<h1 className="font-heading text-[48px] leading-none tracking-[-0.02em] text-foreground lg:text-[88px]">
 					{title}
 				</h1>
-				{zitat && <p className="font-serif text-[28px] text-foreground md:text-[40px]">{zitat}</p>}
+				{zitat && <p className="font-serif text-[28px] text-foreground lg:text-[40px]">{zitat}</p>}
 				<div className="text-lg text-muted-foreground">{children}</div>
 				{actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
 			</div>
