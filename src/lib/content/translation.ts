@@ -1,5 +1,5 @@
 import type { Translation } from './loader'
-import type { BaseDocument, ContentSet, Viertel } from './types'
+import type { Abschnitt, BaseDocument, ContentSet, Kapitel, Viertel } from './types'
 import type { UrlScope } from './urls'
 import { abschnittUrl, kapitelUrl, pathUrl, stationUrl } from './urls'
 
@@ -26,14 +26,39 @@ function localizeBase<T extends BaseDocument>(
 	}
 }
 
-// A Viertel additionally translates its own Leitsatz and Steckbrief
-// (content-layer.md). Its number always stays the German document's — it
-// comes from stadt/meta.json, never from a translation.
+// A Viertel additionally translates its own Leitsatz, Steckbrief and
+// Untertitel (content-layer.md). Its number, `hinweisId` and resolved
+// `hinweis` always stay the German document's (issue #93): a reference is
+// never translatable, and `hinweis` is derived from it, before translation
+// ever runs (graph.ts).
 function localizeViertel(viertel: Viertel, translation: Translation | undefined, url: string) {
 	return {
 		...localizeBase(viertel, translation, url),
 		leitsatz: translation?.frontmatter.leitsatz ?? viertel.leitsatz,
 		steckbrief: translation?.frontmatter.steckbrief ?? viertel.steckbrief,
+		untertitel: translation?.frontmatter.untertitel ?? viertel.untertitel,
+	}
+}
+
+// A Kapitel additionally translates its own Untertitel (issue #93).
+function localizeKapitel(kapitel: Kapitel, translation: Translation | undefined, url: string) {
+	return {
+		...localizeBase(kapitel, translation, url),
+		untertitel: translation?.frontmatter.untertitel ?? kapitel.untertitel,
+	}
+}
+
+// An Abschnitt additionally translates its own Leitsatz and Jahr (issue
+// #93).
+function localizeAbschnitt(
+	abschnitt: Abschnitt,
+	translation: Translation | undefined,
+	url: string,
+) {
+	return {
+		...localizeBase(abschnitt, translation, url),
+		leitsatz: translation?.frontmatter.leitsatz ?? abschnitt.leitsatz,
+		jahr: translation?.frontmatter.jahr ?? abschnitt.jahr,
 	}
 }
 
@@ -78,7 +103,7 @@ export function localizeSet(
 	const viertelUrls = new Map(viertel.map((item) => [item.id, item.url]))
 
 	const kapitel = set.kapitel.map((document) =>
-		localizeBase(
+		localizeKapitel(
 			document,
 			translations.get(document.id),
 			kapitelUrl(viertelUrls.get(document.viertelId) ?? '', document.number, slugOf(document.id)),
@@ -87,7 +112,7 @@ export function localizeSet(
 	const kapitelUrls = new Map(kapitel.map((item) => [item.id, item.url]))
 
 	const abschnitt = set.abschnitt.map((document) =>
-		localizeBase(
+		localizeAbschnitt(
 			document,
 			translations.get(document.id),
 			abschnittUrl(

@@ -18,7 +18,7 @@ tags:
     seo,
   ]
 status: stable
-last_reviewed: 2026-11-23
+last_reviewed: 2026-11-25
 authoritative: true
 ---
 
@@ -38,17 +38,17 @@ The rules of the content layer and why they hold. For the API, read the code: `s
 
 A document's type is decided by where its file sits under `src/content`, not by a frontmatter field. Every type has `title`, `description`, an optional `shortTitle` and an optional `draft`, through one shared `BaseDocument`.
 
-| Type      | Location                                    | Frontmatter beyond the shared fields            |
-| --------- | ------------------------------------------- | ----------------------------------------------- |
-| Seite     | anywhere not listed below                   | none                                            |
-| Viertel   | `stadt/<slug>/` (slug is not `zentrum`)     | `leitsatz`, `steckbrief`                        |
-| Zentrum   | `stadt/zentrum/`                            | none                                            |
-| Aufsatz   | `bibliothek/aufsaetze/<slug>/`              | `viertelId` (reference)                         |
-| Kapitel   | `leitthema/<slug>/`                         | `viertelId` (reference)                         |
-| Abschnitt | `leitthema/<kapitel>/<slug>/`               | none                                            |
-| Rundgang  | `rundgaenge/<slug>/`                        | none                                            |
-| Station   | `rundgaenge/<rundgang>/<slug>/`             | `ortId` (reference to a Viertel or the Zentrum) |
-| Thema     | `themen/<slug>/` (Leitthema and Themen-Ort) | `kapitelId` (optional reference)                |
+| Type      | Location                                    | Frontmatter beyond the shared fields                                                          |
+| --------- | ------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Seite     | anywhere not listed below                   | none                                                                                          |
+| Viertel   | `stadt/<slug>/` (slug is not `zentrum`)     | `leitsatz`, `steckbrief`, `untertitel` (optional), `hinweisId` (optional, any-type reference) |
+| Zentrum   | `stadt/zentrum/`                            | none                                                                                          |
+| Aufsatz   | `bibliothek/aufsaetze/<slug>/`              | `viertelId` (reference)                                                                       |
+| Kapitel   | `leitthema/<slug>/`                         | `viertelId` (reference), `untertitel` (optional)                                              |
+| Abschnitt | `leitthema/<kapitel>/<slug>/`               | `leitsatz` (optional), `jahr` (optional)                                                      |
+| Rundgang  | `rundgaenge/<slug>/`                        | none                                                                                          |
+| Station   | `rundgaenge/<rundgang>/<slug>/`             | `ortId` (reference to a Viertel or the Zentrum)                                               |
+| Thema     | `themen/<slug>/` (Leitthema and Themen-Ort) | `kapitelId` (optional reference)                                                              |
 
 - A Kapitel belongs to the Leitthema, not to the Viertel it is set in, so its files sit under `leitthema/`.
 - A Thema without `kapitelId` is the Leitthema; with one it is a Themen-Ort branching off that Kapitel.
@@ -71,9 +71,11 @@ A URL is built from these rules and parsed in one place, `graph.resolveUrl`, whi
 
 ## References
 
-A reference is a frontmatter field holding another document's ID (`viertelId`, `ortId`, `kapitelId`), or an ID prop of a body component (`<ViertelTeaser id>`). A Zod schema can't see other documents, so the schema checks only that the field is a string; one generic resolver checks every reference once all documents are loaded. A new reference field reuses it and needs no resolution code of its own.
+A reference is a frontmatter field holding another document's ID (`viertelId`, `ortId`, `kapitelId`), or an ID prop of a body component (`<ViertelTeaser id>`). A Zod schema can't see other documents, so the schema checks only that the field is a string; one generic resolver (`resolveReference`) checks every same-type reference once all documents are loaded. A new reference field reuses it and needs no resolution code of its own.
 
 A reference to a missing document fails naming the referring file, the field and the ID. References resolve against the full set, Drafts included, so a Draft may reference a Draft. For a published document referencing a Draft, see [Drafts](#drafts).
+
+A reference may instead name a document of **any** type: a Menu entry's `id`, or a Viertel's optional `hinweisId` (issue #93), resolved to the target's Short title and URL for the Viertel page's Hinweis link. Both reuse a second generic resolver, `resolveAnyReference`, against the full set of known IDs and the visible ones' resolved shape — the same failure shape a same-type reference gives, naming the referring file, the field and the ID.
 
 ## Order and numbers
 
@@ -119,7 +121,7 @@ A Draft (`draft: true`, any type) is written and checked but not published.
 German is the default locale: no file suffix, no URL prefix ([ADR-0001](../../adr/adr-0001-unprefixed-default-locale-urls.md)). No other locale is configured or shipped; the plumbing is exercised by test fixtures with a test-only locale.
 
 - A translation is a sibling `index.<locale>.mdx` of the German document, for any type.
-- It holds only translatable fields: `title`, `shortTitle`, `description`, `slug`, the body, and on a Viertel `leitsatz` and `steckbrief`. Every other field (numbers, references, Draft state) is inherited from the German document, so it is never duplicated per language. A non-translatable field in a translation fails, naming the file and field.
+- It holds only translatable fields: `title`, `shortTitle`, `description`, `slug`, the body, and on a Viertel `leitsatz`, `steckbrief` and `untertitel`, on a Kapitel `untertitel`, on an Abschnitt `leitsatz` and `jahr`. Every other field (numbers, references, Draft state) is inherited from the German document, so it is never duplicated per language — a Viertel's `hinweisId` and its resolved `hinweis` stay German-only for the same reason, even though `untertitel` next to it is translatable. A non-translatable field in a translation fails, naming the file and field.
 - An omitted translatable field falls back to the German value; a missing translation falls back to the whole German document under the locale's prefix.
 - A localized URL is `/<locale>` plus the type's URL rule applied to translated slugs: a translated `slug` replaces the document's own last segment, an ancestor Seite's translated slug replaces its folder name, and a missing translation keeps the German segment.
 - A translation file next to no document fails for a configured locale; one for an unconfigured locale is never read.

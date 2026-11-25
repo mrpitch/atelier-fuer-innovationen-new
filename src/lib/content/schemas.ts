@@ -89,10 +89,18 @@ export type ViertelSteckbrief = z.infer<typeof viertelSteckbriefSchema>
 // A Viertel's number comes from its position in stadt/meta.json
 // (loader.ts), never from frontmatter — there is deliberately no `number`
 // field here, so one in a document's frontmatter is parsed and dropped.
+//
+// `hinweisId` (issue #93) is an optional reference to a document of any type
+// (the same any-type reference Menus use, references.ts's
+// resolveAnyReference), resolved to that document's Short title and URL for
+// the Viertel page's Hinweis link. `untertitel` is the Viertel's own
+// subtitle, independent of it.
 export const viertelFrontmatterSchema = z.object({
 	...baseShape,
 	leitsatz: z.string().min(1),
 	steckbrief: viertelSteckbriefSchema,
+	untertitel: z.string().min(1).optional(),
+	hinweisId: z.string().min(1).optional(),
 })
 
 export type ViertelFrontmatter = z.infer<typeof viertelFrontmatterSchema>
@@ -117,10 +125,12 @@ export type AufsatzFrontmatter = z.infer<typeof aufsatzFrontmatterSchema>
 
 // A Kapitel (glossary) belongs to one Viertel, by reference (issue #30), the
 // same reference shape as Aufsatz's viertelId. Its number and URL come from
-// that Viertel (kapitel.ts), never from frontmatter.
+// that Viertel (kapitel.ts), never from frontmatter. `untertitel` (issue #93)
+// is its own optional subtitle.
 export const kapitelFrontmatterSchema = z.object({
 	...baseShape,
 	viertelId: z.string().min(1),
+	untertitel: z.string().min(1).optional(),
 })
 
 export type KapitelFrontmatter = z.infer<typeof kapitelFrontmatterSchema>
@@ -138,8 +148,14 @@ export type ThemaFrontmatter = z.infer<typeof themaFrontmatterSchema>
 
 // An Abschnitt (glossary) belongs to one Kapitel by its folder location, not
 // by reference. Its position, number and URL come from the Kapitel's own
-// meta.json order (abschnitt.ts), never from frontmatter.
-export const abschnittFrontmatterSchema = z.object(baseShape)
+// meta.json order (abschnitt.ts), never from frontmatter. `leitsatz` (issue
+// #93) is its own pull-quote, independent of a Viertel's; `jahr` is the year
+// of the original Xenia text it carries (PRODUCT.md: texts stay verbatim).
+export const abschnittFrontmatterSchema = z.object({
+	...baseShape,
+	leitsatz: z.string().min(1).optional(),
+	jahr: z.number().int().optional(),
+})
 
 export type AbschnittFrontmatter = z.infer<typeof abschnittFrontmatterSchema>
 
@@ -165,10 +181,13 @@ export type StationFrontmatter = z.infer<typeof stationFrontmatterSchema>
 // A translation file's frontmatter (issue #36, ADR-0001): every field is
 // optional, since a translation need not repeat one it doesn't change.
 // Title, Short title, description and slug are translatable on every type;
-// a Viertel's translation schema adds its own Leitsatz and Steckbrief. The
-// loader allows exactly the keys of the type's translation schema — any
-// other key (draft, a reference, …) is a validation error naming the file
-// and the key, never silently ignored.
+// a Viertel's translation schema adds its own Leitsatz, Steckbrief and
+// Untertitel, a Kapitel's its own Untertitel, an Abschnitt's its own
+// Leitsatz and Jahr (issue #93). `hinweisId` stays out of every translation
+// schema: it's a reference, and references are never translatable
+// (content-layer.md). The loader allows exactly the keys of the type's
+// translation schema — any other key (draft, a reference, …) is a
+// validation error naming the file and the key, never silently ignored.
 export const translationFrontmatterSchema = z.object({
 	title: z.string().min(1).optional(),
 	shortTitle: z.string().min(1).optional(),
@@ -179,7 +198,23 @@ export const translationFrontmatterSchema = z.object({
 export const viertelTranslationFrontmatterSchema = translationFrontmatterSchema.extend({
 	leitsatz: z.string().min(1).optional(),
 	steckbrief: viertelSteckbriefSchema.optional(),
+	untertitel: z.string().min(1).optional(),
 })
 
-// The widest shape: a non-Viertel translation never carries the last two.
-export type TranslationFrontmatter = z.infer<typeof viertelTranslationFrontmatterSchema>
+export const kapitelTranslationFrontmatterSchema = translationFrontmatterSchema.extend({
+	untertitel: z.string().min(1).optional(),
+})
+
+export const abschnittTranslationFrontmatterSchema = translationFrontmatterSchema.extend({
+	leitsatz: z.string().min(1).optional(),
+	jahr: z.number().int().optional(),
+})
+
+// The widest shape across every type's translation schema, inferred from
+// all three rather than hand-duplicating their fields, so one of them
+// growing a field can't silently drift from this type. Used only as
+// Translation's frontmatter type (loader.ts); each type's own schema above
+// still enforces which fields its translation file may actually set.
+export type TranslationFrontmatter = z.infer<typeof viertelTranslationFrontmatterSchema> &
+	z.infer<typeof kapitelTranslationFrontmatterSchema> &
+	z.infer<typeof abschnittTranslationFrontmatterSchema>

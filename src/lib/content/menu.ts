@@ -1,10 +1,10 @@
 import { ContentValidationError, MENU_FIELD } from './errors'
 import type { RawMenu } from './loader'
-import { documentFile } from './locations'
 import { shortTitleOrTitle } from './presentation'
+import type { AnyTargets } from './references'
+import { resolveAnyReference } from './references'
 import type { MenuEntry, MenuGroup, MenuItem } from './schemas'
 import { isMenuEntry, isMenuGroup } from './schemas'
-import type { ContentDocument } from './types'
 
 // A resolved Menu entry (glossary: Menu): a label is always resolved here,
 // never restated by the Menu file for a content entry.
@@ -29,34 +29,21 @@ export function isGroupedMenu(menu: ResolvedMenu): menu is readonly MenuGroupLin
 	return menu.length > 0 && 'links' in menu[0]
 }
 
-// Every document a Menu entry may name, by ID (issue #23): any content type's
-// published document resolves, with its URL and label. `known` holds the ID of
-// every document that exists, Draft or not; `visible` only those the graph
-// exposes. An ID in `known` but not in `visible` is a Draft in a production
-// graph, which fails the same way a missing one does, with its own reason
-// (issue #33: a Menu entry can't publish a link to an unpublished Draft).
-export interface MenuTargets {
-	readonly known: ReadonlySet<string>
-	readonly visible: ReadonlyMap<string, ContentDocument>
-}
+// Every document a Menu entry may name, by ID (issue #23): any content
+// type's published document resolves, with its URL and label — the same
+// any-type reference a Viertel's Hinweis names (issue #93), so both reuse
+// references.ts's resolveAnyReference and its target shape.
+export type MenuTargets = AnyTargets
 
 // A content entry's label is the target's Short title, else its title — the
 // same rule Navigation uses. An external entry's label is written in the
-// Menu file itself.
+// Menu file itself. A Menu entry is always strict (issue #33: a Menu can't
+// publish a link to an unpublished Draft) — there's no referring document of
+// its own to let a Draft target through.
 function resolveEntry(file: string, entry: MenuEntry, targets: MenuTargets): MenuLink {
 	if ('url' in entry) return { url: entry.url, label: entry.label }
 
-	const target = targets.visible.get(entry.id)
-	if (!target) {
-		if (targets.known.has(entry.id)) {
-			throw new ContentValidationError(
-				file,
-				entry.id,
-				`menu references a Draft: ${documentFile(entry.id)}`,
-			)
-		}
-		throw new ContentValidationError(file, entry.id, 'menu lists an ID with no matching document')
-	}
+	const target = resolveAnyReference(file, entry.id, entry.id, targets, true)
 	return { url: target.document.url, label: shortTitleOrTitle(target.document) }
 }
 

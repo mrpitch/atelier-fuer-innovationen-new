@@ -4,7 +4,7 @@ title: Glossary
 description: Canonical definitions for domain terms — the shared vocabulary used by the codebase, docs, and AI agents.
 tags: [glossary, domain, language]
 status: stable
-last_reviewed: 2026-11-23
+last_reviewed: 2026-11-25
 authoritative: true
 ---
 
@@ -46,6 +46,14 @@ _Avoid_: site map
 One of the eight districts of the Wissensstadt, each standing for a design focus. It has a fixed number (01–08), a name and an illustration.
 _Avoid_: Stadtviertel, Stadtteil, district
 
+**Hinweis**
+A Viertel's optional link to one other document, of any type, resolved to that document's Short title and URL. Not every Viertel sets one.
+_Avoid_: hint, tip, cross-reference
+
+**Stadtplan**
+The `/stadt` hub page: a grid of tiles for the eight Viertel and the Zentrum, the map view into the Wissensstadt.
+_Avoid_: map, city map
+
 **Leitsatz**
 The one-sentence motto of a Viertel, e.g. "Erweiterte, kontextuelle Orientierungen haben konsensstiftende Wirkung."
 _Avoid_: Zitat, motto
@@ -85,6 +93,10 @@ _Avoid_: chapter
 **Abschnitt**
 One readable section of a Kapitel, numbered within it (e.g. 4.3).
 _Avoid_: section, Seite
+
+**Gangart**
+One of the two ways to move through a Viertel: Schauen, a Rundgang's guided walk, or Lesen, the Leitthema's Kapitel. The Gangart-Box lets a visitor switch between them without losing their place.
+_Avoid_: mode, way
 
 **Themen-Ort**
 A Thema presented as a single place instead of a walk. It branches off from one Kapitel of the Leitthema.
