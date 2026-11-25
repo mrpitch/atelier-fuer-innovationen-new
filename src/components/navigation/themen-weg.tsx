@@ -95,7 +95,7 @@ function ThemenWeg({ leitthemaTitle, kapitel, className, ...props }: ThemenWegPr
 										/>
 										<span className="flex min-w-0 flex-col gap-0.5">
 											<span className="truncate text-sm font-semibold">{item.title}</span>
-											<span className="truncate text-xs text-muted-foreground">
+											<span className="truncate font-mono text-xs text-muted-foreground">
 												{t('themenWeg.kapitelLabel', {
 													number: item.number,
 													viertelNumber: formatTwoDigits(item.viertelNumber),
