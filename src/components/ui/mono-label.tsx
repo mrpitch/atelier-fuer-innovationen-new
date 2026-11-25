@@ -22,17 +22,20 @@ type MonoLabelProps = useRender.ComponentProps<'p'> & VariantProps<typeof monoLa
 // "IM VIERTEL AUSSERDEM"), as a `<p>` or an `<h2>` via `render`. One place for
 // the class list every reading-page label repeated (tailwind-conventions.md,
 // Custom CSS: "A class list repeated across files becomes a component").
-function MonoLabel({ className, tone, render, ...props }: MonoLabelProps) {
+function MonoLabel({ className, tone = 'primary', render, ...props }: MonoLabelProps) {
 	return useRender({
 		defaultTagName: 'p',
 		render,
 		props: mergeProps<'p'>(
 			{
-				'data-slot': 'mono-label',
 				className: cn(monoLabelVariants({ tone, className })),
 			} as React.ComponentProps<'p'>,
 			props,
 		),
+		state: {
+			slot: 'mono-label',
+			tone,
+		},
 	})
 }
 

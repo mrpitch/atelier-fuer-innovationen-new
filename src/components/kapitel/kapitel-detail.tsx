@@ -91,7 +91,7 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 										<ItemTitle>
 											{t('abschnitt.numberedTitle', {
 												number: abschnitt.number,
-												title: abschnitt.title,
+												title: shortTitleOrTitle(abschnitt),
 											})}
 										</ItemTitle>
 										{abschnitt.leitsatz && <ItemDescription>{abschnitt.leitsatz}</ItemDescription>}
@@ -129,7 +129,7 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 							<ItemTitle>
 								{t('kapitel.naechstesKapitel', {
 									number: nextKapitel.number,
-									title: nextKapitel.title,
+									title: shortTitleOrTitle(nextKapitel),
 								})}
 							</ItemTitle>
 							{lastAbschnitt && (
