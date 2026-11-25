@@ -33,6 +33,9 @@ describe('AbschnittDetail', () => {
 
 		expect(html).toContain(`Abschnitt ${zweiter!.number}`)
 		expect(html).toContain('Text von 1996')
+		// The ghost variant's `capitalize` would show "Text Von 1996".
+		expect(html).toMatch(/data-slot="tagline" class="[^"]*\bnormal-case\b/)
+		expect(html).not.toMatch(/data-slot="tagline" class="[^"]*\bcapitalize\b/)
 	})
 
 	it('leaves the year out of the Tagline without one', async () => {

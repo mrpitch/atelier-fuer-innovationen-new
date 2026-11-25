@@ -81,7 +81,8 @@ async function AbschnittDetail({ abschnitt, locale, ...props }: AbschnittDetailP
 				    Xenia text (Figma T04 36626:14599, kartei-design-system.md Typography). */}
 				{/* eslint-disable-next-line restrictions/arbitrary-size-classes */}
 				<div className="flex max-w-[608px] flex-col gap-8">
-					<Tagline>{tagline}</Tagline>
+					{/* normal-case: the ghost variant's `capitalize` would render "Text Von 1996". */}
+					<Tagline className="normal-case">{tagline}</Tagline>
 					<div className="flex flex-col gap-5">
 						<h1 className="font-heading text-[48px] leading-none tracking-[-0.02em] text-foreground">
 							{abschnitt.title}
