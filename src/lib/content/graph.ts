@@ -45,7 +45,7 @@ import type {
 	Zentrum,
 } from './types'
 import { pathUrl } from './urls'
-import { orderViertel, resolveZentrum } from './viertel'
+import { orderViertel, resolveHinweise, resolveZentrum } from './viertel'
 
 // Compiles a document's MDX body through Next's MDX pipeline (ADR-0002) — the
 // one place in the module that imports `@/content` dynamically, so pages
@@ -281,8 +281,11 @@ export function buildContentGraph(
 	}
 	const stationen = rundgaenge.flatMap((item) => stationenByRundgang.get(item.id) ?? [])
 
-	// The published documents of every type: what the graph exposes.
-	const set: ContentSet = {
+	// The published documents of every type, Viertel not yet enriched with
+	// their Hinweis: what resolveHinweise below resolves against, since a
+	// Hinweis may name a document of any type, including one resolved above
+	// this point (issue #93) — the same any-type reference Menus use.
+	const setBeforeHinweise: ContentSet = {
 		seite: seiten,
 		viertel,
 		zentrum: zentrum ? [zentrum] : [],
@@ -293,15 +296,29 @@ export function buildContentGraph(
 		rundgang: rundgaenge,
 		station: stationen,
 	}
+	const everyLoaded = listLoaded(loaded)
+	const kindById = new Map<string, ContentKind>(
+		everyLoaded.map((document) => [document.id, document.kind]),
+	)
+	const hinweise = resolveHinweise(
+		loaded.viertel,
+		{
+			known: new Set(kindById.keys()),
+			visible: new Map(flattenSet(setBeforeHinweise).map((entry) => [entry.document.id, entry])),
+		},
+		isVisible,
+	)
+
+	// The published documents of every type: what the graph exposes.
+	const set: ContentSet = {
+		...setBeforeHinweise,
+		viertel: viertel.map((item) => ({ ...item, hinweis: hinweise.get(item.id) })),
+	}
 	const entries = flattenSet(set)
 	const lookup = lookupSet(set)
 
 	// Translations (issue #36): loaded for every document, Draft included, so
 	// a translation file is validated whether or not its document is exposed.
-	const everyLoaded = listLoaded(loaded)
-	const kindById = new Map<string, ContentKind>(
-		everyLoaded.map((document) => [document.id, document.kind]),
-	)
 	const translations = loadTranslations(contentDir, locales, kindById)
 	const localized = new Map(
 		locales.map((locale) => {

@@ -413,6 +413,26 @@ describe('buildContentGraph', () => {
 			})
 		})
 
+		it('accepts an optional Untertitel, independent of its Hinweis', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			expect(graph.getViertel('stadt/erste-viertel')?.untertitel).toBe('Platzhalter-Untertitel.')
+			// zweite-viertel sets neither; both stay optional.
+			expect(graph.getViertel('stadt/zweite-viertel')?.untertitel).toBeUndefined()
+		})
+
+		it("resolves a Viertel's Hinweis to the target's Short title, falling back to its title, and its URL", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
+
+			expect(graph.getViertel('stadt/erste-viertel')?.hinweis).toEqual({
+				shortTitle: 'Idee',
+				url: '/idee',
+			})
+			// zweite-viertel sets no hinweisId; it stays undefined rather than
+			// resolving to something.
+			expect(graph.getViertel('stadt/zweite-viertel')?.hinweis).toBeUndefined()
+		})
+
 		it('loads the Zentrum as its own type, not a Viertel and with no number', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'stadt-valid'))
 
@@ -455,6 +475,34 @@ describe('buildContentGraph', () => {
 				expect(validationError.file).toBe(path.join('stadt', 'meta.json'))
 				expect(validationError.field).toBe('stadt/erste-viertel')
 				expect(validationError.reason).toMatch(/missing/i)
+			}
+		})
+
+		it("fails when a Viertel's Hinweis references an unknown ID, naming the file, field and ID", () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'hinweis-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('stadt', 'erste-viertel', 'index.mdx'))
+				expect(validationError.field).toBe('hinweisId')
+				expect(validationError.reason).toContain('nichtvorhanden')
+			}
+		})
+
+		it("fails when a published Viertel's Hinweis references a Draft, naming both files", () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'hinweis-draft'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('stadt', 'erste-viertel', 'index.mdx'))
+				expect(validationError.field).toBe('hinweisId')
+				expect(validationError.reason).toContain(path.join('entwurf', 'index.mdx'))
 			}
 		})
 	})
@@ -531,6 +579,22 @@ describe('buildContentGraph', () => {
 			expect(zweites?.id).toBe('leitthema/zweites-kapitel')
 			expect(zweites?.number).toBe(2)
 			expect(zweites?.url).toBe('/stadt/zweite-viertel/kapitel-2')
+		})
+
+		it('accepts an optional Untertitel on a Kapitel and Leitsatz/Jahr on an Abschnitt', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'leitthema-valid'))
+
+			expect(graph.getKapitel('leitthema/erstes-kapitel')?.untertitel).toBe(
+				'Platzhalter-Untertitel.',
+			)
+			expect(graph.getKapitel('leitthema/zweites-kapitel')?.untertitel).toBeUndefined()
+
+			const abschnitt = graph.getAbschnitt('leitthema/erstes-kapitel/erster-abschnitt')
+			expect(abschnitt?.leitsatz).toBe('Platzhalter-Leitsatz.')
+			expect(abschnitt?.jahr).toBe(1996)
+			expect(
+				graph.getAbschnitt('leitthema/erstes-kapitel/zweiter-abschnitt')?.leitsatz,
+			).toBeUndefined()
 		})
 
 		it("changes a Kapitel's number when the Viertel order changes", () => {
@@ -857,6 +921,7 @@ describe('buildContentGraph', () => {
 			expect(translated?.leitsatz).toBe('Translated leitsatz.')
 			expect(translated?.steckbrief.prozessansatz).toBe('Translated prozessansatz.')
 			expect(translated?.steckbrief.bauform).toBe('Translated bauform.')
+			expect(translated?.untertitel).toBe('Translated untertitel.')
 			expect(translated?.body).toContain('Translated Testinhalt.')
 			expect(translated?.url).toBe('/xx/stadt/translated-viertel')
 		})
@@ -1192,9 +1257,13 @@ describe('buildContentGraph', () => {
 				'/xx/city/first-quarter/kapitel-1',
 			)
 			expect(graph.getKapitel('leitthema/ein-kapitel', 'xx')?.title).toBe('Translated Kapitel')
-			expect(graph.getAbschnitt('leitthema/ein-kapitel/ein-abschnitt', 'xx')?.url).toBe(
-				'/xx/city/first-quarter/kapitel-1/1',
+			expect(graph.getKapitel('leitthema/ein-kapitel', 'xx')?.untertitel).toBe(
+				'Translated untertitel.',
 			)
+			const abschnitt = graph.getAbschnitt('leitthema/ein-kapitel/ein-abschnitt', 'xx')
+			expect(abschnitt?.url).toBe('/xx/city/first-quarter/kapitel-1/1')
+			expect(abschnitt?.leitsatz).toBe('Translated leitsatz.')
+			expect(abschnitt?.jahr).toBe(1997)
 			expect(graph.getStation('rundgaenge/ein-rundgang/eine-station', 'xx')?.url).toBe(
 				'/xx/rundgaenge/ein-rundgang/a-station',
 			)
