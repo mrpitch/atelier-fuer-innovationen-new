@@ -99,7 +99,7 @@ One readable section of a Kapitel, numbered within it (e.g. 4.3).
 _Avoid_: section, Seite
 
 **Gangart**
-One of the two ways to move through a Viertel: Schauen, a Rundgang's guided walk, or Lesen, the Leitthema's Kapitel. The Gangart-Box lets a visitor switch between them without losing their place.
+One of the two ways to visit the same Ort, a Viertel or the Zentrum: Schauen, a Rundgang's guided walk, or Lesen, the Leitthema's Kapitel (for the Zentrum, its Einführung). The Gangart-Box and the Gangart-Karten link to the other Gangart; a Gangart carries no reading state.
 _Avoid_: mode, way
 
 **Themen-Ort**
