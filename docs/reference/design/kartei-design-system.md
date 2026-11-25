@@ -4,7 +4,7 @@ title: Kartei design system
 description: The rules of the Kartei style that no token carries — colour roles, type hierarchy, layout, elevation, shapes, illustrations, components, do's and don'ts, and the open deviations in the Figma screens.
 tags: [design, design-system, kartei, figma, colors, typography, layout, illustrations]
 status: stable
-last_reviewed: 2026-11-24
+last_reviewed: 2026-11-25
 authoritative: true
 ---
 
@@ -123,32 +123,44 @@ Sizes are desktop / mobile; where only one size is given, both use it. The sizes
 
 - **Desktop canvas:** 1440px. Content sits in a 1248px column with 96px side margins. The header is 64px tall with a 1280px container and 24px inner padding.
 - **Mobile canvas:** 390px. Content sits in a 350px column with 20px side margins.
-- **Tablet:** every Stadt template (T02, T03, T04, T08) and the Startseite are also drawn at 768px and 1024px.
+- **Tablet and mobile:** every screen on the Figma pages 1–6 is drawn at 1440, 1024, 768 and 390px. The Zentrum page has no frame (see Open deviations).
 - **Breakpoints:** the code switches at Tailwind's `sm` (640), `md` (768), `lg` (1024) and `xl` (1280), or at a container width. Figma draws one frame per width (1440, 1024, 768, 390) with a `Breakpoint` variant on each component. The table maps one to the other; a ticket spec names the row it relies on instead of restating "Desktop at 768".
 
-  | Component                                 | 390             | 768             | 1024                     | 1440          | Switch           |
-  | ----------------------------------------- | --------------- | --------------- | ------------------------ | ------------- | ---------------- |
-  | Header, Footer, Ebenen-Leiste, Ortsleiste | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-  | Bild-Hero                                 | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-  | Stadtplan                                 | 1 column        | 3 × 3           | 3 × 3                    | 3 × 3         | `sm`             |
-  | Steckbrief                                | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-  | Weg-Leiste                                | Mobile          | Desktop         | Desktop                  | Desktop       | `md`             |
-  | Gangart cards                             | stacked         | stacked         | side by side             | side by side  | `lg`             |
-  | "Weiter im Stadtplan" Items               | stacked         | side by side    | side by side             | side by side  | `sm`             |
-  | Reading layout                            | 1 column, Sheet | 1 column, Sheet | text + Randspalte, Sheet | three columns | `lg`, `xl`       |
-  | Kapitel-Hero                              | Mobile          | Desktop         | Desktop                  | Desktop       | container, 512px |
+  | Component                         | 390             | 768             | 1024                     | 1440          | Switch           |
+  | --------------------------------- | --------------- | --------------- | ------------------------ | ------------- | ---------------- |
+  | Header, Footer, Ebenen-Leiste     | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Ortsleiste                        | Mobile          | Mobile          | Mobile                   | Desktop       | `xl`             |
+  | Bild-Hero                         | Mobile          | Mobile          | Mobile                   | Desktop       | `xl`             |
+  | Home / Hero                       | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Stadtplan                         | 1 column        | 3 × 3           | 3 × 3                    | 3 × 3         | `sm`             |
+  | Steckbrief                        | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Weg-Leiste                        | Mobile          | Desktop         | Desktop                  | Desktop       | `md`             |
+  | Gangart cards                     | stacked         | stacked         | side by side             | side by side  | `lg`             |
+  | "Weiter im Stadtplan" Items       | stacked         | side by side    | side by side             | side by side  | `sm`             |
+  | Reading layout                    | 1 column, Sheet | 1 column, Sheet | text + Randspalte, Sheet | three columns | `lg`, `xl`       |
+  | Kapitel-Hero                      | Mobile          | Desktop         | Desktop                  | Desktop       | container, 512px |
+  | Thema-Karte, Typ Leitthema        | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Thema-Karte, Typ Themen-Ort       | Mobile          | Desktop         | Desktop                  | Desktop       | `md`             |
+  | Rundgang-Eintrag, Rundgang-Leiste | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Stationsnavigation                | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Stations-Bühne                    | Mobile          | Mobile          | Mobile                   | Desktop       | `xl`             |
+  | Bibliothek / Listen-Eintrag       | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
+  | Chronik / Zeitleisten-Eintrag     | Mobile          | Desktop         | Desktop                  | Desktop       | `md`             |
 
-- **A frame is a layout reference only when its content fits it.** A responsive frame whose children are wider than its body, or are clipped by it, is a resized copy of the 1440 frame, not a design for that width. Use the table above, and correct the frame.
+  The Ortsleiste and the Bild-Hero switch at `xl` because their desktop rows don't fit 1024: long neighbour names ("Besuch in der Umgebung →") clip beside the breadcrumb, and the hero's text column would be 332px for an 88px title (issue #110). The Rundgang-Eintrag route wraps onto a second row when its column is narrower than the route. The Stationsnavigation's Mobile variant drops the stop illustrations from its two buttons; at 390 they don't fit beside each other.
+
+- **A frame is a layout reference only when its content fits it.** A responsive frame whose children are wider than its body, or are clipped by it, is a resized copy of the 1440 frame, not a design for that width. Use the table above, and correct the frame. The same holds one level down: text clipped by its own card, column or row is a drawing error, not a truncation rule. [How to check Figma against the design specs](../../how-to/how-to-check-figma-against-the-design-specs.md) finds both.
+- **Section heads wrap.** A section's heading row (heading on the left, a count or link on the right, "25 Aufsätze · 17 Mosaik-Bausteine →") wraps the right-hand part under the heading when both don't fit, as at 768.
 - **Spacing:** on the Tailwind 4px scale. Sections have 64–80px of padding top and bottom (80px on the Startseite, 72px on the Viertel-Seite, 56–64px on hubs and inner pages) and 40px on mobile. A section's heading block sits 24–40px above its content; list items are 12–16px apart.
-- **Page hero (Bild-Hero):** a 748px text column and a 420px illustration, 80px apart, with 48px padding above and 80px below. On mobile the illustration comes first, then the text.
+- **Page hero (Bild-Hero):** from 1280 a 748px text column and a 420px illustration, 80px apart, with 48px padding above and 80px below. Below 1280 the illustration comes first, then the text. The title hyphenates, so a one-word title breaks at a syllable ("Futur-systeme").
 - **Place bar:** Viertel, Rundgang and Thema pages and every Übersicht, Inhaltsseite and Chronik page have an Ortsleiste under the header: the breadcrumb on the left, the neighbouring places on the right, named after them ("← 02 Märkte", "04 Inszenierung →", "Xenia in Telepolis ’95 →"). Kapitel and Abschnitt pages use the Ebenen-Leiste instead: the current place with "Sie sind hier", the breadcrumb, and a progress count ("KAPITEL 4 · 3 VON 8").
 - **Stadtplan:** a 3 × 3 grid of square-cornered 416 × 340px tiles sharing Haarlinie borders. The eight Viertel run clockwise from top left, with the Zentrum in the middle. On mobile the tiles stack in one column in the desktop reading order (01, 02, 03, 08, Zentrum, 04, 07, 06, 05).
 - **Reading pages (Kapitel, Abschnitt):** at 1440 three columns 56px apart: a 300px Themen-Weg sidebar, a 608px text column and a 260px right column, with 64px margin on the left and 96px on the right. The right column holds the "Gangart wechseln" box and an "Im Viertel außerdem" list of related material. At 1024 the sidebar is the Themen-Weg button and the text column sits beside the right column, 48px margins on both sides: three columns would leave the text about 192px (the Text Leads Rule). Below 1024 the right-column content follows the text.
-- **Rundgang station pages:** the Rundgang-Leiste on top, then a 620px illustration stage on Pappe beside an 820px text area, and the station navigation along the bottom. On mobile they stack, and the bottom bar keeps only the previous and next buttons.
+- **Rundgang station pages:** the Rundgang-Leiste on top, then a 620px illustration stage on Pappe beside an 820px text area, and the station navigation along the bottom. On mobile they stack, and the bottom bar keeps only the previous and next buttons, without their stop illustrations.
 - **Seitenkopf (Übersicht, Inhaltsseite, Chronik):** the uppercase mono eyebrow in Petrol, the page title, then a Schibsted Grotesk introduction on an Übersicht or the Chronik, or an Italic subtitle and an optional mono meta line on an Inhaltsseite. Items 24px apart.
 - **Übersicht** (`/bibliothek`, `/bibliothek/[typ]`): the Seitenkopf in a 608px column, a filter row with tabs and search, then the Bibliothek entries across the full 1248px column.
 - **Inhaltsseite** (Dossier, Mosaik-Baustein, Aufsatz, Ereignis, and the Idee and Menschen pages): three columns 56px apart with 96px margins on both sides, so they line up with the header and the Ortsleiste: a 268px navigation column, a 608px content column and a 260px right column. The left column is always navigation, in one of two forms: the sections of the page as jump links ("Inhalt") on long texts, or the siblings of a collection entry with the current one active ("Alle Dossiers · 4", "Alle Mosaik-Bausteine · 17", "Ausstellungen · 3"). The right column holds links to related places as outline list items under a section label ("Zum Dossier", "Zur Ausstellung"). The content column opens with the Seitenkopf and then carries only the blocks the page needs, 48px apart: Steckbrief (facts in two columns), Fließtext (Literata with Heading-size subheads and Italic quotes), Inhaltsliste (numbered list items that link to original texts).
-- **Chronik** (`/chronik`): the Seitenkopf, the Zeitleiste of milestones in an 880px column (year, line with dot, entry), then the Arbeitsschwerpunkte list. Mobile versions of Übersicht, Inhaltsseite and Chronik are not drawn yet.
+- **Chronik** (`/chronik`): the Seitenkopf, the Zeitleiste of milestones in an 880px column (year, line with dot, entry), then the Arbeitsschwerpunkte list.
 
 **The Text Leads Rule.** On a reading page the text column is the widest thing on screen. When navigation competes with it, collapse the navigation.
 
@@ -263,4 +275,6 @@ Places where the screens break their own system. They are recorded here, not ado
 - On mobile, the pull quotes on the Startseite and Thema-Seite are set in Schibsted Grotesk 500 18px, which breaks the Source Text Rule.
 - The Thema-Karte uses a raw 12px corner radius instead of the kit's 8px card radius.
 - Input borders are below 3:1 contrast (see Inputs).
+- Reading state is drawn but not decided (issue #64): T01 Wiederkehr ("Hier waren Sie zuletzt", "Kapitel 1–2 gelesen"), T05 ("✓ Besucht" on visited stations), T07 ("Sie waren zuletzt hier", "Ihr Fortschritt bleibt gespeichert") and the Datenschutz page ("Lesezeichen auf diesem Gerät"). The specs of the Startseite, Rundgang and Seiten epics (#72, #70, #74) decide per screen once #64 is settled; until then these screens are not a reference for that copy.
+- The Zentrum page (`/stadt/zentrum`) has no Figma frame. Epic #92 specs it as the Viertel composition (T02) without Steckbrief and Aufsätze; the code follows that.
 - The desktop header's current area (issue #81) has no dedicated active state in Figma: the screens draw it as the NavigationMenu item's `State=Hover` variant, the same Pappe pill a pointer hover shows. The code gives the current entry a real active state (`aria-current="page"`, `data-active`), which happens to render identically to Hover since both map to `bg-muted`.
