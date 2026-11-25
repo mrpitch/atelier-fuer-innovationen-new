@@ -884,6 +884,18 @@ describe('buildContentGraph', () => {
 			expect(graph.getKapitel('leitthema/erstes-kapitel')).not.toHaveProperty('themen')
 		})
 
+		it("exposes the Leitthema for a Viertel's Bild-Hero badge (issue #96) without a stored field on the Viertel or its Kapitel", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-valid'))
+
+			expect(graph.leitthema?.id).toBe('themen/eine-welt-fuer-morgen')
+
+			const viertel = graph.getViertel('stadt/erste-viertel')
+			const kapitel = viertel && graph.getKapitelByViertel(viertel.id)
+			expect(kapitel?.id).toBe('leitthema/erstes-kapitel')
+			expect(viertel).not.toHaveProperty('leitthema')
+			expect(kapitel).not.toHaveProperty('leitthema')
+		})
+
 		it('fails when a Themen-Ort references a missing Kapitel, naming the file, field and ID', () => {
 			expect.assertions(4)
 

@@ -60,7 +60,7 @@ function zentrumRow(
 	zentrum: Zentrum,
 	schauenRundgang: Rundgang | undefined,
 ): StadtTabelleRow {
-	const leitthema = graph.themen.find((thema) => thema.kapitelId === undefined)
+	const { leitthema } = graph
 
 	return {
 		key: zentrum.id,
@@ -120,7 +120,7 @@ function headings(
 	graph: ContentGraph,
 	schauenRundgang: Rundgang | undefined,
 ): StadtTabelleHeadings {
-	const leitthema = graph.themen.find((thema) => thema.kapitelId === undefined)
+	const { leitthema } = graph
 
 	return {
 		station: schauenRundgang
