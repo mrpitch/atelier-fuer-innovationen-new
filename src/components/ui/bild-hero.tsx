@@ -57,7 +57,7 @@ function BildHero({
 				<div className="text-lg text-muted-foreground">{children}</div>
 				{actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
 			</div>
-			<div data-slot="bild-hero-media" className="shrink-0">
+			<div data-slot="bild-hero-media" className="shrink-0 [&>svg]:h-auto [&>svg]:max-w-full">
 				{illustration}
 			</div>
 		</section>
