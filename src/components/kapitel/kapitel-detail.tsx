@@ -30,7 +30,7 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 		<div data-slot="kapitel-detail" {...props}>
 			<KapitelEbenenLeiste kapitel={kapitel} />
 			<ReadingLayout
-				themenWeg={<KapitelThemenWeg kapitel={kapitel} />}
+				themenWeg={<KapitelThemenWeg graph={graph} kapitel={kapitel} />}
 				themenWegKapitelCount={graph.kapitel.length}
 			>
 				<p>{t('kapitel.number', { n: kapitel.number })}</p>

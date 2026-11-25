@@ -28,7 +28,7 @@ async function AbschnittDetail({ abschnitt, locale, ...props }: AbschnittDetailP
 		<div data-slot="abschnitt-detail" {...props}>
 			<KapitelEbenenLeiste kapitel={kapitel} abschnitt={abschnitt} />
 			<ReadingLayout
-				themenWeg={<KapitelThemenWeg kapitel={kapitel} abschnitt={abschnitt} />}
+				themenWeg={<KapitelThemenWeg graph={graph} kapitel={kapitel} abschnitt={abschnitt} />}
 				themenWegKapitelCount={graph.kapitel.length}
 			>
 				<h1>

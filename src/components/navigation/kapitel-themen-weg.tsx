@@ -3,10 +3,11 @@ import type {
 	ThemenWegKapitelItem,
 } from '@/components/navigation/themen-weg'
 import { ThemenWeg } from '@/components/navigation/themen-weg'
-import type { Abschnitt, Kapitel } from '@/lib/content'
-import { contentGraph, shortTitleOrTitle } from '@/lib/content'
+import type { Abschnitt, ContentGraph, Kapitel } from '@/lib/content'
+import { shortTitleOrTitle } from '@/lib/content'
 
 interface KapitelThemenWegProps {
+	graph: ContentGraph
 	kapitel: Kapitel
 	// Set on an Abschnitt page: that Kapitel's Themen-Weg entry expands to its
 	// Abschnitte, the current one marked, instead of being marked active
@@ -17,12 +18,12 @@ interface KapitelThemenWegProps {
 // The Themen-Weg resolved from the content graph (issue #99): every Kapitel
 // of the Leitthema, the current one marked — expanded to its Abschnitte
 // instead when `abschnitt` is given. Kapitel and Abschnitt pages share it,
-// the way KapitelEbenenLeiste shares the Ebenen-Leiste's graph lookup.
+// the caller passes the graph it already holds.
 function KapitelThemenWeg({
+	graph,
 	kapitel: currentKapitel,
 	abschnitt: currentAbschnitt,
 }: KapitelThemenWegProps) {
-	const graph = contentGraph()
 	const leitthema = graph.themen.find((thema) => thema.kapitelId === undefined)
 	if (!leitthema) throw new Error('KapitelThemenWeg: no Leitthema in the content graph')
 
