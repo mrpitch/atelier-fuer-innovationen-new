@@ -857,12 +857,10 @@ describe('buildContentGraph', () => {
 		})
 	})
 
-	describe('Schauen Station (issue #100)', () => {
-		it("is the Ort's own Station in its Schauen Rundgang", () => {
+	describe('Schauen Station (issue #97)', () => {
+		it("resolves the Ort's own Station on its Schauen Rundgang", () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'schauen-rundgang-valid'))
 
-			// mit-erstem's Schauen Rundgang is rundgang-a (earlier in order), so
-			// its Station there, not rundgang-b's, is the Schauen Station.
 			expect(graph.getSchauenStation('stadt/mit-erstem')?.id).toBe(
 				'rundgaenge/rundgang-a/station-erstem',
 			)
