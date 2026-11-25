@@ -255,7 +255,10 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[id.name="revalidate"]',
-					message: `\`export const revalidate\` is unused here: there is no incremental regeneration; a content change needs a new build. See ${DOC.staticExport}.`,
+					message:
+						'`export const revalidate` is unused here: there is no incremental regeneration; a content change needs a new build. See ' +
+						DOC.staticExport +
+						'.',
 				},
 			],
 
@@ -267,7 +270,10 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[id.name="dynamicParams"][init.value=true]',
-					message: `\`export const dynamicParams = true\` is unused here: every dynamic segment exports \`generateStaticParams()\` from the content graph. Use \`export const dynamicParams = false\`. See ${DOC.staticExport}.`,
+					message:
+						'`export const dynamicParams = true` is unused here: every dynamic segment exports `generateStaticParams()` from the content graph. Use `export const dynamicParams = false`. See ' +
+						DOC.staticExport +
+						'.',
 				},
 			],
 		},
@@ -912,7 +918,10 @@ const eslintConfig = defineConfig([
 				'error',
 				{
 					selector: 'Property[key.name=/^(rewrites|redirects|headers)$/]',
-					message: `\`rewrites\`, \`redirects\` and \`headers\` in next.config.ts are unused here: URLs come from the content graph (ADR-0003), and the host handles redirects. See ${DOC.staticExport}.`,
+					message:
+						'`rewrites`, `redirects` and `headers` in next.config.ts are unused here: URLs come from the content graph (ADR-0003), and the host handles redirects. See ' +
+						DOC.staticExport +
+						'.',
 				},
 			],
 		},
