@@ -120,4 +120,14 @@ function ItemDescription({ className, ...props }: React.ComponentProps<'p'>) {
 	)
 }
 
-export { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle }
+// A trailing action beside an Item's content (Figma "Item / Actions"), such
+// as the "Hier beginnen" and "Weiter" CTAs on a Kapitel page (issue #100). No
+// caller before this one needed it: ItemContent's own `flex-1` already pushes
+// this slot to the row's end.
+function ItemActions({ className, ...props }: React.ComponentProps<'div'>) {
+	return (
+		<div data-slot="item-actions" className={cn('flex items-center gap-2', className)} {...props} />
+	)
+}
+
+export { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle }
