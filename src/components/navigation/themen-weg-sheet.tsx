@@ -22,8 +22,8 @@ interface ThemenWegSheetProps extends React.ComponentProps<'div'> {
 }
 
 // The outline xs Button "Themen-Weg · N Kapitel" that opens the same
-// Themen-Weg list from a Sheet on the left, replacing the sidebar at 768 and
-// 390 (issue #99). Base UI's Dialog gives Escape-to-close and focus-return to
+// Themen-Weg list from a Sheet on the left, replacing the sidebar below 1280
+// (issues #99, #109). Base UI's Dialog gives Escape-to-close and focus-return to
 // the trigger for free.
 function ThemenWegSheet({ kapitelCount, children, className, ...props }: ThemenWegSheetProps) {
 	return (

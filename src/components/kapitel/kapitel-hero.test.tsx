@@ -25,6 +25,7 @@ describe('KapitelHero', () => {
 				viertel={viertel}
 				leitthema={graph.leitthema}
 				viertelCount={graph.viertel.length}
+				kapitelCount={graph.kapitel.length}
 				firstAbschnitt={abschnitte[0]}
 			/>,
 		)
@@ -50,11 +51,35 @@ describe('KapitelHero', () => {
 				viertel={viertel}
 				leitthema={undefined}
 				viertelCount={graph.viertel.length}
+				kapitelCount={graph.kapitel.length}
 				firstAbschnitt={undefined}
 			/>,
 		)
 
 		expect(html).not.toContain('Testleitthema')
 		expect(html).not.toContain('Alle')
+		expect(html).toContain(`HIER SPIELT KAPITEL ${kapitel.number} VON ${graph.viertel.length}<`)
+		expect(html).not.toContain('·')
+	})
+
+	it('counts the way in Viertel and "Alle n Kapitel" in published Kapitel', () => {
+		const kapitel = graph.getKapitel('leitthema/erstes-kapitel')
+		if (!kapitel) throw new Error('fixture content has no leitthema/erstes-kapitel')
+		const viertel = graph.getViertel(kapitel.viertelId)
+		if (!viertel) throw new Error(`fixture content has no ${kapitel.viertelId}`)
+
+		const html = renderToStaticMarkup(
+			<KapitelHero
+				kapitel={kapitel}
+				viertel={viertel}
+				leitthema={graph.leitthema}
+				viertelCount={8}
+				kapitelCount={7}
+				firstAbschnitt={undefined}
+			/>,
+		)
+
+		expect(html).toContain(`KAPITEL ${kapitel.number} VON 8`)
+		expect(html).toContain('Alle 7 Kapitel')
 	})
 })

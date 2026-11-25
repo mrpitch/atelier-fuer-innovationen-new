@@ -35,6 +35,15 @@ describe('KapitelDetail', () => {
 		expect(html.match(/Hier beginnen/g)).toHaveLength(1)
 	})
 
+	it("shows the next Kapitel's Viertel illustration in its Item", async () => {
+		const html = await render('leitthema/erstes-kapitel')
+		const title = html.indexOf('Kapitel 2 · Zweites Kapitel')
+		const nextItem = html.slice(html.lastIndexOf('<a data-slot="item"', title), title)
+
+		expect(nextItem).toContain('data-slot="item-media"')
+		expect(nextItem).toContain('data-slot="illustration-kontexte"')
+	})
+
 	it('leaves out the next-Kapitel link on the last Kapitel, and "Hier beginnen" without Abschnitte', async () => {
 		const html = await render('leitthema/zweites-kapitel')
 

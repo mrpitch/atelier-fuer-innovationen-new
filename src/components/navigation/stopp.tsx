@@ -10,7 +10,7 @@ const stoppVariants = cva(
 	{
 		variants: {
 			status: {
-				aktuell: 'border border-primary bg-secondary text-secondary-foreground',
+				aktuell: 'border border-primary bg-secondary text-primary',
 				offen: 'text-muted-foreground',
 			},
 		},
@@ -28,12 +28,9 @@ interface StoppProps
 
 // Xenia / Weg / Stopp (Figma component set 36585:8230, issue #97): one place
 // on the Weg-Leiste — its 36px illustration over its own number. "aktuell"
-// keeps the Figma fill (Petrolschleier with a Petrol ring): the Kartei
-// design system's Mist Rule names "the current station" as a valid
-// Petrolschleier use, unlike Plan-Feld's own Signal Rule deviation
-// (plan-feld.tsx) — but its text follows the Ink Rule ("on Petrolschleier,
-// text is Tiefpetrol") rather than Figma's own Petrol-coloured Nummer, a
-// deviation recorded in the design system's Open deviations. The set's third
+// is the Figma variant: Petrolschleier with a Petrol ring and a Petrol
+// Nummer (Kartei design system, Mist Rule and the Ink Rule's current-Stopp
+// exception; issue #109). The set's third
 // variant, Status=gesehen, has no code counterpart: this page tracks no
 // reading state, so every other place is "offen".
 function Stopp({

@@ -6,7 +6,15 @@ import { KapitelRandspalte } from '@/components/kapitel/kapitel-randspalte'
 import { KapitelEbenenLeiste } from '@/components/navigation/kapitel-ebenen-leiste'
 import { ReadingLayout } from '@/components/navigation/reading-layout'
 import { buttonVariants } from '@/components/ui/button'
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item'
+import { Illustration } from '@/components/ui/illustration'
+import {
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemMedia,
+	ItemTitle,
+} from '@/components/ui/item'
 import { MonoLabel } from '@/components/ui/mono-label'
 import type { Kapitel } from '@/lib/content'
 import { contentGraph, shortTitleOrTitle } from '@/lib/content'
@@ -66,6 +74,7 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 					viertel={viertel}
 					leitthema={graph.leitthema}
 					viertelCount={graph.viertel.length}
+					kapitelCount={graph.kapitel.length}
 					firstAbschnitt={abschnitte[0]}
 					className="mb-10"
 				>
@@ -125,6 +134,10 @@ async function KapitelDetail({ kapitel, locale, ...props }: KapitelDetailProps) 
 
 				{nextKapitel && nextViertel && (
 					<Item render={<Link href={nextKapitel.url} />} variant="outline" className="mt-10">
+						{/* The next Kapitel's Viertel at 48px (Figma 36588:18332, issue #109). */}
+						<ItemMedia className="size-12">
+							<Illustration id={nextViertel.id} label={nextViertel.title} />
+						</ItemMedia>
 						<ItemContent>
 							<ItemTitle>
 								{t('kapitel.naechstesKapitel', {

@@ -35,6 +35,7 @@ export const de = {
 	'kapitel.numberedTitle': 'Kapitel {n}: {title}',
 	'kapitel.themenOrtHeading': 'Themen-Ort',
 	'kapitel.heroOverline': 'HIER SPIELT KAPITEL {number} VON {total} · {leitthema}',
+	'kapitel.heroOverlineOhneLeitthema': 'HIER SPIELT KAPITEL {number} VON {total}',
 	'kapitel.heroOrt': 'Das Viertel der {title}',
 	'kapitel.heroBeginnen': 'Mit {number} beginnen',
 	'kapitel.heroAlleKapitel': 'Alle {total} Kapitel',
