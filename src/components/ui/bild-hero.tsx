@@ -1,6 +1,8 @@
 import { cn } from 'cn'
 import type * as React from 'react'
 
+import { MonoLabel } from '@/components/ui/mono-label'
+
 interface BildHeroProps extends React.ComponentProps<'section'> {
 	// The uppercase mono eyebrow that names the page and its position (Kartei
 	// design system, the Label Rule), e.g. "DER STADTPLAN · ACHT VIERTEL · EIN
@@ -45,7 +47,7 @@ function BildHero({
 			{/* eslint-disable-next-line restrictions/arbitrary-size-classes */}
 			<div className="flex max-w-[748px] flex-col gap-6">
 				<div className="flex flex-wrap items-center gap-3">
-					<p className="font-mono text-xs text-muted-foreground uppercase">{eyebrow}</p>
+					<MonoLabel tone="muted">{eyebrow}</MonoLabel>
 					{badge}
 				</div>
 				<h1 className="font-heading text-[48px] leading-none tracking-[-0.02em] hyphens-auto text-foreground xl:text-[88px]">

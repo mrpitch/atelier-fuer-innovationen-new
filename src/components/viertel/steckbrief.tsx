@@ -1,6 +1,7 @@
 import { cn } from 'cn'
 import type * as React from 'react'
 
+import { MonoLabel } from '@/components/ui/mono-label'
 import type { ViertelSteckbrief } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
@@ -16,7 +17,9 @@ interface SteckbriefFaktProps extends React.ComponentProps<'div'> {
 function SteckbriefFakt({ label, wert, className, ...props }: SteckbriefFaktProps) {
 	return (
 		<div data-slot="steckbrief-fakt" className={cn('flex flex-col gap-2.5', className)} {...props}>
-			<dt className="font-mono text-xs text-muted-foreground uppercase">{label}</dt>
+			<MonoLabel tone="muted" render={<dt />}>
+				{label}
+			</MonoLabel>
 			<dd className="font-heading text-[22px] leading-tight text-foreground">{wert}</dd>
 		</div>
 	)
