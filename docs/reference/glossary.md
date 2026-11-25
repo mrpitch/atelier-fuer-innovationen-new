@@ -59,8 +59,8 @@ The `/stadt` page: the Stadtplan with its overview table, the landing page of th
 _Avoid_: Stadtplan (for the page)
 
 **Leitsatz**
-The one-sentence motto of a Viertel, e.g. "Erweiterte, kontextuelle Orientierungen haben konsensstiftende Wirkung."
-_Avoid_: Zitat, motto
+A one-sentence statement set apart from the body text. Two kinds share the field name `leitsatz`: a Viertel's motto, e.g. "Erweiterte, kontextuelle Orientierungen haben konsensstiftende Wirkung.", and an Abschnitt's own optional pull-quote, which is not tied to the Viertel's motto.
+_Avoid_: Zitat, motto (for the Viertel's, use Leitsatz)
 
 **Steckbrief**
 The short profile of a Viertel: its Prozessansatz, Bauform, Prozessdokument and its place in the Stadtzentrum.
