@@ -42,6 +42,12 @@ export const de = {
 	'ebenenLeiste.ortTitle': 'Viertel {number} · {title}',
 	'ebenenLeiste.kapitelPosition': 'THEMA · KAPITEL {number} VON {total}',
 	'ebenenLeiste.abschnittPosition': 'KAPITEL {kapitel} · {position} VON {total}',
+	'themenWeg.heading': 'Themen-Weg · {title}',
+	'themenWeg.kapitelLabel': 'K{number} · Viertel {viertelNumber} {viertelTitle}',
+	'themenWeg.trigger': 'Themen-Weg · {n} Kapitel',
+	'themenWeg.sheetTitle': 'Themen-Weg',
+	'themenWeg.sheetDescription': 'Die Kapitel des Leitthemas als Liste zum Blättern.',
+	'sheet.close': 'Schließen',
 } as const
 
 export type DictionaryKey = keyof typeof de
