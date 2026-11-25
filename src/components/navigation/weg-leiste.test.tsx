@@ -26,7 +26,7 @@ describe('WegLeiste', () => {
 		)
 
 		expect(html.match(/data-status="aktuell"/g)).toHaveLength(1)
-		expect(html.match(/data-status="offen"/g)).toHaveLength(8)
+		expect(html.match(/data-status="offen"/g)).toHaveLength(2)
 		expect(html).toContain('aria-current="page"')
 	})
 
