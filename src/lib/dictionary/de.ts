@@ -110,6 +110,10 @@ export const de = {
 	'viertel.wege.schauenVonVorn': 'Von vorn · Station {number}',
 	'viertel.wege.lesenBadge': 'Lesen · Themen-Weg „{title}“',
 	'viertel.wege.lesenAlle': 'Alle {count} Kapitel',
+	'zentrum.heroWegeAction': 'Wege vom Zentrum aus',
+	'zentrum.wege.tagline': 'Wege vom Zentrum aus',
+	'zentrum.wege.lesenEinfuehrung': 'Einführung lesen',
+	'zentrum.weiterTitle': 'Sie sind hier: Zentrum',
 } as const
 
 export type DictionaryKey = keyof typeof de
