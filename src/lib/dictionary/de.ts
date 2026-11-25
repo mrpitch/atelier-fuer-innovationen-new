@@ -60,7 +60,6 @@ export const de = {
 	'rundgang.summary': '{stationen} · {duration}',
 	'station.numberedTitle': 'Station {n}: {title}',
 	'station.readingTime': 'ca. {n} Min.',
-	'ort.stationenHeading': 'Stationen an diesem Ort',
 	'themen.navigation': 'Die drei Themen',
 	'thema.kapitelHeading': 'Kapitel',
 	'ortsleiste.previous': '← {label}',
