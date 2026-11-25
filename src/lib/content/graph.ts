@@ -165,6 +165,12 @@ export interface ContentGraph {
 	// The Stationen set at a Viertel or the Zentrum — derived from each
 	// Station's Ort reference, never listed by hand on the Viertel/Zentrum.
 	getStationenByOrt(ortId: string): readonly Station[]
+	// The Schauen Rundgang (glossary: Gangart) of a Viertel or the Zentrum
+	// (issue #95): the first Rundgang, in `rundgaenge`' own order, with a
+	// published Station at that Ort — undefined when no Rundgang visits it.
+	// An Ort can stand in several Rundgänge; this is the one the Stadtplan
+	// Übersicht shows alongside the Ort's Kapitel in the Leitthema.
+	getSchauenRundgang(ortId: string): Rundgang | undefined
 	// The three Themen (issue #31, ADR-0003): the Leitthema and each
 	// Themen-Ort, both documents at src/content/themen/<slug>/. The Leitthema
 	// has no kapitelId and lists every Kapitel on its own landing page; a
@@ -414,7 +420,7 @@ export function buildContentGraph(
 		getNext: trail.getNext,
 		site,
 		getMenu: ((name: string) => menus.get(name) ?? []) as ContentGraph['getMenu'],
-		viertel,
+		viertel: set.viertel,
 		getViertel: (id, locale) => find('viertel', id, locale),
 		zentrum,
 		aufsaetze,
@@ -431,6 +437,10 @@ export function buildContentGraph(
 		getStationenByRundgang: (rundgangId) => stationenByRundgang.get(rundgangId) ?? [],
 		getStation: (id, locale) => find('station', id, locale),
 		getStationenByOrt: (ortId) => stationen.filter((station) => station.ortId === ortId),
+		getSchauenRundgang: (ortId) =>
+			rundgaenge.find((rundgang) =>
+				(stationenByRundgang.get(rundgang.id) ?? []).some((station) => station.ortId === ortId),
+			),
 		themen,
 		getThema: (id, locale) => find('thema', id, locale),
 		getThemenByKapitel: (kapitelId) => themen.filter((item) => item.kapitelId === kapitelId),

@@ -20,7 +20,7 @@ interface OrtsleisteProps extends React.ComponentProps<'div'> {
 
 // A neighbour's visible name: its Short title alone, or, for a Viertel
 // neighbour, its number first (NavigationLink.number), the same composition
-// viertel-liste.tsx uses for a Viertel's own numbered title.
+// stadtplan.tsx uses for a Viertel-Kachel's own numbered title.
 function neighbourLabel(link: NavigationLink): string {
 	return link.number === undefined
 		? link.title
