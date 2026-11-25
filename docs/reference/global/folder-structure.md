@@ -16,6 +16,7 @@ src/
 ├── app/                 routes: layouts, pages, metadata, generateStaticParams
 ├── components/
 │   ├── ui/              shadcn primitives and the registries keyed by name or ID (icons.tsx, illustration.tsx)
+│   │   └── illustrations/  one generated drawing module per illustration ID, plus IllustrationFrame
 │   ├── pro-blocks/      shadcndesign Pro Blocks, one folder per block category
 │   ├── utils/           providers without markup of their own (theme-provider.tsx)
 │   └── <feature>/       project components by feature: layout/, viertel/, rundgang/ …
@@ -36,12 +37,13 @@ src/
 
 ## src/components
 
-| Folder        | Contents                                                    | Written by                                                      |
-| ------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
-| `ui/`         | shadcn primitives, `icons.tsx`, `illustration.tsx`          | `shadcn add`, then adapted: lucide imports swapped for `<Icon>` |
-| `pro-blocks/` | Pro Blocks (`shadcn.proBlocksDir` in `agents.yaml`)         | `shadcn add @shadcndesign/<block>`, then adapted the same way   |
-| `utils/`      | Client providers and wrappers                               | the project                                                     |
-| `<feature>/`  | Project components, named after the glossary term they show | the project                                                     |
+| Folder              | Contents                                                                                                                                | Written by                                                                       |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `ui/`               | shadcn primitives, `icons.tsx`, `illustration.tsx`                                                                                      | `shadcn add`, then adapted: lucide imports swapped for `<Icon>`                  |
+| `ui/illustrations/` | One generated module per illustration ID plus its test, `illustration-frame.tsx`, the shared test helper `expect-token-coloured-svg.ts` | `pnpm illustration:export`; by hand only `illustration-frame.tsx` and the helper |
+| `pro-blocks/`       | Pro Blocks (`shadcn.proBlocksDir` in `agents.yaml`)                                                                                     | `shadcn add @shadcndesign/<block>`, then adapted the same way                    |
+| `utils/`            | Client providers and wrappers                                                                                                           | the project                                                                      |
+| `<feature>/`        | Project components, named after the glossary term they show                                                                             | the project                                                                      |
 
 Feature folders use the domain language of [the glossary](../glossary.md): `viertel/`, `rundgang/`, `thema/`, `layout/` for header, footer and Menus.
 
