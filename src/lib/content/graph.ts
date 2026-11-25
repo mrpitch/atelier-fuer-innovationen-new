@@ -171,6 +171,12 @@ export interface ContentGraph {
 	// An Ort can stand in several Rundgänge; this is the one the Stadtplan
 	// Übersicht shows alongside the Ort's Kapitel in the Leitthema.
 	getSchauenRundgang(ortId: string): Rundgang | undefined
+	// The Ort's own Station on its Schauen Rundgang (issue #97) — undefined
+	// alongside getSchauenRundgang whenever no Rundgang visits it. Shares
+	// getSchauenRundgang's lookup; the Viertel page and the Stadtplan-Hub
+	// use it. stadt-tabelle-rows.ts derives its own, as it deliberately uses
+	// the Zentrum's Rundgang for every row.
+	getSchauenStation(ortId: string): Station | undefined
 	// The three Themen (issue #31, ADR-0003): the Leitthema and each
 	// Themen-Ort, both documents at src/content/themen/<slug>/. The Leitthema
 	// has no kapitelId and lists every Kapitel on its own landing page; a
@@ -292,6 +298,14 @@ export function buildContentGraph(
 		rundgaenge.push(summarizeRundgang(document, stationen))
 	}
 	const stationen = rundgaenge.flatMap((item) => stationenByRundgang.get(item.id) ?? [])
+	// The Schauen Rundgang of a Viertel or the Zentrum (issue #95): the first
+	// Rundgang, in `rundgaenge`'s own order, with a published Station there.
+	// Shared by getSchauenRundgang and getSchauenStation below.
+	function schauenRundgangFor(ortId: string) {
+		return rundgaenge.find((rundgang) =>
+			(stationenByRundgang.get(rundgang.id) ?? []).some((station) => station.ortId === ortId),
+		)
+	}
 
 	// The published documents of every type, Viertel not yet enriched with
 	// their Hinweis: what resolveHinweise below resolves against, since a
@@ -443,10 +457,14 @@ export function buildContentGraph(
 		getStationenByRundgang: (rundgangId) => stationenByRundgang.get(rundgangId) ?? [],
 		getStation: (id, locale) => find('station', id, locale),
 		getStationenByOrt: (ortId) => stationen.filter((station) => station.ortId === ortId),
-		getSchauenRundgang: (ortId) =>
-			rundgaenge.find((rundgang) =>
-				(stationenByRundgang.get(rundgang.id) ?? []).some((station) => station.ortId === ortId),
-			),
+		getSchauenRundgang: schauenRundgangFor,
+		getSchauenStation: (ortId) => {
+			const rundgang = schauenRundgangFor(ortId)
+			return (
+				rundgang &&
+				stationen.find((station) => station.ortId === ortId && station.rundgangId === rundgang.id)
+			)
+		},
 		themen,
 		getThema: (id, locale) => find('thema', id, locale),
 		getThemenByKapitel: (kapitelId) => themen.filter((item) => item.kapitelId === kapitelId),
