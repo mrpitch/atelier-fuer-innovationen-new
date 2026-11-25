@@ -1,0 +1,62 @@
+import { cn } from 'cn'
+import type * as React from 'react'
+
+interface BildHeroProps extends React.ComponentProps<'section'> {
+	// The uppercase mono eyebrow that names the page and its position (Kartei
+	// design system, the Label Rule), e.g. "DER STADTPLAN · ACHT VIERTEL · EIN
+	// ZENTRUM". A Badge may sit next to it; this hero (issue #95) sets none.
+	eyebrow: string
+	badge?: React.ReactNode
+	title: string
+	zitat?: string
+	children: React.ReactNode
+	actions?: React.ReactNode
+	illustration: React.ReactNode
+}
+
+// Xenia / Section / Bild-Hero (Figma 36584:15357, component set 36625:8921):
+// a text column (eyebrow, title, Zitat, intro, actions) beside an
+// illustration, 420px on desktop; the illustration comes first on mobile
+// (Kartei design system, Layout).
+function BildHero({
+	eyebrow,
+	badge,
+	title,
+	zitat,
+	children,
+	actions,
+	illustration,
+	className,
+	...props
+}: BildHeroProps) {
+	return (
+		<section
+			data-slot="bild-hero"
+			className={cn(
+				'flex flex-col-reverse gap-10 px-5 pt-12 pb-20 md:flex-row md:items-center md:justify-between md:gap-20 md:px-24',
+				className,
+			)}
+			{...props}
+		>
+			{/* 748px: the Bild-Hero text column (Kartei design system, Layout). */}
+			{/* eslint-disable-next-line restrictions/arbitrary-size-classes */}
+			<div className="flex max-w-[748px] flex-col gap-6">
+				<div className="flex flex-wrap items-center gap-3">
+					<p className="font-mono text-xs text-muted-foreground uppercase">{eyebrow}</p>
+					{badge}
+				</div>
+				<h1 className="font-heading text-[48px] leading-none tracking-[-0.02em] text-foreground md:text-[88px]">
+					{title}
+				</h1>
+				{zitat && <p className="font-serif text-[28px] text-foreground md:text-[40px]">{zitat}</p>}
+				<div className="text-lg text-muted-foreground">{children}</div>
+				{actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
+			</div>
+			<div data-slot="bild-hero-media" className="shrink-0">
+				{illustration}
+			</div>
+		</section>
+	)
+}
+
+export { BildHero }

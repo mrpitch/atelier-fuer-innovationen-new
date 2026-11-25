@@ -20,6 +20,7 @@ export type {
 	BaseDocument,
 	ContentDocument,
 	ContentKind,
+	Hinweis,
 	Kapitel,
 	NavigationLink,
 	NavigationNode,

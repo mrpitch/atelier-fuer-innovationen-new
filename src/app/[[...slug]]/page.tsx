@@ -9,18 +9,19 @@ import { PreviousNext } from '@/components/navigation/previous-next'
 import { RundgaengeListe } from '@/components/rundgang/rundgaenge-liste'
 import { RundgangDetail } from '@/components/rundgang/rundgang-detail'
 import { StationDetail } from '@/components/rundgang/station-detail'
+import { StadtplanHub } from '@/components/stadt/stadtplan-hub'
 import { ThemaDetail } from '@/components/thema/thema-detail'
 import { ThemenListe } from '@/components/thema/themen-liste'
 import { ViertelDetail } from '@/components/viertel/viertel-detail'
-import { ViertelListe } from '@/components/viertel/viertel-liste'
 import { ZentrumDetail } from '@/components/zentrum/zentrum-detail'
 import type { Seite } from '@/lib/content'
 import { contentGraph, urlFromSegments, urlSegments } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
 import { bodyImageComponents } from '@/mdx-components'
 
-// The Stadt area's landing Seite (issue #28): the one Seite ID that also
-// lists the Viertel and Zentrum, derived from the content graph.
+// The Stadt area's landing Seite: the Stadtplan-Hub (issue #95), its own
+// full-page layout rather than the generic Seite + area list every other
+// landing Seite below gets.
 const STADT_SEITE_ID = 'stadt'
 
 // The Rundgänge area's landing Seite (issue #32): the one Seite ID that also
@@ -67,6 +68,17 @@ export async function generateMetadata({ params }: PageProps<'/[[...slug]]'>): P
 // Navigation under a locale: only the translatable fields a translation can
 // set change (issue #36).
 async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
+	// The Stadtplan-Hub (issue #95) is its own full-page layout — Bild-Hero,
+	// Stadtplan and table — not the generic Seite shape every other landing
+	// Seite below still gets.
+	if (seite.id === STADT_SEITE_ID) {
+		return (
+			<main>
+				<StadtplanHub seite={seite} locale={locale} />
+			</main>
+		)
+	}
+
 	const graph = contentGraph()
 	const Body = await graph.getBody(seite.id, locale)
 
@@ -75,9 +87,6 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 			<Breadcrumbs items={graph.getBreadcrumbs(seite.id)} />
 			<h1>{seite.title}</h1>
 			<Body components={bodyImageComponents(seite.id)} />
-			{seite.id === STADT_SEITE_ID && (
-				<ViertelListe viertel={graph.viertel} zentrum={graph.zentrum} />
-			)}
 			{seite.id === RUNDGAENGE_SEITE_ID && <RundgaengeListe rundgaenge={graph.rundgaenge} />}
 			{seite.id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
 			<PreviousNext previous={graph.getPrevious(seite.id)} next={graph.getNext(seite.id)} />
