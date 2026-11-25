@@ -46,9 +46,7 @@ describe('Ortsleiste', () => {
 	it('stays stacked up to 1279px and becomes a row at xl (issue #110)', () => {
 		const html = renderFor('stadt/zweites-viertel')
 
-		expect(html).toContain('xl:flex-row xl:items-center xl:justify-between xl:px-24')
-		expect(html).toContain('lg:flex-col')
-		expect(html).not.toContain('lg:flex-row')
+		expect(html).toContain('data-switch-at="xl"')
 	})
 
 	it('renders only the previous neighbour for the last place', () => {

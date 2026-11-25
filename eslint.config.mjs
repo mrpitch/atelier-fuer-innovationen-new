@@ -7,6 +7,21 @@ import betterTailwindcss from 'eslint-plugin-better-tailwindcss'
 import * as mdx from 'eslint-plugin-mdx'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 
+// The docs the lint messages point to, so moving a doc is a one-line change here.
+const DOC = {
+	aboutArchitecture: 'docs/explanation/about-architecture.md',
+	componentBlueprint: 'docs/reference/components/component-blueprint.md',
+	contentLayer: 'docs/reference/content/content-layer.md',
+	dictionary: 'docs/reference/i18n/dictionary.md',
+	folderStructure: 'docs/reference/global/folder-structure.md',
+	fontSystem: 'docs/reference/design/font-system.md',
+	iconRegistry: 'docs/reference/components/icon-registry.md',
+	karteiDesignSystem: 'docs/reference/design/kartei-design-system.md',
+	staticExport: 'docs/reference/react/static-export.md',
+	tailwindConventions: 'docs/reference/design/tailwind-conventions.md',
+	themeSystem: 'docs/reference/design/theme-system.md',
+}
+
 // Flat config doesn't merge two blocks that configure the same rule for one file: the later
 // block's options replace the earlier one's. A per-file override that disables one check's
 // restrictions would silently disable another check's restrictions on the same rule too. So
@@ -127,21 +142,16 @@ const sizeProperty =
 // and `export … from` but not `import()`, so each has a `no-restricted-syntax` twin for that.
 const appImportsMessage =
 	'Nothing imports from src/app/, because routes are entry points. Move what you share into src/components/ or src/lib/ and import it from there.'
-const uiLayerMessage =
-	"A shadcn primitive doesn't import a Pro Block or a feature component. Move what both need into src/components/ui/, or pass it in as props or children. See docs/explanation/about-architecture.md."
-const proBlocksLayerMessage =
-	"A Pro Block doesn't import a feature component. Move what both need into src/components/ui/ or src/components/pro-blocks/, or pass it in as props or children. See docs/explanation/about-architecture.md."
+const uiLayerMessage = `A shadcn primitive doesn't import a Pro Block or a feature component. Move what both need into src/components/ui/, or pass it in as props or children. See ${DOC.aboutArchitecture}.`
+const proBlocksLayerMessage = `A Pro Block doesn't import a feature component. Move what both need into src/components/ui/ or src/components/pro-blocks/, or pass it in as props or children. See ${DOC.aboutArchitecture}.`
 
 // Content-graph boundaries (issue #55): only src/lib/content/ reads content (About the
 // architecture, ADR-0003) — everywhere else in src/ asks the graph instead of touching the file
 // system, src/content or a file inside the module directly. Shared messages, since several
 // selectors below report the same violation.
-const CONTENT_MODULE_MESSAGE =
-	'Only src/lib/content/ reads content, static or dynamic import alike. Import @/lib/content instead. See docs/explanation/about-architecture.md.'
-const CONTENT_FS_MESSAGE =
-	'File system access belongs in src/lib/content/, the one module that reads content. See docs/explanation/about-architecture.md.'
-const LIB_DOMAIN_DEEP_IMPORT_MESSAGE =
-	"Import from the domain folder's public API, @/lib/<domain>, never a file inside it. See docs/reference/global/folder-structure.md."
+const CONTENT_MODULE_MESSAGE = `Only src/lib/content/ reads content, static or dynamic import alike. Import @/lib/content instead. See ${DOC.aboutArchitecture}.`
+const CONTENT_FS_MESSAGE = `File system access belongs in src/lib/content/, the one module that reads content. See ${DOC.aboutArchitecture}.`
+const LIB_DOMAIN_DEEP_IMPORT_MESSAGE = `Import from the domain folder's public API, @/lib/<domain>, never a file inside it. See ${DOC.folderStructure}.`
 const CONTENT_URL_MESSAGE =
 	"URLs come from the content graph's per-type rule (ADR-0003), not a hand-built path. Ask @/lib/content for the link instead."
 const CONTENT_HREF_MESSAGE =
@@ -186,8 +196,7 @@ const eslintConfig = defineConfig([
 					paths: [
 						{
 							name: 'lucide-react',
-							message:
-								'Render icons with <Icon iconName="..." /> from @/components/ui/icons. See docs/reference/components/icon-registry.md.',
+							message: `Render icons with <Icon iconName="..." /> from @/components/ui/icons. See ${DOC.iconRegistry}.`,
 						},
 					],
 				},
@@ -201,8 +210,7 @@ const eslintConfig = defineConfig([
 					patterns: [
 						{
 							group: ['radix-ui', '@radix-ui/*'],
-							message:
-								'shadcn here runs on Base UI: import primitives from @base-ui/react and use the render prop instead of asChild. See docs/reference/components/component-blueprint.md.',
+							message: `shadcn here runs on Base UI: import primitives from @base-ui/react and use the render prop instead of asChild. See ${DOC.componentBlueprint}.`,
 						},
 					],
 				},
@@ -225,8 +233,7 @@ const eslintConfig = defineConfig([
 					paths: [
 						{
 							name: 'next/headers',
-							message:
-								'Read browser state in a Client Component instead: it needs a server. A preview needs a new build. See docs/reference/react/static-export.md.',
+							message: `Read browser state in a Client Component instead: it needs a server. A preview needs a new build. See ${DOC.staticExport}.`,
 						},
 					],
 				},
@@ -237,8 +244,7 @@ const eslintConfig = defineConfig([
 				'error',
 				{
 					selector: 'ExpressionStatement[expression.value="use server"]',
-					message:
-						"'use server' is unused here: there are no Server Actions, because the site has no writes. See docs/reference/react/static-export.md.",
+					message: `'use server' is unused here: there are no Server Actions, because the site has no writes. See ${DOC.staticExport}.`,
 				},
 			],
 
@@ -249,8 +255,7 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[id.name="revalidate"]',
-					message:
-						'`export const revalidate` is unused here: there is no incremental regeneration; a content change needs a new build. See docs/reference/react/static-export.md.',
+					message: `\`export const revalidate\` is unused here: there is no incremental regeneration; a content change needs a new build. See ${DOC.staticExport}.`,
 				},
 			],
 
@@ -262,8 +267,7 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[id.name="dynamicParams"][init.value=true]',
-					message:
-						'`export const dynamicParams = true` is unused here: every dynamic segment exports `generateStaticParams()` from the content graph. Use `export const dynamicParams = false`. See docs/reference/react/static-export.md.',
+					message: `\`export const dynamicParams = true\` is unused here: every dynamic segment exports \`generateStaticParams()\` from the content graph. Use \`export const dynamicParams = false\`. See ${DOC.staticExport}.`,
 				},
 			],
 		},
@@ -409,8 +413,7 @@ const eslintConfig = defineConfig([
 					restrict: [
 						{
 							pattern: `(?:^|:)!?${colorUtility}-${paletteColor}(?:/[^:]*)?!?$`,
-							message:
-								'Palette colours bypass the theme and break dark mode. Use a token utility such as bg-card, text-foreground or text-muted-foreground. See docs/reference/design/kartei-design-system.md.',
+							message: `Palette colours bypass the theme and break dark mode. Use a token utility such as bg-card, text-foreground or text-muted-foreground. See ${DOC.karteiDesignSystem}.`,
 						},
 					],
 				},
@@ -424,8 +427,7 @@ const eslintConfig = defineConfig([
 					restrict: [
 						{
 							pattern: `(?:^|:)!?(?:${colorUtility}-\\[(?:#|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\\(|color:|${namedColor}\\])|\\[(?:[a-z-]*color|background|fill|stroke):)`,
-							message:
-								'Arbitrary colours bypass the theme and break dark mode. Use a token utility such as bg-primary or text-muted-foreground. See docs/reference/design/kartei-design-system.md.',
+							message: `Arbitrary colours bypass the theme and break dark mode. Use a token utility such as bg-primary or text-muted-foreground. See ${DOC.karteiDesignSystem}.`,
 						},
 					],
 				},
@@ -439,8 +441,7 @@ const eslintConfig = defineConfig([
 						{
 							pattern:
 								'(?:^|:)!?(?:rounded(?:-(?:s|e|t|r|b|l|ss|se|ee|es|tl|tr|br|bl))?-\\[|\\[[a-z-]*radius:)',
-							message:
-								'Arbitrary radii bypass the theme. Use the radius scale: rounded-sm, rounded-lg (4px), rounded-xl (8px) or rounded-none. See docs/reference/design/theme-system.md for the scale and docs/reference/design/kartei-design-system.md (Shapes) for which element gets which.',
+							message: `Arbitrary radii bypass the theme. Use the radius scale: rounded-sm, rounded-lg (4px), rounded-xl (8px) or rounded-none. See ${DOC.themeSystem} for the scale and ${DOC.karteiDesignSystem} (Shapes) for which element gets which.`,
 						},
 					],
 				},
@@ -454,8 +455,7 @@ const eslintConfig = defineConfig([
 					restrict: [
 						{
 							pattern: '(?:^|:)!?(?:font-\\[(?!\\d|number:|var\\()|\\[font-family:)',
-							message:
-								'Arbitrary font families bypass the theme. Use font-sans, font-serif, font-mono or font-heading. See docs/reference/design/font-system.md.',
+							message: `Arbitrary font families bypass the theme. Use font-sans, font-serif, font-mono or font-heading. See ${DOC.fontSystem}.`,
 						},
 					],
 				},
@@ -468,8 +468,7 @@ const eslintConfig = defineConfig([
 					restrict: [
 						{
 							pattern: `(?:^|:)!?(?:-?${sizeUtility}-\\[|\\[${sizeProperty}:)`,
-							message:
-								'Use the 4px spacing scale: p-3 is 12px, w-24 is 96px. A measured one-off, such as the 416 × 340px Stadtplan tile, gets an eslint-disable comment that states the measurement. See docs/reference/design/kartei-design-system.md.',
+							message: `Use the 4px spacing scale: p-3 is 12px, w-24 is 96px. A measured one-off, such as the 416 × 340px Stadtplan tile, gets an eslint-disable comment that states the measurement. See ${DOC.karteiDesignSystem}.`,
 						},
 					],
 				},
@@ -484,8 +483,7 @@ const eslintConfig = defineConfig([
 						{
 							pattern:
 								'(?:^|:)!?(?:text-(?:signal|\\((?:color:)?--signal\\)|\\[(?:color:)?var\\(--signal\\)\\])|\\[color:var\\(--signal\\)\\])(?:/[^:]*)?!?$',
-							message:
-								'Koralle has 3.4:1 contrast on Archivstein, so signal never colours text. Use text-foreground, text-muted-foreground or text-accent-foreground, and keep bg-signal for the "Sie sind hier" marker. See docs/reference/design/kartei-design-system.md.',
+							message: `Koralle has 3.4:1 contrast on Archivstein, so signal never colours text. Use text-foreground, text-muted-foreground or text-accent-foreground, and keep bg-signal for the "Sie sind hier" marker. See ${DOC.karteiDesignSystem}.`,
 						},
 					],
 				},
@@ -526,8 +524,7 @@ const eslintConfig = defineConfig([
 				'error',
 				{
 					selector: "JSXAttribute[name.name='asChild']",
-					message:
-						"There is no asChild. Compose through Base UI's render prop instead. See docs/reference/components/component-blueprint.md.",
+					message: `There is no asChild. Compose through Base UI's render prop instead. See ${DOC.componentBlueprint}.`,
 				},
 			],
 
@@ -538,8 +535,7 @@ const eslintConfig = defineConfig([
 					paths: [
 						{
 							name: '@base-ui/react',
-							message:
-								"Import a Base UI primitive from its own subpath, e.g. '@base-ui/react/dialog', never the package root. See docs/reference/components/component-blueprint.md.",
+							message: `Import a Base UI primitive from its own subpath, e.g. '@base-ui/react/dialog', never the package root. See ${DOC.componentBlueprint}.`,
 						},
 					],
 				},
@@ -562,8 +558,7 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						'TSTypeReference > TSQualifiedName[right.name=/HTMLAttributes$/], TSTypeReference > Identifier[name=/HTMLAttributes$/], TSInterfaceHeritage > MemberExpression[property.name=/HTMLAttributes$/], TSInterfaceHeritage > Identifier[name=/HTMLAttributes$/]',
-					message:
-						"Derive props from React.ComponentProps<'element'> or the primitive's own props type instead of a *HTMLAttributes type. See docs/reference/components/component-blueprint.md.",
+					message: `Derive props from React.ComponentProps<'element'> or the primitive's own props type instead of a *HTMLAttributes type. See ${DOC.componentBlueprint}.`,
 				},
 			],
 
@@ -632,8 +627,7 @@ const eslintConfig = defineConfig([
 					paths: [
 						{
 							name: '@/lib/utils/cn',
-							message:
-								"Import cn from the 'cn' package directly; @/lib/utils/cn is the registry alias Pro Blocks installs use. See docs/reference/global/folder-structure.md.",
+							message: `Import cn from the 'cn' package directly; @/lib/utils/cn is the registry alias Pro Blocks installs use. See ${DOC.folderStructure}.`,
 						},
 					],
 				},
@@ -660,8 +654,7 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						"JSXAttribute[name.name='className'] TemplateLiteral, CallExpression[callee.name='cn'] TemplateLiteral, CallExpression[callee.name='cva'] TemplateLiteral",
-					message:
-						'Tailwind finds classes by scanning source text, so a template literal never reaches the CSS. Map values to complete class names instead. See docs/reference/design/tailwind-conventions.md.',
+					message: `Tailwind finds classes by scanning source text, so a template literal never reaches the CSS. Map values to complete class names instead. See ${DOC.tailwindConventions}.`,
 				},
 			],
 
@@ -672,8 +665,7 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						"JSXOpeningElement[name.name='html'] > JSXAttribute[name.name='className'] > JSXExpressionContainer > :not(Literal)",
-					message:
-						'next/font variable classes go on <body>, never <html>: theme.css maps --font-sans: var(--font-sans) and Tailwind also writes that self-reference to :root, so on <html> it would compete with the next/font class at equal specificity and only the order of the CSS chunks would decide which wins. On <body> the class always wins. See docs/reference/design/font-system.md.',
+					message: `next/font variable classes go on <body>, never <html>: theme.css maps --font-sans: var(--font-sans) and Tailwind also writes that self-reference to :root, so on <html> it would compete with the next/font class at equal specificity and only the order of the CSS chunks would decide which wins. On <body> the class always wins. See ${DOC.fontSystem}.`,
 				},
 			],
 		},
@@ -694,19 +686,16 @@ const eslintConfig = defineConfig([
 				'error',
 				{
 					selector: 'ExportNamedDeclaration[declaration]',
-					message:
-						'Export from one list at the bottom of the file instead: export { Name }. See docs/reference/components/component-blueprint.md.',
+					message: `Export from one list at the bottom of the file instead: export { Name }. See ${DOC.componentBlueprint}.`,
 				},
 				{
 					selector:
 						'ExportNamedDeclaration:not([declaration]):not([source]) ~ ExportNamedDeclaration:not([source])',
-					message:
-						'Export from one list at the bottom of the file: merge this into the existing export { … } list. See docs/reference/components/component-blueprint.md.',
+					message: `Export from one list at the bottom of the file: merge this into the existing export { … } list. See ${DOC.componentBlueprint}.`,
 				},
 				{
 					selector: 'ExportNamedDeclaration:not([declaration]) ~ :not(ExportNamedDeclaration)',
-					message:
-						'The export { … } list goes at the bottom of the file, after every declaration. See docs/reference/components/component-blueprint.md.',
+					message: `The export { … } list goes at the bottom of the file, after every declaration. See ${DOC.componentBlueprint}.`,
 				},
 			],
 		},
@@ -722,13 +711,11 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						'JSXAttribute[name.name=/^(aria-label|aria-description|alt|title|placeholder)$/] > Literal[value=/[A-Za-z]{2}/]',
-					message:
-						"Read user-facing attribute text from the dictionary: t('key'). See docs/reference/i18n/dictionary.md.",
+					message: `Read user-facing attribute text from the dictionary: t('key'). See ${DOC.dictionary}.`,
 				},
 				{
 					selector: 'JSXText[value=/[A-Za-z\\u00C0-\\u024F]{2}/]',
-					message:
-						"Read visible text from the dictionary: {t('key')}. See docs/reference/i18n/dictionary.md.",
+					message: `Read visible text from the dictionary: {t('key')}. See ${DOC.dictionary}.`,
 				},
 			],
 		},
@@ -746,8 +733,7 @@ const eslintConfig = defineConfig([
 				'error',
 				{
 					selector: 'ExpressionStatement[expression.value="use client"]',
-					message:
-						"'use client' on a route's page or layout makes the whole route a Client Component: put it on the smallest component that needs interaction instead, so the page stays static HTML. See docs/reference/react/static-export.md.",
+					message: `'use client' on a route's page or layout makes the whole route a Client Component: put it on the smallest component that needs interaction instead, so the page stays static HTML. See ${DOC.staticExport}.`,
 				},
 			],
 		},
@@ -858,8 +844,7 @@ const eslintConfig = defineConfig([
 					restrict: [
 						{
 							pattern: '(?:^|:|not-)dark:',
-							message:
-								'Tokens switch with the theme, so dark: is unused. Use a token utility, or disable this rule for the line with a comment saying why no token covers the difference. See docs/reference/design/theme-system.md.',
+							message: `Tokens switch with the theme, so dark: is unused. Use a token utility, or disable this rule for the line with a comment saying why no token covers the difference. See ${DOC.themeSystem}.`,
 						},
 					],
 				},
@@ -894,8 +879,7 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						'ExportNamedDeclaration ~ ExportNamedDeclaration, ExportSpecifier ~ ExportSpecifier',
-					message:
-						'One export per file here. Split the extra export into its own file. See docs/reference/global/folder-structure.md.',
+					message: `One export per file here. Split the extra export into its own file. See ${DOC.folderStructure}.`,
 				},
 			],
 		},
@@ -914,8 +898,7 @@ const eslintConfig = defineConfig([
 				{
 					selector:
 						'ExportNamedDeclaration[declaration.id.name=/^[A-Z]/] ~ ExportNamedDeclaration[declaration.id.name=/^[A-Z]/], ExportNamedDeclaration[exportKind="value"] > ExportSpecifier[exportKind="value"][exported.name=/^[A-Z]/] ~ ExportSpecifier[exportKind="value"][exported.name=/^[A-Z]/]',
-					message:
-						'One exported component per file here. Split the extra component into its own file. See docs/reference/global/folder-structure.md.',
+					message: `One exported component per file here. Split the extra component into its own file. See ${DOC.folderStructure}.`,
 				},
 			],
 		},
@@ -929,8 +912,7 @@ const eslintConfig = defineConfig([
 				'error',
 				{
 					selector: 'Property[key.name=/^(rewrites|redirects|headers)$/]',
-					message:
-						'`rewrites`, `redirects` and `headers` in next.config.ts are unused here: URLs come from the content graph (ADR-0003), and the host handles redirects. See docs/reference/react/static-export.md.',
+					message: `\`rewrites\`, \`redirects\` and \`headers\` in next.config.ts are unused here: URLs come from the content graph (ADR-0003), and the host handles redirects. See ${DOC.staticExport}.`,
 				},
 			],
 		},
@@ -963,13 +945,11 @@ const eslintConfig = defineConfig([
 				'error',
 				{
 					selector: 'ImportDeclaration',
-					message:
-						'Content MDX has no imports: it can only use the registered component set. See docs/reference/content/content-layer.md.',
+					message: `Content MDX has no imports: it can only use the registered component set. See ${DOC.contentLayer}.`,
 				},
 				{
 					selector: 'ExportNamedDeclaration, ExportDefaultDeclaration, ExportAllDeclaration',
-					message:
-						'Content MDX has no exports: it can only use the registered component set. See docs/reference/content/content-layer.md.',
+					message: `Content MDX has no exports: it can only use the registered component set. See ${DOC.contentLayer}.`,
 				},
 			],
 		},

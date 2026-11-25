@@ -46,16 +46,13 @@ function NeighbourLink({
 // PreviousNext on the Viertel, Zentrum, Rundgang and Thema pages (issue
 // #82). Stacked up to 1279px, a row from 1280 up: at 1024 long neighbour names
 // ("Besuch in der Umgebung →") don't fit beside the breadcrumb (issue #110,
-// Kartei design system, Breakpoints). The Ebenen-Leiste keeps the PlaceBar's
-// 1024 switch.
+// Kartei design system, Breakpoints).
 function Ortsleiste({ breadcrumbs, previous, next, className, ...props }: OrtsleisteProps) {
 	return (
 		<PlaceBar
 			data-slot="ortsleiste"
-			className={cn(
-				'lg:flex-col lg:items-start lg:px-5 xl:flex-row xl:items-center xl:justify-between xl:px-24',
-				className,
-			)}
+			switchAt="xl"
+			className={cn('xl:justify-between', className)}
 			{...props}
 		>
 			<BreadcrumbTrail breadcrumbs={breadcrumbs} />

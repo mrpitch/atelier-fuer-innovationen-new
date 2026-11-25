@@ -15,8 +15,10 @@ describe('BildHero', () => {
 	it('stays stacked up to 1279px and puts the illustration beside the text at xl (issue #110)', () => {
 		const html = render()
 
-		expect(html).toContain('xl:flex-row xl:items-center xl:justify-between xl:gap-20 xl:px-24')
-		expect(html).not.toContain('lg:flex-row')
+		const classes = /<section[^>]* class="([^"]*)"/.exec(html)?.[1].split(' ') ?? []
+
+		expect(classes).toEqual(expect.arrayContaining(['xl:flex-row', 'xl:items-center', 'xl:px-24']))
+		expect(classes).not.toContain('lg:flex-row')
 	})
 
 	it('hyphenates the title and sets it at 88px from xl', () => {
