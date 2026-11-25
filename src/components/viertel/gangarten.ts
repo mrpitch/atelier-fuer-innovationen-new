@@ -1,4 +1,4 @@
-import type { ContentGraph, Kapitel, Station, Viertel } from '@/lib/content'
+import type { ContentGraph, Kapitel, Station, Viertel, Zentrum } from '@/lib/content'
 import { shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
@@ -42,13 +42,17 @@ function kapitelLink(kapitel: Kapitel | undefined): GangartKarteLink | undefined
 	)
 }
 
-// The Schauen Gangart-Karte for a Viertel (issue #97): its Station on its own
-// Schauen Rundgang (graph.getSchauenRundgang/getSchauenStation, issue #95),
-// with the Rundgang's previous and next Station. Undefined when no Rundgang
-// visits this Viertel — the card the Viertel page then leaves out.
-function buildSchauenGangart(graph: ContentGraph, viertel: Viertel): GangartKarteProps | undefined {
-	const station = graph.getSchauenStation(viertel.id)
-	const rundgang = station && graph.getSchauenRundgang(viertel.id)
+// The Schauen Gangart-Karte for a Viertel or the Zentrum (issues #97, #98):
+// its Station on its own Schauen Rundgang (graph.getSchauenRundgang/
+// getSchauenStation, issue #95), with the Rundgang's previous and next
+// Station. Undefined when no Rundgang visits this Ort — the card its page
+// then leaves out.
+function buildSchauenGangart(
+	graph: ContentGraph,
+	ort: Viertel | Zentrum,
+): GangartKarteProps | undefined {
+	const station = graph.getSchauenStation(ort.id)
+	const rundgang = station && graph.getSchauenRundgang(ort.id)
 	if (!station || !rundgang) return undefined
 
 	const stationen = graph.getStationenByRundgang(rundgang.id)
@@ -59,7 +63,7 @@ function buildSchauenGangart(graph: ContentGraph, viertel: Viertel): GangartKart
 		badge: t('viertel.wege.schauenBadge', { title: rundgang.title }),
 		title: t('stadt.hub.tabelleStation', {
 			number: station.number,
-			title: shortTitleOrTitle(viertel),
+			title: shortTitleOrTitle(ort),
 		}),
 		primary: {
 			label: t('viertel.wege.schauenAnsehen', { number: station.number }),

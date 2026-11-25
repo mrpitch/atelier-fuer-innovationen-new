@@ -37,6 +37,20 @@ describe('buildSchauenGangart', () => {
 
 		expect(buildSchauenGangart(graph, viertel)).toBeUndefined()
 	})
+
+	it('builds the Schauen Gangart-Karte for the Zentrum too (issue #98)', () => {
+		const graph = buildContentGraph(path.join(fixturesDir, 'gangarten-valid'))
+		if (!graph.zentrum) throw new Error('fixture missing the Zentrum')
+
+		const gangart = buildSchauenGangart(graph, graph.zentrum)
+		const station = graph.getStation('rundgaenge/rundgang-a/station-zentrum')
+		const naechste = graph.getStation('rundgaenge/rundgang-a/station-mit-allem')
+
+		expect(gangart?.title).toBe('Station 0 · Testzentrum')
+		expect(gangart?.primary.href).toBe(station?.url)
+		expect(gangart?.previous).toBeUndefined()
+		expect(gangart?.next?.href).toBe(naechste?.url)
+	})
 })
 
 describe('buildLesenGangart', () => {

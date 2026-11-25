@@ -10,9 +10,9 @@ interface MiniStadtplanProps extends React.ComponentProps<'div'> {
 	// shape Stadtplan takes.
 	viertel: readonly Viertel[]
 	zentrum: Zentrum | undefined
-	// The Viertel whose page this Mini-Stadtplan sits on: its Plan-Feld is
-	// "aktuell", every other one "offen" (issue #96 — no reading state to
-	// mark a Plan-Feld "besucht" with).
+	// The Viertel or the Zentrum whose page this Mini-Stadtplan sits on
+	// (issues #96, #98): its Plan-Feld is "aktuell", every other one "offen"
+	// (issue #96 — no reading state to mark a Plan-Feld "besucht" with).
 	aktuellId: string
 }
 
@@ -26,8 +26,10 @@ function viertelFeld(viertel: Viertel, aktuellId: string) {
 	)
 }
 
-function zentrumFeld(zentrum: Zentrum) {
-	return <PlanFeld key={zentrum.id} nummer="0" status="offen" />
+function zentrumFeld(zentrum: Zentrum, aktuellId: string) {
+	return (
+		<PlanFeld key={zentrum.id} nummer="0" status={zentrum.id === aktuellId ? 'aktuell' : 'offen'} />
+	)
 }
 
 // Xenia / Stadt / Mini-Stadtplan (Figma 36585:8630): the same 3×3 reading
@@ -52,7 +54,7 @@ function MiniStadtplan({ viertel, zentrum, aktuellId, className, ...props }: Min
 			key: 'mitte',
 			felder: [
 				v8 && viertelFeld(v8, aktuellId),
-				zentrum && zentrumFeld(zentrum),
+				zentrum && zentrumFeld(zentrum, aktuellId),
 				v4 && viertelFeld(v4, aktuellId),
 			],
 		},

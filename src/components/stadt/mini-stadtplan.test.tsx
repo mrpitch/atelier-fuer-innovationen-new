@@ -24,6 +24,22 @@ describe('MiniStadtplan', () => {
 		expect(html.match(/data-status="offen"/g)).toHaveLength(8)
 	})
 
+	it('marks the Zentrum "aktuell" when its own page passes the Zentrum\'s ID (issue #98)', () => {
+		const graph = buildContentGraph(path.join(fixturesDir, 'stadtplan-valid'))
+		if (!graph.zentrum) throw new Error('fixture missing the Zentrum')
+
+		const html = renderToStaticMarkup(
+			<MiniStadtplan
+				viertel={graph.viertel}
+				zentrum={graph.zentrum}
+				aktuellId={graph.zentrum.id}
+			/>,
+		)
+
+		expect(html.match(/data-status="aktuell"/g)).toHaveLength(1)
+		expect(html.match(/data-status="offen"/g)).toHaveLength(8)
+	})
+
 	it('is hidden from assistive tech, since the Items beside it carry the real links', () => {
 		const graph = buildContentGraph(path.join(fixturesDir, 'stadtplan-valid'))
 		const aktuell = graph.viertel[0]
