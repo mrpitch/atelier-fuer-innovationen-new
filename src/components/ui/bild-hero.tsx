@@ -20,7 +20,7 @@ interface BildHeroProps extends React.ComponentProps<'section'> {
 // At 1024 the row would leave the text 332px, too narrow for the 88px title
 // (issue #110), so the hero switches at xl (Kartei design system, Breakpoints).
 // The title hyphenates (lang="de"), so a one-word title like "Futursysteme"
-// never breaks mid-syllable.
+// breaks only at a syllable ("Futur-systeme").
 function BildHero({
 	eyebrow,
 	badge,

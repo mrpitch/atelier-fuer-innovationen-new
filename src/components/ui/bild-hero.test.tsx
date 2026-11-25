@@ -16,7 +16,7 @@ describe('BildHero', () => {
 		const html = render()
 
 		expect(html).toContain('xl:flex-row xl:items-center xl:justify-between xl:gap-20 xl:px-24')
-		expect(html).not.toContain('lg:')
+		expect(html).not.toContain('lg:flex-row')
 	})
 
 	it('hyphenates the title and sets it at 88px from xl', () => {

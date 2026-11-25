@@ -87,7 +87,16 @@ const vis = (n) => {
    )
    ```
 
-   On the Components page (`figma.app.componentsPage`), list every `COMPONENT_SET` whose variants carry `Breakpoint`, so the table covers all of them.
+   On the Components page (`figma.app.componentsPage`, as `PAGE_ID`), list every `COMPONENT_SET` whose variants carry `Breakpoint`, so the table covers all of them:
+
+   ```js
+   return page
+   	.findAllWithCriteria({ types: ['COMPONENT_SET'] })
+   	.filter((s) =>
+   		s.children.some((c) => c.variantProperties && 'Breakpoint' in c.variantProperties),
+   	)
+   	.map((s) => ({ id: s.id, name: s.name }))
+   ```
 
 3. **Tokens: Figma values against `variables-kartei.css`.** Resolve each `Mode` colour variable under the `Style` collection's Kartei mode (follow `VARIABLE_ALIAS` values, using the Kartei mode for `Style` and Light/Dark for `Mode`), then convert the CSS `oklch()` values to hex and compare; a difference above 2/255 per channel is drift. Check the radii the same way (`radius/lg` = `--radius`).
 

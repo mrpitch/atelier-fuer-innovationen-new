@@ -4,8 +4,9 @@ import type * as React from 'react'
 // The bar under the header that the Ortsleiste (#82) and the Ebenen-Leiste
 // (#85) both are: a bottom Haarlinie, 20px side padding (96px from 1024 up, so
 // it lines up with the header), stacked on mobile and tablet (768) and a row
-// from 1024 up (Figma). Each bar adds its own content and `data-slot`; the
-// Ortsleiste moves its switch to 1280 (issue #110).
+// from 1024 up (Figma), as the Ebenen-Leiste uses it. The Ortsleiste overrides
+// both the padding and the row to start at 1280 (issue #110). Each bar adds its
+// own content and `data-slot`.
 function PlaceBar({ className, ...props }: React.ComponentProps<'div'>) {
 	return (
 		<div
