@@ -40,7 +40,7 @@ function AufsaetzeListe({ aufsaetze, className, ...props }: AufsaetzeListeProps)
 
 	return (
 		<PageSection
-			as="nav"
+			render={<nav />}
 			data-slot="aufsaetze-liste"
 			aria-label={t('viertel.aufsaetzeHeading')}
 			className={className}

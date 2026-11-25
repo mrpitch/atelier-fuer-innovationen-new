@@ -17,7 +17,7 @@ function SteckbriefFakt({ label, wert, className, ...props }: SteckbriefFaktProp
 	return (
 		<div data-slot="steckbrief-fakt" className={cn('flex flex-col gap-2.5', className)} {...props}>
 			<dt className="font-mono text-xs text-muted-foreground uppercase">{label}</dt>
-			<dd className="font-serif text-[22px] text-foreground">{wert}</dd>
+			<dd className="font-heading text-[22px] leading-tight text-foreground">{wert}</dd>
 		</div>
 	)
 }

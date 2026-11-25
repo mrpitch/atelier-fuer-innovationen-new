@@ -20,7 +20,6 @@ export const de = {
 	'viertel.steckbrief.prozessdokument': 'Prozessdokument',
 	'viertel.steckbrief.imStadtzentrum': 'Im Stadtzentrum',
 	'viertel.aufsaetzeHeading': 'Mehr aus dem Viertel',
-	'viertel.kapitelHeading': 'Kapitel des Leitthemas',
 	'viertel.heroBadge': 'Thema · {title}',
 	'viertel.heroKapitelAction': 'Kapitel {number} lesen',
 	'viertel.heroWegeAction': 'Wege durch dieses Viertel',
