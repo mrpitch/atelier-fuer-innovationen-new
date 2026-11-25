@@ -35,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 			suppressHydrationWarning
 			className="h-full antialiased"
 		>
-			{/* Font variables belong on <body>: docs/reference/css/font-system.md */}
+			{/* Font variables belong on <body>: docs/reference/design/font-system.md */}
 			<body
 				className={cn(
 					sans.variable,

@@ -43,6 +43,12 @@ describe('Ortsleiste', () => {
 		expect(html).toContain('href="/stadt/zweites-viertel"')
 	})
 
+	it('stays stacked up to 1279px and becomes a row at xl (issue #110)', () => {
+		const html = renderFor('stadt/zweites-viertel')
+
+		expect(html).toContain('data-switch-at="xl"')
+	})
+
 	it('renders only the previous neighbour for the last place', () => {
 		const html = renderFor('stadt/drittes-viertel')
 

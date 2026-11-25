@@ -10,7 +10,7 @@ authoritative: true
 
 # Font system
 
-Every theme defines four font variables. Kartei fills them from the Figma file's `font/family/*` variables ([Kartei design system](../design/kartei-design-system.md), Typography):
+Every theme defines four font variables. Kartei fills them from the Figma file's `font/family/*` variables ([Kartei design system](./kartei-design-system.md), Typography):
 
 | Variable         | Utility        | Kartei family     | Loaded                               | Used for                                                         |
 | ---------------- | -------------- | ----------------- | ------------------------------------ | ---------------------------------------------------------------- |
@@ -52,9 +52,9 @@ export { heading, mono, sans, serif } from './kartei'
 - Load fonts with `next/font` only. `variables-*.css` holds no `font-family` literal, and no stylesheet links Google Fonts.
 - Load the weights and styles the Kartei design system uses, nothing more. Variable fonts load their whole weight axis without a `weight` option.
 - Instrument Serif ships weight 400 only. `font-heading` with `font-medium`, `font-semibold` or `font-bold` makes the browser fake a bold; use size, not weight, for hierarchy.
-- The original texts are set in `font-serif`, interface words in `font-sans`, labels and numbers in `font-mono` ([Kartei design system](../design/kartei-design-system.md), Typography).
+- The original texts are set in `font-serif`, interface words in `font-sans`, labels and numbers in `font-mono` ([Kartei design system](./kartei-design-system.md), Typography).
 
 ## Related
 
 - [Theme system](./theme-system.md)
-- [Design tokens](./design-tokens.md)
+- [Kartei design system](./kartei-design-system.md)

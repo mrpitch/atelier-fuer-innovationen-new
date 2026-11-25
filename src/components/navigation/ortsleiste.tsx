@@ -44,10 +44,17 @@ function NeighbourLink({
 // The breadcrumb on the left and the neighbouring places on the right
 // (Kartei design system, Place bar), replacing the separate Breadcrumbs and
 // PreviousNext on the Viertel, Zentrum, Rundgang and Thema pages (issue
-// #82). Stacked on mobile and tablet (768), a row from 1024 up (Figma).
+// #82). Stacked up to 1279px, a row from 1280 up: at 1024 long neighbour names
+// ("Besuch in der Umgebung →") don't fit beside the breadcrumb (issue #110,
+// Kartei design system, Breakpoints).
 function Ortsleiste({ breadcrumbs, previous, next, className, ...props }: OrtsleisteProps) {
 	return (
-		<PlaceBar data-slot="ortsleiste" className={cn('lg:justify-between', className)} {...props}>
+		<PlaceBar
+			data-slot="ortsleiste"
+			switchAt="xl"
+			className={cn('xl:justify-between', className)}
+			{...props}
+		>
 			<BreadcrumbTrail breadcrumbs={breadcrumbs} />
 			{(previous !== undefined || next !== undefined) && (
 				<div className="flex items-center gap-2">

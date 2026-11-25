@@ -23,7 +23,7 @@ authoritative: true
 | `aliases.utils` | `@/lib/utils/cn`             | Pro Blocks import `cn` through this alias; `src/lib/utils/cn.ts` re-exports the `cn` package                                                                    |
 | `registries`    | `@shadcndesign`              | Pro Blocks, see below                                                                                                                                           |
 
-`baseColor` only shapes the CSS that `shadcn init` writes, and the Kartei tokens replace that CSS: [Theme system](../css/theme-system.md). `menuColor` and `menuAccent` keep the CLI defaults.
+`baseColor` only shapes the CSS that `shadcn init` writes, and the Kartei tokens replace that CSS: [Theme system](../design/theme-system.md). `menuColor` and `menuAccent` keep the CLI defaults.
 
 ## Packages
 

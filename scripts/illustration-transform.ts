@@ -4,7 +4,7 @@
 // neither the network nor the file system, so a test can feed it a fixture
 // string.
 
-// docs/reference/design/kartei-design-system.md, Colors → Illustration: the
+// docs/reference/design/kartei-design-system.md, Colors, Illustration: the
 // seven colours every drawing is built from, mapped to the Kartei theme tokens
 // (theme.css). White is only used on Petrol and maps to `primary-foreground`.
 // A path's `fill`/`stroke` becomes a `fill-`/`stroke-` class for the matching token; `none` stays

@@ -1,21 +1,35 @@
+import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from 'cn'
 import type * as React from 'react'
 
 // The bar under the header that the Ortsleiste (#82) and the Ebenen-Leiste
-// (#85) both are: a bottom Haarlinie, 20px side padding (96px from 1024 up, so
-// it lines up with the header), stacked on mobile and tablet (768) and a row
-// from 1024 up (Figma). Each bar adds its own content and `data-slot`.
-function PlaceBar({ className, ...props }: React.ComponentProps<'div'>) {
+// (#85) both are: a bottom Haarlinie, 20px side padding (96px once it is a
+// row, so it lines up with the header), stacked below `switchAt` and a row
+// from there. The Ebenen-Leiste switches at lg (1024, Figma); the Ortsleiste
+// at xl (1280), because at 1024 long neighbour names don't fit beside the
+// breadcrumb (issue #110, Kartei design system, Breakpoints). Each bar adds
+// its own content and `data-slot`.
+const placeBarVariants = cva('flex flex-col gap-3 border-b border-border px-5 py-3', {
+	variants: {
+		switchAt: {
+			lg: 'lg:flex-row lg:items-center lg:px-24',
+			xl: 'xl:flex-row xl:items-center xl:px-24',
+		},
+	},
+	defaultVariants: { switchAt: 'lg' },
+})
+
+type PlaceBarProps = React.ComponentProps<'div'> & VariantProps<typeof placeBarVariants>
+
+function PlaceBar({ switchAt = 'lg', className, ...props }: PlaceBarProps) {
 	return (
 		<div
 			data-slot="place-bar"
-			className={cn(
-				'flex flex-col gap-3 border-b border-border px-5 py-3 lg:flex-row lg:items-center lg:px-24',
-				className,
-			)}
+			data-switch-at={switchAt}
+			className={cn(placeBarVariants({ switchAt }), className)}
 			{...props}
 		/>
 	)
 }
 
-export { PlaceBar }
+export { PlaceBar, placeBarVariants }

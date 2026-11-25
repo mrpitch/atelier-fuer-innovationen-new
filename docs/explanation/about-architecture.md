@@ -48,12 +48,12 @@ flowchart TB
   blocks --> project
 ```
 
-Each layer only knows the one above it. A primitive reads `bg-primary`, not Petrol's value, so a token change in `variables-kartei.css` reaches every component without touching one. Primitives and blocks are installed by the shadcn CLI and then owned by the repository: the icon swap and the Kartei rules in [Design tokens](../reference/css/design-tokens.md) apply to them like to any project component.
+Each layer only knows the one above it. A primitive reads `bg-primary`, not Petrol's value, so a token change in `variables-kartei.css` reaches every component without touching one. Primitives and blocks are installed by the shadcn CLI and then owned by the repository: the icon swap and the Kartei rules in [Kartei design system](../reference/design/kartei-design-system.md) apply to them like to any project component.
 
 The style choice follows the [Kartei design system](../reference/design/kartei-design-system.md): `base-nova` installs 32px buttons and inputs and 24px small buttons, the control sizes the Kartei screens use. Its primitives come from Base UI, so composition goes through Base UI's `render` prop.
 
 ## Where to go next
 
 - [Folder structure](../reference/global/folder-structure.md)
-- [Theme system](../reference/css/theme-system.md)
+- [Theme system](../reference/design/theme-system.md)
 - [shadcn setup](../reference/components/shadcn-setup.md)
