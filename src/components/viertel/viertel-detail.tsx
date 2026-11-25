@@ -4,6 +4,7 @@ import type * as React from 'react'
 import { AufsaetzeListe } from '@/components/aufsatz/aufsaetze-liste'
 import { Ortsleiste } from '@/components/navigation/ortsleiste'
 import { MiniStadtplan } from '@/components/stadt/mini-stadtplan'
+import { PageSection } from '@/components/stadt/page-section'
 import { SectionTitle } from '@/components/stadt/section-title'
 import { Badge } from '@/components/ui/badge'
 import { BildHero } from '@/components/ui/bild-hero'
@@ -82,15 +83,15 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 				<Body components={bodyImageComponents(viertel.id)} />
 			</BildHero>
 
-			<section data-slot="steckbrief-section" className="px-5 py-14 md:px-24 md:py-16">
+			<PageSection data-slot="steckbrief-section">
 				<SectionTitle tagline={t('viertel.steckbriefTagline')} className="mb-10" />
 				<h2 className="sr-only">{t('viertel.steckbriefTagline')}</h2>
 				<Steckbrief steckbrief={viertel.steckbrief} />
-			</section>
+			</PageSection>
 
 			<AufsaetzeListe aufsaetze={graph.getAufsaetzeByViertel(viertel.id)} />
 
-			<section data-slot="weiter-im-stadtplan-section" className="px-5 py-14 md:px-24 md:py-16">
+			<PageSection data-slot="weiter-im-stadtplan-section">
 				<div className="mb-10 flex flex-wrap items-center gap-6">
 					<MiniStadtplan viertel={graph.viertel} zentrum={graph.zentrum} aktuellId={viertel.id} />
 					<SectionTitle
@@ -122,7 +123,7 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 						</Item>
 					)}
 				</div>
-			</section>
+			</PageSection>
 		</div>
 	)
 }

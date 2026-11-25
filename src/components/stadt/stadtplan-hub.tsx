@@ -11,6 +11,7 @@ import { contentGraph } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 import { bodyImageComponents } from '@/mdx-components'
 
+import { PageSection } from './page-section'
 import { SectionTitle } from './section-title'
 import { StadtTabelle } from './stadt-tabelle'
 import { buildStadtTabelle } from './stadt-tabelle-rows'
@@ -78,17 +79,17 @@ async function StadtplanHub({ seite, locale, className, ...props }: StadtplanHub
 				<Body components={bodyImageComponents(seite.id)} />
 			</BildHero>
 
-			<section data-slot="stadtplan-section" className="px-5 py-14 md:px-24 md:py-16">
+			<PageSection data-slot="stadtplan-section">
 				<SectionTitle tagline={t('stadt.hub.stadtplanTagline')} className="mb-10" />
 				<h2 className="sr-only">{t('stadt.hub.stadtplanHeading')}</h2>
 				<nav aria-label={t('stadt.navigation')}>
 					<Stadtplan viertel={viertel} zentrum={zentrum} />
 				</nav>
-			</section>
+			</PageSection>
 
-			<section data-slot="stadt-tabelle-section" className="bg-muted px-5 py-14 md:px-24 md:py-16">
+			<PageSection data-slot="stadt-tabelle-section" className="bg-muted">
 				<StadtTabelle data={buildStadtTabelle(graph, viertel, zentrum)} />
-			</section>
+			</PageSection>
 		</div>
 	)
 }

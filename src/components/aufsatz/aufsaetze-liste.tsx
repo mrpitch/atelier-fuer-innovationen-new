@@ -1,7 +1,7 @@
-import { cn } from 'cn'
 import Link from 'next/link'
 import type * as React from 'react'
 
+import { PageSection } from '@/components/stadt/page-section'
 import { SectionTitle } from '@/components/stadt/section-title'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -39,10 +39,11 @@ function AufsaetzeListe({ aufsaetze, className, ...props }: AufsaetzeListeProps)
 	if (aufsaetze.length === 0) return null
 
 	return (
-		<nav
+		<PageSection
+			as="nav"
 			data-slot="aufsaetze-liste"
 			aria-label={t('viertel.aufsaetzeHeading')}
-			className={cn('px-5 py-14 md:px-24 md:py-16', className)}
+			className={className}
 			{...props}
 		>
 			<SectionTitle tagline={t('viertel.aufsaetzeHeading')} className="mb-10" />
@@ -52,7 +53,7 @@ function AufsaetzeListe({ aufsaetze, className, ...props }: AufsaetzeListeProps)
 					<li key={aufsatz.id}>{aufsatzKarte(aufsatz)}</li>
 				))}
 			</ul>
-		</nav>
+		</PageSection>
 	)
 }
 
