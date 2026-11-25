@@ -6,9 +6,11 @@
 
 // docs/reference/design/kartei-design-system.md, Colors → Illustration: the
 // seven colours every drawing is built from, mapped to the Kartei theme tokens
-// (theme.css). White is only used on Petrol and maps to `primary-foreground`. A path's `fill`/`stroke`
-// becomes a `fill-`/`stroke-` class for the matching token; `none` stays
+// (theme.css). White is only used on Petrol and maps to `primary-foreground`.
+// A path's `fill`/`stroke` becomes a `fill-`/`stroke-` class for the matching token; `none` stays
 // literal; anything else is a design error the export must not paper over.
+const WHITE_TOKEN = 'primary-foreground'
+
 const TOKEN_BY_HEX: Record<string, string> = {
 	'#DCEBE9': 'secondary',
 	'#1F2421': 'foreground',
@@ -17,6 +19,9 @@ const TOKEN_BY_HEX: Record<string, string> = {
 	'#3D5A80': 'chart-4',
 	'#D6D1C5': 'border',
 }
+
+// Every token a drawing's classes may name; the test helper builds its regex from this.
+const ILLUSTRATION_TOKENS: readonly string[] = [...Object.values(TOKEN_BY_HEX), WHITE_TOKEN]
 
 interface XmlElement {
 	tag: string
@@ -171,7 +176,7 @@ function moduleNames(contentId: string): { name: string; slug: string } {
 }
 
 function colorToken(value: string): string | undefined {
-	if (value.toLowerCase() === 'white') return 'primary-foreground'
+	if (value.toLowerCase() === 'white') return WHITE_TOKEN
 	return TOKEN_BY_HEX[value.toUpperCase()]
 }
 
@@ -238,6 +243,21 @@ function isPathWith(node: XmlElement | undefined, expected: Record<string, strin
 	)
 }
 
+function serializeElement(node: XmlElement, indent: string): string {
+	const nodeLabel = node.attrs.id ?? node.tag
+	const jsxAttrs = convertAttributes(node.attrs, nodeLabel)
+	const attrsText = jsxAttrs
+		.map(([name, value]) => ` ${name}="${escapeJsxAttributeValue(value)}"`)
+		.join('')
+
+	if (node.children.length === 0) {
+		return `${indent}<${node.tag}${attrsText} />`
+	}
+
+	const childrenText = serializeChildren(node.children, `${indent}\t`)
+	return `${indent}<${node.tag}${attrsText}>\n${childrenText}\n${indent}</${node.tag}>`
+}
+
 function serializeChildren(children: XmlElement[], indent: string): string {
 	const lines: string[] = []
 	for (let i = 0; i < children.length; i++) {
@@ -252,21 +272,6 @@ function serializeChildren(children: XmlElement[], indent: string): string {
 		lines.push(serializeElement(children[i]!, indent))
 	}
 	return lines.join('\n')
-}
-
-function serializeElement(node: XmlElement, indent: string): string {
-	const nodeLabel = node.attrs.id ?? node.tag
-	const jsxAttrs = convertAttributes(node.attrs, nodeLabel)
-	const attrsText = jsxAttrs
-		.map(([name, value]) => ` ${name}="${escapeJsxAttributeValue(value)}"`)
-		.join('')
-
-	if (node.children.length === 0) {
-		return `${indent}<${node.tag}${attrsText} />`
-	}
-
-	const childrenText = serializeChildren(node.children, `${indent}\t`)
-	return `${indent}<${node.tag}${attrsText}>\n${childrenText}\n${indent}</${node.tag}>`
 }
 
 interface TransformedIllustration {
@@ -340,4 +345,4 @@ export { ${name} }
 	return { name, slug, source, testSource: drawingTestSource(name, slug) }
 }
 
-export { drawingTestSource, transformIllustrationSvg }
+export { drawingTestSource, ILLUSTRATION_TOKENS, transformIllustrationSvg }

@@ -1,7 +1,7 @@
+import { ILLUSTRATION_TOKENS } from '@scripts/illustration-transform'
 import { expect } from 'vitest'
 
-const TOKEN_CLASS =
-	/^(?:fill|stroke)-(?:secondary|foreground|card|primary|chart-4|border|primary-foreground)$/
+const TOKEN_CLASS = new RegExp(`^(?:fill|stroke)-(?:${ILLUSTRATION_TOKENS.join('|')})$`)
 
 // The contract every drawing shares: an accessible 240 × 240 svg whose colours
 // all come from design-token classes, with no ids and no literal colours.
