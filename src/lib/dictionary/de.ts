@@ -30,6 +30,7 @@ export const de = {
 	'viertel.weiterNaechstes': 'Nächstes Viertel →',
 	'aufsatz.readingTime': 'ca. {n} Min.',
 	'aufsatz.type': 'Aufsatz',
+	'aufsatz.typeReadingTime': 'Aufsatz · ca. {n} Min.',
 	'kapitel.number': 'Kapitel {n}',
 	'kapitel.numberedTitle': 'Kapitel {n}: {title}',
 	'kapitel.themenOrtHeading': 'Themen-Ort',
