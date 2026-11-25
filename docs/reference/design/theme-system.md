@@ -2,7 +2,7 @@
 type: reference
 title: Theme system
 description: How the Kartei theme reaches Tailwind and shadcn components, the files in src/lib/styles, dark mode through next-themes, and what changes when another theme becomes active.
-tags: [css, theming, tailwind, next-themes, dark-mode, design-tokens]
+tags: [css, theming, tailwind, next-themes, dark-mode]
 status: stable
 last_reviewed: 2026-11-22
 authoritative: true
@@ -10,7 +10,7 @@ authoritative: true
 
 # Theme system
 
-One theme is active per build. Kartei is the active theme; its source is the Kartei mode of the Figma file, and its rules are in the [Kartei design system](../design/kartei-design-system.md).
+One theme is active per build. Kartei is the active theme; its source is the Kartei mode of the Figma file, and its rules are in the [Kartei design system](./kartei-design-system.md).
 
 ## Files
 
@@ -60,7 +60,7 @@ One theme is active per build. Kartei is the active theme; its source is the Kar
 | Shape   | `--radius`                                                                                                                                                                                                            |
 | Project | `--signal`, `--viertel-annaeherung`, `--viertel-maerkte`, `--viertel-kontexte`, `--viertel-inszenierung`, `--viertel-zukunft`, `--viertel-wertschoepfung`, `--viertel-potenziale`, `--viertel-fuehrung`               |
 
-Values and naming rules: [Design tokens](./design-tokens.md).
+Values and naming rules: [Kartei design system](./kartei-design-system.md).
 
 ## Switching the active theme
 
@@ -68,10 +68,10 @@ Values and naming rules: [Design tokens](./design-tokens.md).
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Tokens       | Copy `design/<name>.tweakcn.css` to `src/lib/styles/variables-<name>.css` without its `--font-*` lines and import it in `globals.css` instead of `variables-kartei.css`. The exports already carry `--signal` and `--viertel-*` |
 | Fonts        | Add `src/lib/styles/fonts/<name>.ts` with the families from the export's `--font-*` lines and re-export it from `fonts/index.ts`                                                                                                |
-| Design rules | The [Kartei design system](../design/kartei-design-system.md) describes Kartei. A theme switch is a design decision and updates that doc with it                                                                                |
+| Design rules | The [Kartei design system](./kartei-design-system.md) describes Kartei. A theme switch is a design decision and updates that doc with it                                                                                        |
 
 ## Related
 
-- [Design tokens](./design-tokens.md)
+- [Kartei design system](./kartei-design-system.md)
 - [Font system](./font-system.md)
 - [Tailwind conventions](./tailwind-conventions.md)

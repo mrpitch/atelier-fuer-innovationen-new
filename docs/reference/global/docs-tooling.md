@@ -10,7 +10,7 @@ authoritative: true
 
 # Docs tooling
 
-Every doc under `docs/` carries the Home `docs` skill's frontmatter contract: `type`, `title` and `description` required, plus `tags`, `status` and `last_reviewed`. `type` matches the Diataxis quadrant its folder names — `tutorials` → `tutorial`, `how-to` → `how-to`, `reference` → `reference` (nested reference subfolders too, e.g. `reference/css/`), `explanation` → `explanation` — and ADRs in `docs/adr` carry `type: adr`. The generated index (`docs/index.md`) and every section `README.md` are exempt; neither carries frontmatter.
+Every doc under `docs/` carries the Home `docs` skill's frontmatter contract: `type`, `title` and `description` required, plus `tags`, `status` and `last_reviewed`. `type` matches the Diataxis quadrant its folder names — `tutorials` → `tutorial`, `how-to` → `how-to`, `reference` → `reference` (nested reference subfolders too, e.g. `reference/design/`), `explanation` → `explanation` — and ADRs in `docs/adr` carry `type: adr`. The generated index (`docs/index.md`) and every section `README.md` are exempt; neither carries frontmatter.
 
 ## `docs:check`
 

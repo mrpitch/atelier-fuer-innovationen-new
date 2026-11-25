@@ -60,11 +60,11 @@ A concern gets a domain folder once it needs at least two of these:
 - its own test files
 - several collaborating internal files
 
-| Type-based folder | Contents                                                                          |
-| ----------------- | --------------------------------------------------------------------------------- |
-| `styles/`         | CSS, theme variables and font definitions: [Theme system](../css/theme-system.md) |
-| `utils/`          | Pure functions                                                                    |
-| `hooks/`          | React hooks (`aliases.hooks` in `components.json` points here)                    |
+| Type-based folder | Contents                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| `styles/`         | CSS, theme variables and font definitions: [Theme system](../design/theme-system.md) |
+| `utils/`          | Pure functions                                                                       |
+| `hooks/`          | React hooks (`aliases.hooks` in `components.json` points here)                       |
 
 | Domain folder | What it owns                                                                                   |
 | ------------- | ---------------------------------------------------------------------------------------------- |

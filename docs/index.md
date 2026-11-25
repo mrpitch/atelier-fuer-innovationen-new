@@ -26,16 +26,12 @@ re-run `docs index` after adding or moving files.
 
 - [Content layer](reference/content/content-layer.md)
 
-### Css
-
-- [Design tokens](reference/css/design-tokens.md)
-- [Font system](reference/css/font-system.md)
-- [Tailwind conventions](reference/css/tailwind-conventions.md)
-- [Theme system](reference/css/theme-system.md)
-
 ### Design
 
+- [Font system](reference/design/font-system.md)
 - [Kartei design system](reference/design/kartei-design-system.md)
+- [Tailwind conventions](reference/design/tailwind-conventions.md)
+- [Theme system](reference/design/theme-system.md)
 
 ### Global
 

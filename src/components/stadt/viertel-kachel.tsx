@@ -47,7 +47,7 @@ interface ViertelKachelProps
 // 36581:7678): a Stadtplan tile — square-cornered, 28px padding, the Nummer
 // and an optional pointer on top, the Illustration (128px), the name and
 // Untertitel below. Built on the installed Card (its ring-based border is
-// Kartei-flat, design-tokens.md's Shadows), overriding its corners square and
+// Kartei-flat, Kartei design system, Elevation), overriding its corners square and
 // its surface inverted for the Zentrum variant, with its own Italic 40px
 // name (issue #95).
 function ViertelKachel({

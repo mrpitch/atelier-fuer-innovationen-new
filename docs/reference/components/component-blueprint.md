@@ -109,4 +109,4 @@ function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
 
 - [React component conventions](../react/react-component-conventions.md)
 - [shadcn setup](./shadcn-setup.md)
-- [Tailwind conventions](../css/tailwind-conventions.md)
+- [Tailwind conventions](../design/tailwind-conventions.md)

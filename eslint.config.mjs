@@ -401,7 +401,7 @@ const eslintConfig = defineConfig([
 			// Functions are declarations; arrow functions are for callbacks.
 			'func-style': ['error', 'declaration'],
 
-			// Kartei class rules (design-tokens.md), everywhere in src/: installed shadcn primitives
+			// Kartei class rules (kartei-design-system.md), everywhere in src/: installed shadcn primitives
 			// and Pro Blocks follow them too. No palette colours.
 			'restrictions/palette-color-classes': [
 				'error',
@@ -410,7 +410,7 @@ const eslintConfig = defineConfig([
 						{
 							pattern: `(?:^|:)!?${colorUtility}-${paletteColor}(?:/[^:]*)?!?$`,
 							message:
-								'Palette colours bypass the theme and break dark mode. Use a token utility such as bg-card, text-foreground or text-muted-foreground. See docs/reference/css/design-tokens.md.',
+								'Palette colours bypass the theme and break dark mode. Use a token utility such as bg-card, text-foreground or text-muted-foreground. See docs/reference/design/kartei-design-system.md.',
 						},
 					],
 				},
@@ -425,7 +425,7 @@ const eslintConfig = defineConfig([
 						{
 							pattern: `(?:^|:)!?(?:${colorUtility}-\\[(?:#|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\\(|color:|${namedColor}\\])|\\[(?:[a-z-]*color|background|fill|stroke):)`,
 							message:
-								'Arbitrary colours bypass the theme and break dark mode. Use a token utility such as bg-primary or text-muted-foreground. See docs/reference/css/design-tokens.md.',
+								'Arbitrary colours bypass the theme and break dark mode. Use a token utility such as bg-primary or text-muted-foreground. See docs/reference/design/kartei-design-system.md.',
 						},
 					],
 				},
@@ -440,7 +440,7 @@ const eslintConfig = defineConfig([
 							pattern:
 								'(?:^|:)!?(?:rounded(?:-(?:s|e|t|r|b|l|ss|se|ee|es|tl|tr|br|bl))?-\\[|\\[[a-z-]*radius:)',
 							message:
-								'Arbitrary radii bypass the theme. Use the radius scale: rounded-sm, rounded-lg (4px), rounded-xl (8px) or rounded-none. See docs/reference/css/design-tokens.md.',
+								'Arbitrary radii bypass the theme. Use the radius scale: rounded-sm, rounded-lg (4px), rounded-xl (8px) or rounded-none. See docs/reference/design/kartei-design-system.md.',
 						},
 					],
 				},
@@ -455,7 +455,7 @@ const eslintConfig = defineConfig([
 						{
 							pattern: '(?:^|:)!?(?:font-\\[(?!\\d|number:|var\\()|\\[font-family:)',
 							message:
-								'Arbitrary font families bypass the theme. Use font-sans, font-serif, font-mono or font-heading. See docs/reference/css/font-system.md.',
+								'Arbitrary font families bypass the theme. Use font-sans, font-serif, font-mono or font-heading. See docs/reference/design/font-system.md.',
 						},
 					],
 				},
@@ -469,7 +469,7 @@ const eslintConfig = defineConfig([
 						{
 							pattern: `(?:^|:)!?(?:-?${sizeUtility}-\\[|\\[${sizeProperty}:)`,
 							message:
-								'Use the 4px spacing scale: p-3 is 12px, w-24 is 96px. A measured one-off, such as the 416 × 340px Stadtplan tile, gets an eslint-disable comment that states the measurement. See docs/reference/css/design-tokens.md.',
+								'Use the 4px spacing scale: p-3 is 12px, w-24 is 96px. A measured one-off, such as the 416 × 340px Stadtplan tile, gets an eslint-disable comment that states the measurement. See docs/reference/design/kartei-design-system.md.',
 						},
 					],
 				},
@@ -485,7 +485,7 @@ const eslintConfig = defineConfig([
 							pattern:
 								'(?:^|:)!?(?:text-(?:signal|\\((?:color:)?--signal\\)|\\[(?:color:)?var\\(--signal\\)\\])|\\[color:var\\(--signal\\)\\])(?:/[^:]*)?!?$',
 							message:
-								'Koralle has 3.4:1 contrast on Archivstein, so signal never colours text. Use text-foreground, text-muted-foreground or text-accent-foreground, and keep bg-signal for the "Sie sind hier" marker. See docs/reference/css/design-tokens.md.',
+								'Koralle has 3.4:1 contrast on Archivstein, so signal never colours text. Use text-foreground, text-muted-foreground or text-accent-foreground, and keep bg-signal for the "Sie sind hier" marker. See docs/reference/design/kartei-design-system.md.',
 						},
 					],
 				},
@@ -661,7 +661,7 @@ const eslintConfig = defineConfig([
 					selector:
 						"JSXAttribute[name.name='className'] TemplateLiteral, CallExpression[callee.name='cn'] TemplateLiteral, CallExpression[callee.name='cva'] TemplateLiteral",
 					message:
-						'Tailwind finds classes by scanning source text, so a template literal never reaches the CSS. Map values to complete class names instead. See docs/reference/css/tailwind-conventions.md.',
+						'Tailwind finds classes by scanning source text, so a template literal never reaches the CSS. Map values to complete class names instead. See docs/reference/design/tailwind-conventions.md.',
 				},
 			],
 
@@ -673,7 +673,7 @@ const eslintConfig = defineConfig([
 					selector:
 						"JSXOpeningElement[name.name='html'] > JSXAttribute[name.name='className'] > JSXExpressionContainer > :not(Literal)",
 					message:
-						'next/font variable classes go on <body>, never <html>: theme.css maps --font-sans: var(--font-sans) and Tailwind also writes that self-reference to :root, so on <html> it would compete with the next/font class at equal specificity and only the order of the CSS chunks would decide which wins. On <body> the class always wins. See docs/reference/css/font-system.md.',
+						'next/font variable classes go on <body>, never <html>: theme.css maps --font-sans: var(--font-sans) and Tailwind also writes that self-reference to :root, so on <html> it would compete with the next/font class at equal specificity and only the order of the CSS chunks would decide which wins. On <body> the class always wins. See docs/reference/design/font-system.md.',
 				},
 			],
 		},
@@ -859,7 +859,7 @@ const eslintConfig = defineConfig([
 						{
 							pattern: '(?:^|:|not-)dark:',
 							message:
-								'Tokens switch with the theme, so dark: is unused. Use a token utility, or disable this rule for the line with a comment saying why no token covers the difference. See docs/reference/css/theme-system.md.',
+								'Tokens switch with the theme, so dark: is unused. Use a token utility, or disable this rule for the line with a comment saying why no token covers the difference. See docs/reference/design/theme-system.md.',
 						},
 					],
 				},

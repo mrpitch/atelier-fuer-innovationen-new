@@ -41,7 +41,7 @@ function BildHero({
 			)}
 			{...props}
 		>
-			{/* 748px: the Bild-Hero text column (Kartei design system, Layout). */}
+			{/* 748px: the Bild-Hero text column (Figma, Bild-Hero component). */}
 			{/* eslint-disable-next-line restrictions/arbitrary-size-classes */}
 			<div className="flex max-w-[748px] flex-col gap-6">
 				<div className="flex flex-wrap items-center gap-3">

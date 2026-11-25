@@ -43,7 +43,7 @@ Prerequisite for Pro Blocks: `SHADCNDESIGN_LICENSE_KEY` in `.env` ([shadcn setup
 
 5. Fix what `pnpm lint` still reports in the installed files. Registry code ships palette colours (`bg-black/10`, `bg-white`) and arbitrary values (`max-w-[calc(100%-2rem)]`, `rounded-[min(var(--radius-md),10px)]`, `w-[32px]`). Each error names the token or scale class to use instead. A measured one-off gets a disable comment that states the measurement.
 
-6. Check the Kartei rules lint can't see: flat page surfaces, no `font-semibold` on `font-heading` ([Design tokens](../reference/css/design-tokens.md)).
+6. Check the Kartei rules lint can't see: flat page surfaces, no `font-semibold` on `font-heading` ([Kartei design system](../reference/design/kartei-design-system.md), [Font system](../reference/design/font-system.md)).
 
 ## Verify
 
