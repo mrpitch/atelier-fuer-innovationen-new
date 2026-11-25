@@ -23,7 +23,7 @@ export const de = {
 	'viertel.kapitelHeading': 'Kapitel des Leitthemas',
 	'viertel.heroBadge': 'Thema · {title}',
 	'viertel.heroKapitelAction': 'Kapitel {number} lesen',
-	'viertel.heroWegeAction': 'Wege durch dieses Viertel ↓',
+	'viertel.heroWegeAction': 'Wege durch dieses Viertel',
 	'viertel.steckbriefTagline': 'Steckbrief',
 	'viertel.weiterTagline': 'Weiter im Stadtplan',
 	'viertel.weiterTitle': 'Sie sind hier: Viertel {number}',

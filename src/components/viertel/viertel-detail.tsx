@@ -74,6 +74,7 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 						)}
 						<Link href={`#${WEGE_ANCHOR}`} className={buttonVariants({ variant: 'ghost' })}>
 							{t('viertel.heroWegeAction')}
+							<Icon iconName="arrowDown" data-icon="inline-end" />
 						</Link>
 					</>
 				}
