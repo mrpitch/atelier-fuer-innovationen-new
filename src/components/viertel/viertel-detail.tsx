@@ -47,6 +47,7 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 	const next = graph.getNext(viertel.id)
 	const schauenGangart = buildSchauenGangart(graph, viertel)
 	const lesenGangart = buildLesenGangart(graph, viertel)
+	const hasWege = Boolean(schauenGangart || lesenGangart)
 
 	return (
 		<div data-slot="viertel-detail" {...props}>
@@ -78,10 +79,12 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 								<Icon iconName="arrowRight" data-icon="inline-end" />
 							</Link>
 						)}
-						<Link href={`#${WEGE_ANCHOR}`} className={buttonVariants({ variant: 'ghost' })}>
-							{t('viertel.heroWegeAction')}
-							<Icon iconName="arrowDown" data-icon="inline-end" />
-						</Link>
+						{hasWege && (
+							<Link href={`#${WEGE_ANCHOR}`} className={buttonVariants({ variant: 'ghost' })}>
+								{t('viertel.heroWegeAction')}
+								<Icon iconName="arrowDown" data-icon="inline-end" />
+							</Link>
+						)}
 					</>
 				}
 			>
@@ -96,15 +99,12 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 
 			<AufsaetzeListe aufsaetze={graph.getAufsaetzeByViertel(viertel.id)} />
 
-			{(schauenGangart ?? lesenGangart) !== undefined && (
+			{hasWege && (
 				<PageSection id={WEGE_ANCHOR} data-slot="wege-section">
 					<SectionTitle
 						tagline={t('viertel.wege.tagline')}
 						title={t('viertel.wege.title')}
-						description={t('viertel.wege.description', {
-							number: viertel.number,
-							viertelNumber: formatTwoDigits(viertel.number),
-						})}
+						description={t('viertel.wege.description')}
 						className="mb-10"
 					/>
 					<WegLeiste
@@ -114,7 +114,7 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 						aktuellNummer={viertel.number}
 						className="mb-6"
 					/>
-					<div className="flex flex-col gap-6 md:flex-row">
+					<div className="flex flex-col gap-6 lg:flex-row">
 						{schauenGangart && <GangartKarte {...schauenGangart} />}
 						{lesenGangart && <GangartKarte {...lesenGangart} />}
 					</div>

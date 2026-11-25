@@ -88,7 +88,7 @@ export const de = {
 	'viertel.wege.tagline': 'Wege durch dieses Viertel',
 	'viertel.wege.title': 'Ein Weg, zwei Gangarten',
 	'viertel.wege.description':
-		'Station {number} = Viertel {viertelNumber} = Kapitel {number}. Schauen mit dem Stadtführer oder lesen im Themen-Weg – am selben Ort.',
+		'Schauen mit dem Stadtführer oder lesen im Themen-Weg – am selben Ort.',
 	'viertel.wege.schauenBadge': 'Schauen · Rundgang „{title}“',
 	'viertel.wege.schauenAnsehen': 'Station {number} ansehen',
 	'viertel.wege.schauenVonVorn': 'Von vorn · Station {number}',

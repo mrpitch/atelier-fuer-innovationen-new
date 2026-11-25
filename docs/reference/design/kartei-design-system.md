@@ -249,3 +249,4 @@ Places where the screens break their own system. They are recorded here, not ado
 - The Thema-Karte uses a raw 12px corner radius instead of the kit's 8px card radius.
 - Input borders are below 3:1 contrast (see Inputs).
 - The desktop header's current area (issue #81) has no dedicated active state in Figma: the screens draw it as the NavigationMenu item's `State=Hover` variant, the same Pappe pill a pointer hover shows. The code gives the current entry a real active state (`aria-current="page"`, `data-active`), which happens to render identically to Hover since both map to `bg-muted`.
+- The Weg-Leiste's current Stopp (issue #97) draws its Nummer in Petrol on the Petrolschleier fill. The code sets it in Tiefpetrol, following the Ink Rule (on Petrolschleier, text is Tiefpetrol).

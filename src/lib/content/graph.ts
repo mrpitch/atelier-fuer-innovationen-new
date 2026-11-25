@@ -173,9 +173,9 @@ export interface ContentGraph {
 	getSchauenRundgang(ortId: string): Rundgang | undefined
 	// The Ort's own Station on its Schauen Rundgang (issue #97) — undefined
 	// alongside getSchauenRundgang whenever no Rundgang visits it. Shares
-	// getSchauenRundgang's lookup instead of each caller re-deriving it
-	// (stadt-tabelle-rows.ts and stadtplan-hub.tsx both did, issue #95's own
-	// judgement call).
+	// getSchauenRundgang's lookup; the Viertel page and the Stadtplan-Hub
+	// use it. stadt-tabelle-rows.ts derives its own, as it deliberately uses
+	// the Zentrum's Rundgang for every row.
 	getSchauenStation(ortId: string): Station | undefined
 	// The three Themen (issue #31, ADR-0003): the Leitthema and each
 	// Themen-Ort, both documents at src/content/themen/<slug>/. The Leitthema
@@ -457,7 +457,7 @@ export function buildContentGraph(
 		getStationenByRundgang: (rundgangId) => stationenByRundgang.get(rundgangId) ?? [],
 		getStation: (id, locale) => find('station', id, locale),
 		getStationenByOrt: (ortId) => stationen.filter((station) => station.ortId === ortId),
-		getSchauenRundgang: (ortId) => schauenRundgangFor(ortId),
+		getSchauenRundgang: schauenRundgangFor,
 		getSchauenStation: (ortId) => {
 			const rundgang = schauenRundgangFor(ortId)
 			return (
