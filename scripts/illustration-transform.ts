@@ -258,6 +258,14 @@ function serializeElement(node: XmlElement, indent: string): string {
 	return `${indent}<${node.tag}${attrsText}>\n${childrenText}\n${indent}</${node.tag}>`
 }
 
+// What the transform would emit for the frame paths if it did not lift them
+// into <IllustrationFrame />; IllustrationFrame's test pins it to the component.
+function inlineFrameSource(): string {
+	return [FRAME_RING_ATTRS, FRAME_GROUND_ATTRS]
+		.map((attrs) => serializeElement({ tag: 'path', attrs, children: [] }, ''))
+		.join('\n')
+}
+
 function serializeChildren(children: XmlElement[], indent: string): string {
 	const lines: string[] = []
 	for (let i = 0; i < children.length; i++) {
@@ -345,4 +353,4 @@ export { ${name} }
 	return { name, slug, source, testSource: drawingTestSource(name, slug) }
 }
 
-export { drawingTestSource, ILLUSTRATION_TOKENS, transformIllustrationSvg }
+export { drawingTestSource, ILLUSTRATION_TOKENS, inlineFrameSource, transformIllustrationSvg }
