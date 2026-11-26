@@ -10,11 +10,19 @@ const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '__f
 const fixtureGraph = buildContentGraph(path.join(fixturesDir, 'zentrum-detail-valid'))
 // The real getBody resolves MDX through a Vite dynamic import of src/content,
 // which a fixture directory isn't part of; the body itself isn't under test.
-const graph = { ...fixtureGraph, getBody: async () => () => null } as typeof fixtureGraph
+function withBody(g: typeof fixtureGraph) {
+	return { ...g, getBody: async () => () => null } as typeof fixtureGraph
+}
+const graph = withBody(fixtureGraph)
+// A Zentrum no Rundgang visits and without a Leitthema: no Gangart-Karte.
+const graphOhneGangarten = withBody(
+	buildContentGraph(path.join(fixturesDir, 'zentrum-ohne-leitthema')),
+)
+let current = graph
 
 vi.mock('@/lib/content', async (importOriginal) => ({
 	...(await importOriginal<typeof import('@/lib/content')>()),
-	contentGraph: () => graph,
+	contentGraph: () => current,
 }))
 
 const { ZentrumDetail } = await import('./zentrum-detail')
@@ -67,5 +75,20 @@ describe('ZentrumDetail', () => {
 
 		expect(html).not.toContain('data-slot="steckbrief-section"')
 		expect(html).not.toContain('Mehr aus dem Viertel')
+	})
+
+	it('keeps the Weg-Leiste and the Wege anchor when neither Gangart-Karte exists', async () => {
+		current = graphOhneGangarten
+		try {
+			if (!current.zentrum) throw new Error('fixture missing the Zentrum')
+			const html = renderToStaticMarkup(await ZentrumDetail({ zentrum: current.zentrum }))
+
+			expect(html).toContain('data-slot="weg-leiste"')
+			expect(html).toContain('id="wege-vom-zentrum-aus"')
+			expect(html).toContain('href="#wege-vom-zentrum-aus"')
+			expect(html).not.toContain('data-slot="gangart-karte"')
+		} finally {
+			current = graph
+		}
 	})
 })

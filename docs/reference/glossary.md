@@ -51,12 +51,16 @@ A Viertel's optional link to one other document, of any type, resolved to that d
 _Avoid_: hint, tip, cross-reference
 
 **Stadtplan**
-The `/stadt` hub page: a grid of tiles for the eight Viertel and the Zentrum, the map view into the Wissensstadt.
+The arrangement of the Zentrum and the eight Viertel on a 3×3 grid, the Zentrum in the middle. The Stadtplan, its small Mini-Stadtplan and the Weg-Leiste all draw it.
 _Avoid_: map, city map
 
+**Stadtplan-Hub**
+The `/stadt` page: the Stadtplan with its overview table, the landing page of the Stadt area. Not the Stadtplan itself (code: `StadtplanHub` vs `Stadtplan`).
+_Avoid_: Stadtplan (for the page)
+
 **Leitsatz**
-The one-sentence motto of a Viertel, e.g. "Erweiterte, kontextuelle Orientierungen haben konsensstiftende Wirkung."
-_Avoid_: Zitat, motto
+A one-sentence statement set apart from the body text. Two kinds share the field name `leitsatz`: a Viertel's motto, e.g. "Erweiterte, kontextuelle Orientierungen haben konsensstiftende Wirkung.", and an Abschnitt's own optional pull-quote, which is not tied to the Viertel's motto.
+_Avoid_: Zitat, motto (for the Viertel's, use Leitsatz)
 
 **Steckbrief**
 The short profile of a Viertel: its Prozessansatz, Bauform, Prozessdokument and its place in the Stadtzentrum.
@@ -95,7 +99,7 @@ One readable section of a Kapitel, numbered within it (e.g. 4.3).
 _Avoid_: section, Seite
 
 **Gangart**
-One of the two ways to move through a Viertel: Schauen, a Rundgang's guided walk, or Lesen, the Leitthema's Kapitel. The Gangart-Box lets a visitor switch between them without losing their place.
+One of the two ways to visit the same Ort, a Viertel or the Zentrum: Schauen, a Rundgang's guided walk, or Lesen, the Leitthema's Kapitel (for the Zentrum, its Einführung). The Gangart-Box and the Gangart-Karten link to the other Gangart; a Gangart carries no reading state.
 _Avoid_: mode, way
 
 **Themen-Ort**

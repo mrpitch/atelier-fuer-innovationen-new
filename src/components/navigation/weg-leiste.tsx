@@ -1,6 +1,7 @@
 import { cn } from 'cn'
 import type * as React from 'react'
 
+import { MonoLabel } from '@/components/ui/mono-label'
 import type { Viertel, Zentrum } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
@@ -62,9 +63,7 @@ function WegLeiste({
 			{...props}
 		>
 			<div className="flex shrink-0 flex-col gap-1.5">
-				<p className="font-mono text-xs font-medium text-primary uppercase">
-					{t('weg.leiste.label')}
-				</p>
+				<MonoLabel className="font-medium">{t('weg.leiste.label')}</MonoLabel>
 				<p className="text-sm font-medium text-foreground">{t('weg.leiste.titel')}</p>
 				<p className="text-xs text-muted-foreground">
 					{t('weg.leiste.hinweis', { number: aktuellNummer })}

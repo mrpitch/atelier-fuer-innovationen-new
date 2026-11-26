@@ -12,7 +12,7 @@ const taglineVariants = cva(
 			variant: {
 				default: 'h-7 rounded-md border bg-background px-2.5 shadow-xs',
 				secondary: 'h-7 rounded-md bg-secondary px-2.5 text-secondary-foreground',
-				ghost: 'bg-transparent text-muted-foreground capitalize',
+				ghost: 'bg-transparent text-muted-foreground',
 				'on-primary': 'text-primary-foreground',
 				link: 'h-7 cursor-pointer gap-1.5 rounded-full border bg-card px-3 py-0 shadow-xs transition-colors hover:bg-accent [&_svg]:size-4',
 			},

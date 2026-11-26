@@ -43,7 +43,6 @@ async function ZentrumDetail({ zentrum, locale, ...props }: ZentrumDetailProps) 
 	const Body = await graph.getBody(zentrum.id, locale)
 	const schauenGangart = buildSchauenGangart(graph, zentrum)
 	const lesenGangart = buildZentrumLesenGangart(graph)
-	const hasWege = Boolean(schauenGangart || lesenGangart)
 	const [ersteViertel] = graph.viertel
 	const letzteViertel = graph.viertel.at(-1)
 
@@ -67,38 +66,36 @@ async function ZentrumDetail({ zentrum, locale, ...props }: ZentrumDetailProps) 
 					/>
 				}
 				actions={
-					hasWege && (
-						<Link href={`#${WEGE_ANCHOR}`} className={buttonVariants({ variant: 'ghost' })}>
-							{t('zentrum.heroWegeAction')}
-							<Icon iconName="arrowDown" data-icon="inline-end" />
-						</Link>
-					)
+					<Link href={`#${WEGE_ANCHOR}`} className={buttonVariants({ variant: 'ghost' })}>
+						{t('zentrum.heroWegeAction')}
+						<Icon iconName="arrowDown" data-icon="inline-end" />
+					</Link>
 				}
 			>
 				<Body components={bodyImageComponents(zentrum.id)} />
 			</BildHero>
 
-			{hasWege && (
-				<PageSection id={WEGE_ANCHOR} data-slot="wege-section">
-					<SectionTitle
-						tagline={t('zentrum.wege.tagline')}
-						title={t('viertel.wege.title')}
-						description={t('viertel.wege.description')}
-						className="mb-10"
-					/>
-					<WegLeiste
-						viertel={graph.viertel}
-						zentrum={graph.zentrum}
-						aktuellId={zentrum.id}
-						aktuellNummer={0}
-						className="mb-6"
-					/>
+			<PageSection id={WEGE_ANCHOR} data-slot="wege-section">
+				<SectionTitle
+					tagline={t('zentrum.wege.tagline')}
+					title={t('viertel.wege.title')}
+					description={t('viertel.wege.description')}
+					className="mb-10"
+				/>
+				<WegLeiste
+					viertel={graph.viertel}
+					zentrum={graph.zentrum}
+					aktuellId={zentrum.id}
+					aktuellNummer={0}
+					className="mb-6"
+				/>
+				{(schauenGangart || lesenGangart) && (
 					<div className="flex flex-col gap-6 lg:flex-row">
 						{schauenGangart && <GangartKarte {...schauenGangart} />}
 						{lesenGangart && <GangartKarte {...lesenGangart} />}
 					</div>
-				</PageSection>
-			)}
+				)}
+			</PageSection>
 
 			<PageSection data-slot="weiter-im-stadtplan-section">
 				<div className="mb-10 flex flex-wrap items-center gap-6">

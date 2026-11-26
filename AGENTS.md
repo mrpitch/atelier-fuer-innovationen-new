@@ -2,7 +2,7 @@ Apply the `unslop` skill to every response in this conversation.
 
 ## Standards
 
-Before writing or changing code, read the docs for its area in `docs/reference/`: `global/` for where files go, `css/` for styling, `components/` for UI components and icons, `react/` for components and the static export, `content/` for content types and validation, `i18n/` for the UI dictionary, `testing/` for Vitest conventions. `docs/index.md` lists every doc.
+Before writing or changing code, read the docs for its area in `docs/reference/`: `global/` for where files go, `design/` for styling, `components/` for UI components and icons, `react/` for components and the static export, `content/` for content types and validation, `i18n/` for the UI dictionary, `testing/` for Vitest conventions. `docs/index.md` lists every doc.
 
 ## Architecture
 
