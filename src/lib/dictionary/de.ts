@@ -54,7 +54,6 @@ export const de = {
 	'abschnitt.nextTitle': '{number} {title} →',
 	'abschnitt.previousLabel': 'Vorheriger Abschnitt',
 	'abschnitt.nextLabel': 'Nächster Abschnitt',
-	'rundgaenge.navigation': 'Die Rundgänge der Wissensstadt',
 	'rundgang.stationenCount': '{n} Stationen',
 	'rundgang.duration': 'ca. {n} Min.',
 	'rundgang.summary': '{stationen} · {duration}',
@@ -126,6 +125,22 @@ export const de = {
 	'rundgang.naechsterRundgang': 'Nächster Rundgang',
 	'rundgang.themaVertiefen': 'Thema vertiefen',
 	'station.hierEinsteigen': 'Hier einsteigen',
+	'rundgang.eintrag.routeAnsehen': 'Route ansehen',
+	'rundgang.eintrag.stationBadge': '{number} · {name}',
+	'rundgaenge.hub.eyebrow': 'STADTRUNDGÄNGE · {n} FÜHRUNGEN DES STADTFÜHRERS',
+	'rundgaenge.hub.heading': 'Die Rundgänge des Stadtführers',
+	'rundgaenge.hub.herkunft': 'Aus dem Original, neu aufbereitet',
+	'rundgaenge.hub.featureTagline': 'In drei Schritten',
+	'rundgaenge.hub.featureHeading': 'So funktioniert ein Rundgang',
+	'rundgaenge.hub.schritt1Titel': '01 · Route wählen',
+	'rundgaenge.hub.schritt1Text':
+		'Drei Führungen des Stadtführers – vom kurzen Einstieg bis zum Besuch aller Viertel. Dauer und Stationen stehen vorab fest.',
+	'rundgaenge.hub.schritt2Titel': '02 · Station für Station',
+	'rundgaenge.hub.schritt2Text':
+		'Jede Station zeigt ein Viertel oder einen Text, mit Fortschritt oben und der Route unten.',
+	'rundgaenge.hub.schritt3Titel': '03 · Abstecher jederzeit',
+	'rundgaenge.hub.schritt3Text':
+		'„Gangart wechseln“ führt zum Kapitel oder Viertel. Über „Route“ kehren Sie jederzeit zum Rundgang zurück.',
 } as const
 
 export type DictionaryKey = keyof typeof de
