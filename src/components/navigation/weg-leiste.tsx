@@ -55,9 +55,10 @@ function stoppFor(ort: Ort, nummer: number, aktuellId: string) {
 // illustration, or, when it stands at none, a Routen-Stopp with no
 // illustration at all. The accessible label is the Station's own name, not
 // the Ort's — the link goes to the Station, not the Ort page. Shared by the
-// Weg-Leiste's Rundgang mode below, where every Stopp is "offen" (a
-// Rundgang-Übersicht tracks no current position), and by a Station's own
-// Stationsnavigation (issue #120), which passes the Station's actual
+// Weg-Leiste's Rundgang mode below and by RundgangEintrag's own route row
+// (issue #119), where every Stopp is "offen" (neither tracks a current
+// position or reading state), and by a Station's own Stationsnavigation
+// (issue #120), which passes the Station's actual
 // "gesehen"/"aktuell"/"offen" status.
 function stationStopp(station: Station, status: StoppStatus = 'offen') {
 	const name = shortTitleOrTitle(station)
