@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import { ContentValidationError } from './errors'
-import { resolveReference } from './references'
+import { resolveAnyReference, resolveReference } from './references'
+import type { ContentDocument } from './types'
 
 const referrer = { file: 'doc.mdx', draft: false }
 function production(document: { readonly draft: boolean }) {
@@ -95,5 +96,63 @@ describe('resolveReference', () => {
 				targets[0],
 			)
 		})
+	})
+})
+
+function seite(id: string, url: string): ContentDocument {
+	return {
+		kind: 'seite',
+		document: { id, url, title: id, description: 'Platzhalter.', body: '', draft: false },
+	}
+}
+
+// The any-type reference mechanism a Menu entry (issue #27) and a Viertel's
+// Hinweis (issue #93) both reuse, as opposed to resolveReference's single
+// same-type collection.
+describe('resolveAnyReference', () => {
+	const idee = seite('idee', '/idee')
+	// entwurf is known but never put in `visible` — a Draft, the same shape a
+	// production graph gives a Draft target.
+	const targets = {
+		known: new Set(['idee', 'entwurf']),
+		visible: new Map([['idee', idee]]),
+	}
+
+	it('returns the matching visible target', () => {
+		expect(resolveAnyReference('doc.mdx', 'hinweisId', 'idee', targets, true)).toBe(idee)
+		expect(resolveAnyReference('doc.mdx', 'hinweisId', 'idee', targets, false)).toBe(idee)
+	})
+
+	it('fails naming the referring file, the field and an unknown ID, strict or not', () => {
+		expect.assertions(8)
+
+		for (const strict of [true, false]) {
+			try {
+				resolveAnyReference('doc.mdx', 'hinweisId', 'nichtvorhanden', targets, strict)
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe('doc.mdx')
+				expect(validationError.field).toBe('hinweisId')
+				expect(validationError.reason).toContain('nichtvorhanden')
+			}
+		}
+	})
+
+	it('fails a strict caller naming a Draft, naming the Draft file', () => {
+		expect.assertions(3)
+
+		try {
+			resolveAnyReference('doc.mdx', 'hinweisId', 'entwurf', targets, true)
+		} catch (error) {
+			expect(error).toBeInstanceOf(ContentValidationError)
+			const validationError = error as ContentValidationError
+			expect(validationError.field).toBe('hinweisId')
+			expect(validationError.reason).toContain('entwurf/index.mdx')
+		}
+	})
+
+	it('resolves a Draft to undefined for a non-strict caller, instead of failing', () => {
+		expect(resolveAnyReference('doc.mdx', 'hinweisId', 'entwurf', targets, false)).toBeUndefined()
 	})
 })

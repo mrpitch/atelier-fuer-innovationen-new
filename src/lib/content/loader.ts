@@ -27,8 +27,10 @@ import type { Meta } from './order'
 import type { MenuItem, Site, TranslationFrontmatter } from './schemas'
 import {
 	abschnittFrontmatterSchema,
+	abschnittTranslationFrontmatterSchema,
 	aufsatzFrontmatterSchema,
 	kapitelFrontmatterSchema,
+	kapitelTranslationFrontmatterSchema,
 	menuSchema,
 	metaSchema,
 	rundgangFrontmatterSchema,
@@ -67,8 +69,8 @@ const TRANSLATION_SCHEMAS = {
 	viertel: viertelTranslationFrontmatterSchema,
 	zentrum: translationFrontmatterSchema,
 	aufsatz: translationFrontmatterSchema,
-	kapitel: translationFrontmatterSchema,
-	abschnitt: translationFrontmatterSchema,
+	kapitel: kapitelTranslationFrontmatterSchema,
+	abschnitt: abschnittTranslationFrontmatterSchema,
 	thema: translationFrontmatterSchema,
 	rundgang: translationFrontmatterSchema,
 	station: translationFrontmatterSchema,

@@ -30,10 +30,23 @@ export interface BaseDocument {
 
 export type Seite = BaseDocument
 
-// A Viertel with its number assigned (viertel.ts).
+// A Hinweis (issue #93): a Viertel's optional link to a document of any
+// type, resolved to that document's Short title and URL, the same shape a
+// resolved Menu entry gets.
+export interface Hinweis {
+	readonly shortTitle: string
+	readonly url: string
+}
+
+// A Viertel with its number assigned (viertel.ts). `hinweisId` is the raw
+// reference, `hinweis` its resolution (viertel.ts's resolveHinweise) —
+// undefined when the Viertel sets no Hinweis.
 export interface Viertel extends BaseDocument {
 	readonly leitsatz: string
 	readonly steckbrief: ViertelSteckbrief
+	readonly untertitel?: string
+	readonly hinweisId?: string
+	readonly hinweis?: Hinweis
 	readonly number: number
 }
 
@@ -48,16 +61,21 @@ export interface Aufsatz extends BaseDocument {
 }
 
 // A Kapitel (issue #30) with its number and URL derived from its Viertel
-// (kapitel.ts).
+// (kapitel.ts). `untertitel` (issue #93) is its own optional subtitle.
 export interface Kapitel extends BaseDocument {
 	readonly viertelId: string
+	readonly untertitel?: string
 	readonly number: number
 }
 
 // An Abschnitt (issue #30) with its position, number, URL and reading time
 // derived from its Kapitel (abschnitt.ts). `kapitelId` is its folder's ID.
+// `leitsatz` and `jahr` (issue #93) are its own optional pull-quote and the
+// year of the original Xenia text.
 export interface Abschnitt extends BaseDocument {
 	readonly kapitelId: string
+	readonly leitsatz?: string
+	readonly jahr?: number
 	readonly position: number
 	readonly number: string
 	readonly readingTimeMinutes: number
@@ -118,7 +136,7 @@ export type ResolvedDocument = ContentDocument & { readonly locale?: string }
 // Breadcrumbs and previous/next are views of this hierarchy, not written down
 // separately. `number` is only ever set on a previous/next neighbour whose
 // own type carries one (a Viertel); a caller formats it, the same way
-// viertel-liste.tsx formats a Viertel's own number — this is data, not a
+// ortsleiste.tsx formats a Viertel's own number — this is data, not a
 // formatted string.
 export interface NavigationLink {
 	readonly id: string

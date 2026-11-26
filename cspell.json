@@ -30,6 +30,9 @@
 		"Aufsatz",
 		"Draft",
 		"draft",
+		// A frontmatter key (issue #93), lowercase like every other one here;
+		// not a glossary headword since "Jahr" names no domain type of its own.
+		"jahr",
 		// Proper nouns (PRODUCT.md).
 		"Xenia",
 		"Xeniapolis",

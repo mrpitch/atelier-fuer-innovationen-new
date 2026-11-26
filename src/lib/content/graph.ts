@@ -45,7 +45,7 @@ import type {
 	Zentrum,
 } from './types'
 import { pathUrl } from './urls'
-import { orderViertel, resolveZentrum } from './viertel'
+import { orderViertel, resolveHinweise, resolveZentrum } from './viertel'
 
 // Compiles a document's MDX body through Next's MDX pipeline (ADR-0002) — the
 // one place in the module that imports `@/content` dynamically, so pages
@@ -165,6 +165,18 @@ export interface ContentGraph {
 	// The Stationen set at a Viertel or the Zentrum — derived from each
 	// Station's Ort reference, never listed by hand on the Viertel/Zentrum.
 	getStationenByOrt(ortId: string): readonly Station[]
+	// The Schauen Rundgang (glossary: Gangart) of a Viertel or the Zentrum
+	// (issue #95): the first Rundgang, in `rundgaenge`' own order, with a
+	// published Station at that Ort — undefined when no Rundgang visits it.
+	// An Ort can stand in several Rundgänge; this is the one the Stadtplan
+	// Übersicht shows alongside the Ort's Kapitel in the Leitthema.
+	getSchauenRundgang(ortId: string): Rundgang | undefined
+	// The Ort's own Station on its Schauen Rundgang (issue #97) — undefined
+	// alongside getSchauenRundgang whenever no Rundgang visits it. Shares
+	// getSchauenRundgang's lookup; the Viertel page and the Stadtplan-Hub
+	// use it. stadt-tabelle-rows.ts derives its own, as it deliberately uses
+	// the Zentrum's Rundgang for every row.
+	getSchauenStation(ortId: string): Station | undefined
 	// The three Themen (issue #31, ADR-0003): the Leitthema and each
 	// Themen-Ort, both documents at src/content/themen/<slug>/. The Leitthema
 	// has no kapitelId and lists every Kapitel on its own landing page; a
@@ -174,6 +186,11 @@ export interface ContentGraph {
 	// A Kapitel's Themen-Ort(e), derived from each Thema's Kapitel reference
 	// — never listed by hand on the Kapitel itself.
 	getThemenByKapitel(kapitelId: string): readonly Thema[]
+	// The Leitthema itself (the one Thema with no kapitelId), looked up once
+	// instead of each caller re-deriving it from `themen` (issue #95's
+	// zentrumRow/headings did; issue #96's Viertel Bild-Hero badge is the
+	// third). Undefined only while no Leitthema is published.
+	readonly leitthema: Thema | undefined
 
 	// Every relative image a published document's body references (translations
 	// included), resolved to its path under the content directory (body.ts) —
@@ -260,6 +277,7 @@ export function buildContentGraph(
 	)
 	const abschnitte = kapitel.flatMap((item) => abschnitteByKapitel.get(item.id) ?? [])
 	const themen = resolveThemen(loaded.thema, loaded.kapitel, isVisible)
+	const leitthema = themen.find((thema) => thema.kapitelId === undefined)
 
 	const orte = [...loaded.viertel, ...loaded.zentrum]
 	const stationDocuments = groupByParent(loaded.station)
@@ -280,9 +298,20 @@ export function buildContentGraph(
 		rundgaenge.push(summarizeRundgang(document, stationen))
 	}
 	const stationen = rundgaenge.flatMap((item) => stationenByRundgang.get(item.id) ?? [])
+	// The Schauen Rundgang of a Viertel or the Zentrum (issue #95): the first
+	// Rundgang, in `rundgaenge`'s own order, with a published Station there.
+	// Shared by getSchauenRundgang and getSchauenStation below.
+	function schauenRundgangFor(ortId: string) {
+		return rundgaenge.find((rundgang) =>
+			(stationenByRundgang.get(rundgang.id) ?? []).some((station) => station.ortId === ortId),
+		)
+	}
 
-	// The published documents of every type: what the graph exposes.
-	const set: ContentSet = {
+	// The published documents of every type, Viertel not yet enriched with
+	// their Hinweis: what resolveHinweise below resolves against, since a
+	// Hinweis may name a document of any type, including one resolved above
+	// this point (issue #93) — the same any-type reference Menus use.
+	const setBeforeHinweise: ContentSet = {
 		seite: seiten,
 		viertel,
 		zentrum: zentrum ? [zentrum] : [],
@@ -293,15 +322,29 @@ export function buildContentGraph(
 		rundgang: rundgaenge,
 		station: stationen,
 	}
+	const everyLoaded = listLoaded(loaded)
+	const kindById = new Map<string, ContentKind>(
+		everyLoaded.map((document) => [document.id, document.kind]),
+	)
+	const hinweise = resolveHinweise(
+		loaded.viertel,
+		{
+			known: new Set(kindById.keys()),
+			visible: new Map(flattenSet(setBeforeHinweise).map((entry) => [entry.document.id, entry])),
+		},
+		isVisible,
+	)
+
+	// The published documents of every type: what the graph exposes.
+	const set: ContentSet = {
+		...setBeforeHinweise,
+		viertel: viertel.map((item) => ({ ...item, hinweis: hinweise.get(item.id) })),
+	}
 	const entries = flattenSet(set)
 	const lookup = lookupSet(set)
 
 	// Translations (issue #36): loaded for every document, Draft included, so
 	// a translation file is validated whether or not its document is exposed.
-	const everyLoaded = listLoaded(loaded)
-	const kindById = new Map<string, ContentKind>(
-		everyLoaded.map((document) => [document.id, document.kind]),
-	)
 	const translations = loadTranslations(contentDir, locales, kindById)
 	const localized = new Map(
 		locales.map((locale) => {
@@ -397,7 +440,7 @@ export function buildContentGraph(
 		getNext: trail.getNext,
 		site,
 		getMenu: ((name: string) => menus.get(name) ?? []) as ContentGraph['getMenu'],
-		viertel,
+		viertel: set.viertel,
 		getViertel: (id, locale) => find('viertel', id, locale),
 		zentrum,
 		aufsaetze,
@@ -414,9 +457,18 @@ export function buildContentGraph(
 		getStationenByRundgang: (rundgangId) => stationenByRundgang.get(rundgangId) ?? [],
 		getStation: (id, locale) => find('station', id, locale),
 		getStationenByOrt: (ortId) => stationen.filter((station) => station.ortId === ortId),
+		getSchauenRundgang: schauenRundgangFor,
+		getSchauenStation: (ortId) => {
+			const rundgang = schauenRundgangFor(ortId)
+			return (
+				rundgang &&
+				stationen.find((station) => station.ortId === ortId && station.rundgangId === rundgang.id)
+			)
+		},
 		themen,
 		getThema: (id, locale) => find('thema', id, locale),
 		getThemenByKapitel: (kapitelId) => themen.filter((item) => item.kapitelId === kapitelId),
+		leitthema,
 		bodyImages: [...bodyImages],
 	}
 }
