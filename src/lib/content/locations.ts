@@ -71,6 +71,7 @@ const ABSCHNITT_CHILD_PATTERN = /^leitthema\/[^/]+\/[^/]+$/
 
 // Rundgang and Station (issue #32): the same shape as Kapitel/Abschnitt,
 // under src/content/rundgaenge/.
+export const RUNDGAENGE_DIR = 'rundgaenge'
 const RUNDGANG_CHILD_PATTERN = /^rundgaenge\/[^/]+$/
 const STATION_CHILD_PATTERN = /^rundgaenge\/[^/]+\/[^/]+$/
 
@@ -95,13 +96,19 @@ export function kindOfPath(relativePath: string): ContentKind {
 }
 
 // A meta.json in one of these folders orders non-Seite children — the
-// Viertel (stadt/meta.json), a Kapitel's Abschnitte, a Rundgang's Stationen
-// — and is read by its own required-order loader (loader.ts's loadOrder).
-// The generic Seite-order scan skips it, so Navigation's strict Seite-only
-// validation never sees it.
+// Viertel (stadt/meta.json), the Rundgänge (rundgaenge/meta.json, issue
+// #116), a Kapitel's Abschnitte and a Rundgang's Stationen — and is read by
+// its own required-order loader (loader.ts's loadOrder). The generic
+// Seite-order scan skips it, so Navigation's strict Seite-only validation
+// never sees it.
 export function isNonSeiteMetaDir(relativeMetaPath: string): boolean {
 	const dir = relativeDir(relativeMetaPath)
-	return dir === STADT_DIR || KAPITEL_CHILD_PATTERN.test(dir) || RUNDGANG_CHILD_PATTERN.test(dir)
+	return (
+		dir === STADT_DIR ||
+		dir === RUNDGAENGE_DIR ||
+		KAPITEL_CHILD_PATTERN.test(dir) ||
+		RUNDGANG_CHILD_PATTERN.test(dir)
+	)
 }
 
 // A document's translation file (issue #36), e.g. idee/index.mdx's sibling

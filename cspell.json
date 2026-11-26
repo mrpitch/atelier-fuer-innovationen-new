@@ -38,6 +38,10 @@
 		"Xeniapolis",
 		"Volkmann",
 		// A Themen-Ort's own name (issue #31), not a German dictionary word.
-		"Futursysteme"
+		"Futursysteme",
+		// A Station's placeholder title (issue #116, Figma): the Kondratiev
+		// waves of economic theory, spelled as the Figma design's own copy
+		// has it, not the German-literature "Kondratjew".
+		"Kondratieffs"
 	]
 }

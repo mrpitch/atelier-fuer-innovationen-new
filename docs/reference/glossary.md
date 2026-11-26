@@ -79,7 +79,7 @@ A guided walk through the Wissensstadt: an ordered sequence of Stationen with an
 _Avoid_: tour, Stadtrundgang, Route
 
 **Station**
-One stop on a Rundgang, with the city guide's text for that place. It stands at the Zentrum or at a Viertel.
+One stop on a Rundgang, with the city guide's text for that place. It usually stands at an Ort; some stand at none.
 _Avoid_: stop, step
 
 **Thema**

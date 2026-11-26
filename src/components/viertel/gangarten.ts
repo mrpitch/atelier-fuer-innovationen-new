@@ -1,4 +1,4 @@
-import type { ContentGraph, Kapitel, Station, Viertel, Zentrum } from '@/lib/content'
+import type { ContentGraph, Kapitel, Ort, Station, Viertel } from '@/lib/content'
 import { shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
@@ -8,8 +8,12 @@ import type { GangartKarteLink, GangartKarteProps } from './gangart-karte'
 // (issue #97's own acceptance criteria) names the place, not the Station's
 // own narrative title ("Bei den Kontexten"), which stadt-tabelle-rows.ts's
 // identical dictionary key shows instead for its own, differently-scoped
-// table cell.
+// table cell. A Station without an Ort (issue #116) falls back to its own
+// title, since there is no place to name — this only shows up here as a
+// previous/next neighbour on the one Rundgang with a Schauen Gangart, which
+// is never such a Station in the placeholder content.
 function ortLabel(graph: ContentGraph, station: Station): string {
+	if (station.ortId === undefined) return shortTitleOrTitle(station)
 	if (station.ortId === graph.zentrum?.id) return shortTitleOrTitle(graph.zentrum)
 	const viertel = graph.getViertel(station.ortId)
 	return viertel ? shortTitleOrTitle(viertel) : station.ortId
@@ -47,10 +51,7 @@ function kapitelLink(kapitel: Kapitel | undefined): GangartKarteLink | undefined
 // getSchauenStation, issue #95), with the Rundgang's previous and next
 // Station. Undefined when no Rundgang visits this Ort — the card its page
 // then leaves out.
-function buildSchauenGangart(
-	graph: ContentGraph,
-	ort: Viertel | Zentrum,
-): GangartKarteProps | undefined {
+function buildSchauenGangart(graph: ContentGraph, ort: Ort): GangartKarteProps | undefined {
 	const station = graph.getSchauenStation(ort.id)
 	const rundgang = station && graph.getSchauenRundgang(ort.id)
 	if (!station || !rundgang) return undefined

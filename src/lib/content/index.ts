@@ -24,6 +24,7 @@ export type {
 	Kapitel,
 	NavigationLink,
 	NavigationNode,
+	Ort,
 	ResolvedDocument,
 	Rundgang,
 	Seite,

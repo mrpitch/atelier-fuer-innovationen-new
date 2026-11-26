@@ -46,13 +46,15 @@ A document's type is decided by where its file sits under `src/content`, not by 
 | Aufsatz   | `bibliothek/aufsaetze/<slug>/`              | `viertelId` (reference)                                                                       |
 | Kapitel   | `leitthema/<slug>/`                         | `viertelId` (reference), `untertitel` (optional)                                              |
 | Abschnitt | `leitthema/<kapitel>/<slug>/`               | `leitsatz` (optional), `jahr` (optional)                                                      |
-| Rundgang  | `rundgaenge/<slug>/`                        | none                                                                                          |
-| Station   | `rundgaenge/<rundgang>/<slug>/`             | `ortId` (reference to a Viertel or the Zentrum)                                               |
+| Rundgang  | `rundgaenge/<slug>/`                        | `leitsatz` (optional), `kennzeichen` (optional), `themaId` (optional reference)               |
+| Station   | `rundgaenge/<rundgang>/<slug>/`             | `ortId` (optional reference to an Ort), `lage` (optional)                                     |
 | Thema     | `themen/<slug>/` (Leitthema and Themen-Ort) | `kapitelId` (optional reference)                                                              |
 
 - A Kapitel belongs to the Leitthema, not to the Viertel it is set in, so its files sit under `leitthema/`.
 - A Thema without `kapitelId` is the Leitthema; with one it is a Themen-Ort branching off that Kapitel.
 - The Steckbrief is a nested object: `prozessansatz`, `bauform`, `prozessdokument`, `imStadtzentrum`.
+- `Ort` (glossary) is the TypeScript alias for `Viertel | Zentrum`, the one place that union is named — `ortId` and every other spot the code needs either type write `Ort` instead of writing the union out again.
+- A Rundgang's `themaId` (issue #116) names the Thema it tells, checked against the actual Thema like any other reference; a published Rundgang naming a missing or Draft Thema fails. `leitsatz` and `kennzeichen` are its own free-standing fields, not references. A Station's `lage` is the same: a free-standing field, passed through unchanged.
 - Schemas live in `src/lib/content/schemas.ts`; types are inferred from them, with no code generation step. A key a schema doesn't know (e.g. a `number`) is dropped, so a number can never be typed into frontmatter.
 - Frontmatter is parsed with the `yaml` package, not `gray-matter` 4, which is unmaintained.
 
@@ -71,7 +73,7 @@ A URL is built from these rules and parsed in one place, `graph.resolveUrl`, whi
 
 ## References
 
-A reference is a frontmatter field holding another document's ID (`viertelId`, `ortId`, `kapitelId`), or an ID prop of a body component (`<ViertelTeaser id>`). A Zod schema can't see other documents, so the schema checks only that the field is a string; one generic resolver (`resolveReference`) checks every same-type reference once all documents are loaded. A new reference field reuses it and needs no resolution code of its own.
+A reference is a frontmatter field holding another document's ID (`viertelId`, `ortId`, `kapitelId`, `themaId`), or an ID prop of a body component (`<ViertelTeaser id>`). A reference field may be optional, like `ortId` or `themaId`: unset, it resolves to nothing; set, it is checked exactly like a required one. A Zod schema can't see other documents, so the schema checks only that the field is a string; one generic resolver (`resolveReference`) checks every same-type reference once all documents are loaded. A new reference field reuses it and needs no resolution code of its own.
 
 A reference to a missing document fails naming the referring file, the field and the ID. References resolve against the full set, Drafts included, so a Draft may reference a Draft. For a published document referencing a Draft, see [Drafts](#drafts).
 
@@ -87,14 +89,15 @@ Order lives in one place per folder: a `meta.json` that is a bare JSON array of 
 
 - **Strict.** When a `meta.json` exists, every child appears exactly once. A duplicate, an unknown ID or an unlisted child fails, naming the `meta.json` and the ID, so order can't drift silently. One reconciliation function handles every order file.
 - **Optional for Seiten.** A folder of Seiten without `meta.json` sorts by natural key: date (once a type has one), then title.
-- **Required** for `stadt/meta.json` (the Viertel), each Kapitel's `meta.json` (its Abschnitte) and each Rundgang's `meta.json` (its Stationen).
+- **Required** for `stadt/meta.json` (the Viertel), `rundgaenge/meta.json` (the Rundgänge, issue #116), each Kapitel's `meta.json` (its Abschnitte) and each Rundgang's `meta.json` (its Stationen).
 
 Numbers are positions, never frontmatter:
 
 - **Viertel:** its 1-based position in `stadt/meta.json`.
+- **Rundgang:** its 1-based position in `rundgaenge/meta.json` (issue #116); its previous/next neighbours and the Schauen Gangart (an Ort's first Rundgang with a Station there, graph.ts's `getSchauenRundgang`) follow the same order.
 - **Kapitel:** its Viertel's number, so "Kapitel n = Viertel n" holds by construction. A second Kapitel set in the same Viertel fails.
 - **Abschnitt:** `{kapitel}.{position}`, e.g. "4.3".
-- **Station:** its position in the Rundgang, counted from 0 when the first Station stands at the Zentrum and from 1 otherwise.
+- **Station:** its position in the Rundgang, counted from 0 when the first Station stands at the Zentrum and from 1 otherwise. Its `lastNumber` is the last Station's own number ("Station n von N"), and `remainingMinutes` sums its own and every following Station's reading time — both derived the same way as the count and duration above, never written in frontmatter.
 
 Numbers are assigned after Drafts are left out, so a production graph has no gaps. A Draft earlier in an order shifts the numbers (and numbered URLs) of later documents between `next dev` and a production build; ADR-0003 accepts that numbered URLs depend on position.
 
@@ -102,7 +105,7 @@ Numbers are assigned after Drafts are left out, so a production graph has no gap
 
 - The **Navigation** tree is the Seite folder hierarchy in `meta.json` order, rooted at the start Seite. Only Seiten are in it.
 - **Breadcrumbs** cover every type: Seite ancestors, then type ancestors, the document last. A Kapitel is read inside its Viertel, an Abschnitt inside its Kapitel, a Station inside its Rundgang (Start › Stadt › Viertel › Kapitel › Abschnitt).
-- **Previous/next** walks one sequence per type: Seiten their Navigation siblings; Viertel their `stadt/meta.json` number order; Kapitel in number order; Abschnitte in number order across Kapitel boundaries; Stationen within their own Rundgang; Rundgänge and Themen in the order their files are read, since neither folder takes a `meta.json` (issue #82). The Zentrum and every other type have none: a one-document "sequence" never has a previous or a next.
+- **Previous/next** walks one sequence per type: Seiten their Navigation siblings; Viertel their `stadt/meta.json` number order; Rundgänge their `rundgaenge/meta.json` order (issue #116); Kapitel in number order; Abschnitte in number order across Kapitel boundaries; Stationen within their own Rundgang; Themen in the order their files are read, since that folder takes no `meta.json` (issue #82). The Zentrum and every other type have none: a one-document "sequence" never has a previous or a next.
 - A link's label is the target's Short title, else its title. The page's own `<h1>` is always the full title.
 
 ## Drafts

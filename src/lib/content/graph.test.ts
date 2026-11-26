@@ -832,6 +832,142 @@ describe('buildContentGraph', () => {
 				expect(validationError.reason).toMatch(/missing/i)
 			}
 		})
+
+		it('builds a Station without an ortId, and passes leitsatz, kennzeichen and lage through unchanged (issue #116)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-optional-fields-valid'))
+
+			const rundgang = graph.getRundgang('rundgaenge/mit-allem')
+			expect(rundgang?.leitsatz).toBe('Platzhalter-Leitsatz für den Rundgang.')
+			expect(rundgang?.kennzeichen).toBe('Einstieg')
+			expect(rundgang?.themaId).toBe('themen/ein-thema')
+
+			const stationen = graph.getStationenByRundgang('rundgaenge/mit-allem')
+			const mitOrt = stationen.find((station) => station.id === 'rundgaenge/mit-allem/mit-ort')
+			const ohneOrt = stationen.find((station) => station.id === 'rundgaenge/mit-allem/ohne-ort')
+			expect(mitOrt?.lage).toBe('Platzhalter-Lage für die Station.')
+			expect(ohneOrt?.ortId).toBeUndefined()
+			expect(ohneOrt?.lage).toBeUndefined()
+		})
+
+		it('fails when a Rundgang references a missing Thema, naming the file, field and ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgang-thema-missing'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'r', 'index.mdx'))
+				expect(validationError.field).toBe('themaId')
+				expect(validationError.reason).toContain('themen/nicht-vorhanden')
+			}
+		})
+
+		it('fails when a Rundgang references a Draft Thema, naming both files', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgang-thema-draft'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'r', 'index.mdx'))
+				expect(validationError.field).toBe('themaId')
+				expect(validationError.reason).toContain(path.join('themen', 'entwurf', 'index.mdx'))
+			}
+		})
+
+		it('numbers a Rundgang by its 1-based position in rundgaenge/meta.json', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			expect(graph.getRundgang('rundgaenge/besuch-im-zentrum')?.number).toBe(1)
+			expect(graph.getRundgang('rundgaenge/ohne-zentrum')?.number).toBe(2)
+		})
+
+		it('derives "Station n von N" and the remaining time from the current Station on', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
+
+			// besuch-im-zentrum: Stationen 0–8… here 0–2, so "von" is 2 (the last
+			// Station's own number); reading times 1 + 1 + 2 Min. (see the
+			// stationenCount/durationMinutes test above), so the remaining time
+			// sums the current and every following Station.
+			const besuch = graph.getStationenByRundgang('rundgaenge/besuch-im-zentrum')
+			expect(besuch.map((station) => station.lastNumber)).toEqual([2, 2, 2])
+			expect(besuch.map((station) => station.remainingMinutes)).toEqual([4, 3, 2])
+
+			// ohne-zentrum: Stationen 1–2, "von" is 2; reading times 1 + 1 Min.
+			const ohne = graph.getStationenByRundgang('rundgaenge/ohne-zentrum')
+			expect(ohne.map((station) => station.lastNumber)).toEqual([2, 2])
+			expect(ohne.map((station) => station.remainingMinutes)).toEqual([2, 1])
+		})
+	})
+
+	describe('Rundgang order (issue #116)', () => {
+		it('fails when rundgaenge/meta.json is missing, naming the file', () => {
+			expect.assertions(3)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgaenge-order-missing-file'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'meta.json'))
+				expect(validationError.reason).toMatch(/not found/i)
+			}
+		})
+
+		it('fails when rundgaenge/meta.json lists an unknown ID, naming the file and the ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgaenge-order-unknown-id'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'meta.json'))
+				expect(validationError.field).toBe('rundgaenge/nicht-vorhanden')
+				expect(validationError.reason).toMatch(/no matching/i)
+			}
+		})
+
+		it('fails when rundgaenge/meta.json lists an ID more than once, naming the file and the ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgaenge-order-duplicate'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'meta.json'))
+				expect(validationError.field).toBe('rundgaenge/ein-rundgang')
+				expect(validationError.reason).toMatch(/more than once/i)
+			}
+		})
+
+		it('fails when rundgaenge/meta.json omits an actual Rundgang, naming the file and the ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgaenge-order-missing-child'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'meta.json'))
+				expect(validationError.field).toBe('rundgaenge/zweiter-rundgang')
+				expect(validationError.reason).toMatch(/missing/i)
+			}
+		})
+
+		it('numbers Rundgänge and links their previous/next by rundgaenge/meta.json order, not file order', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-order-valid'))
+
+			// The folder names read "erste" before "zweite", but the order file
+			// lists "zweite" first — the resolved order follows it, not the names.
+			expect(graph.getRundgang('rundgaenge/zweite')?.number).toBe(1)
+			expect(graph.getRundgang('rundgaenge/erste')?.number).toBe(2)
+			expect(graph.getNext('rundgaenge/zweite')?.id).toBe('rundgaenge/erste')
+			expect(graph.getPrevious('rundgaenge/erste')?.id).toBe('rundgaenge/zweite')
+		})
 	})
 
 	describe('Schauen Rundgang (issue #95)', () => {
@@ -854,6 +990,15 @@ describe('buildContentGraph', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'schauen-rundgang-valid'))
 
 			expect(graph.getSchauenRundgang('stadt/ohne')).toBeUndefined()
+		})
+
+		it('follows rundgaenge/meta.json order, not file order (issue #116)', () => {
+			// Same fixture as schauen-rundgang-valid, except rundgaenge/meta.json
+			// lists rundgang-b before rundgang-a — the opposite of their folder
+			// names' own order, which both this and schauen-rundgang-valid share.
+			const graph = buildContentGraph(path.join(fixturesDir, 'schauen-rundgang-reordered'))
+
+			expect(graph.getSchauenRundgang('stadt/mit-erstem')?.id).toBe('rundgaenge/rundgang-b')
 		})
 	})
 
