@@ -83,6 +83,14 @@ describe('StationDetail', () => {
 		expect(html).toContain('oder das Zentrum frei erkunden')
 	})
 
+	it('shows the Viertel link but omits the Kapitel-lesen item for a Viertel-Ort Station with no Kapitel of its own', async () => {
+		const html = await render('rundgaenge/ohne-kapitel-rundgang/ohne-kapitel-station')
+
+		expect(html).toContain('VIERTEL 02')
+		expect(html).not.toContain('lesen')
+		expect(html).toContain('oder Viertel 02 frei erkunden')
+	})
+
 	it('omits the Mini-Stadtplan, the Ort label and the Gangart switch for a Station without an Ort', async () => {
 		const html = await render('rundgaenge/besuch-im-zentrum/ohne-ort-zwei')
 

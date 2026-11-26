@@ -36,12 +36,12 @@ describe('buildStationGangart', () => {
 
 		const gangart = buildStationGangart(graph, viertel)
 
-		expect(gangart?.illustrationId).toBe(graph.leitthema?.id)
-		expect(gangart?.illustrationLabel).toBe(graph.leitthema?.title)
-		expect(gangart?.aktionLabel).toBe('Kapitel 1 lesen')
-		expect(gangart?.aktionHref).toBe(kapitel?.url)
-		expect(gangart?.erkundenLabel).toBe('oder Viertel 01 frei erkunden')
-		expect(gangart?.erkundenHref).toBe(viertel.url)
+		expect(gangart.aktion?.illustrationId).toBe(graph.leitthema?.id)
+		expect(gangart.aktion?.illustrationLabel).toBe(graph.leitthema?.title)
+		expect(gangart.aktion?.aktionLabel).toBe('Kapitel 1 lesen')
+		expect(gangart.aktion?.aktionHref).toBe(kapitel?.url)
+		expect(gangart.erkundenLabel).toBe('oder Viertel 01 frei erkunden')
+		expect(gangart.erkundenHref).toBe(viertel.url)
 	})
 
 	it('builds "Einführung lesen" for the Zentrum instead, with its own Zentrum wording', () => {
@@ -49,8 +49,20 @@ describe('buildStationGangart', () => {
 
 		const gangart = buildStationGangart(graph, graph.zentrum)
 
-		expect(gangart?.aktionLabel).toBe('Einführung lesen')
-		expect(gangart?.erkundenLabel).toBe('oder das Zentrum frei erkunden')
-		expect(gangart?.erkundenHref).toBe(graph.zentrum.url)
+		expect(gangart.aktion?.aktionLabel).toBe('Einführung lesen')
+		expect(gangart.erkundenLabel).toBe('oder das Zentrum frei erkunden')
+		expect(gangart.erkundenHref).toBe(graph.zentrum.url)
+	})
+
+	it('omits only the aktion, not the Viertel link, for a Viertel with no Kapitel of its own', () => {
+		const viertel = graph.viertel.find((item) => item.id === 'stadt/fuehrung')
+		if (!viertel) throw new Error('fixture missing stadt/fuehrung')
+		expect(graph.getKapitelByViertel(viertel.id)).toBeUndefined()
+
+		const gangart = buildStationGangart(graph, viertel)
+
+		expect(gangart.aktion).toBeUndefined()
+		expect(gangart.erkundenLabel).toBe('oder Viertel 02 frei erkunden')
+		expect(gangart.erkundenHref).toBe(viertel.url)
 	})
 })

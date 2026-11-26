@@ -29,38 +29,51 @@ function resolveOrt(graph: ContentGraph, ortId: string | undefined): Ort | undef
 // — and "oder Viertel nn frei erkunden" (or "oder das Zentrum frei erkunden")
 // back to the Ort's own page. The switch's illustration names the Leitthema,
 // not the Ort or the Rundgang, since it's the destination the switch leads
-// to. Undefined wherever those helpers are (no Leitthema, or — a Viertel
-// only — no Kapitel of its own): the caller then leaves the whole switch out,
-// same as a Station with no Ort at all.
-interface StationGangart {
+// to. `aktion` is undefined wherever those helpers are (no Leitthema, or — a
+// Viertel only — no Kapitel of its own yet, graph.ts: "a Viertel has at most
+// one" — zero is a valid state): the caller then leaves just the Kapitel-
+// lesen item out. The Ort link stays — it needs only the Ort itself, not its
+// Kapitel/Leitthema content — same as the caller leaving the whole switch
+// out for a Station with no Ort at all.
+interface StationGangartAktion {
 	readonly illustrationId: string
 	readonly illustrationLabel: string
 	readonly title: string
 	readonly aktionLabel: string
 	readonly aktionHref: string
+}
+
+interface StationGangart {
+	readonly aktion: StationGangartAktion | undefined
 	readonly erkundenLabel: string
 	readonly erkundenHref: string
 }
 
-function buildStationGangart(graph: ContentGraph, ort: Ort): StationGangart | undefined {
+function buildStationGangart(graph: ContentGraph, ort: Ort): StationGangart {
 	const { leitthema } = graph
-	if (!leitthema) return undefined
+	const lesenGangart = leitthema
+		? ortIsViertel(ort)
+			? buildLesenGangart(graph, ort)
+			: buildZentrumLesenGangart(graph)
+		: undefined
 
-	const lesenGangart = ortIsViertel(ort)
-		? buildLesenGangart(graph, ort)
-		: buildZentrumLesenGangart(graph)
-	if (!lesenGangart) return undefined
+	const aktion =
+		leitthema && lesenGangart
+			? {
+					illustrationId: leitthema.id,
+					illustrationLabel: leitthema.title,
+					title: lesenGangart.title,
+					aktionLabel: lesenGangart.primary.label,
+					aktionHref: lesenGangart.primary.href,
+				}
+			: undefined
 
 	const erkundenLabel = ortIsViertel(ort)
 		? t('rundgang.gangartViertelErkunden', { number: formatTwoDigits(ort.number) })
 		: t('rundgang.gangartZentrumErkunden')
 
 	return {
-		illustrationId: leitthema.id,
-		illustrationLabel: leitthema.title,
-		title: lesenGangart.title,
-		aktionLabel: lesenGangart.primary.label,
-		aktionHref: lesenGangart.primary.href,
+		aktion,
 		erkundenLabel,
 		erkundenHref: ort.url,
 	}

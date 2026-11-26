@@ -76,24 +76,29 @@ async function StationDetail({ station, locale, ...props }: StationDetailProps) 
 					</RichText>
 					{gangart && (
 						<div className="flex flex-col items-start gap-4">
-							<Item variant="outline">
-								<ItemMedia>
-									<Illustration id={gangart.illustrationId} label={gangart.illustrationLabel} />
-								</ItemMedia>
-								<ItemContent>
-									<ItemTitle>{gangart.title}</ItemTitle>
-									<ItemDescription>{t('rundgang.gangartWechseln')}</ItemDescription>
-								</ItemContent>
-								<ItemActions>
-									<Link
-										href={gangart.aktionHref}
-										className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-									>
-										{gangart.aktionLabel}
-										<Icon iconName="arrowRight" data-icon="inline-end" />
-									</Link>
-								</ItemActions>
-							</Item>
+							{gangart.aktion && (
+								<Item variant="outline">
+									<ItemMedia>
+										<Illustration
+											id={gangart.aktion.illustrationId}
+											label={gangart.aktion.illustrationLabel}
+										/>
+									</ItemMedia>
+									<ItemContent>
+										<ItemTitle>{gangart.aktion.title}</ItemTitle>
+										<ItemDescription>{t('rundgang.gangartWechseln')}</ItemDescription>
+									</ItemContent>
+									<ItemActions>
+										<Link
+											href={gangart.aktion.aktionHref}
+											className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+										>
+											{gangart.aktion.aktionLabel}
+											<Icon iconName="arrowRight" data-icon="inline-end" />
+										</Link>
+									</ItemActions>
+								</Item>
+							)}
 							<Link
 								href={gangart.erkundenHref}
 								className={buttonVariants({ variant: 'link', size: 'sm' })}
