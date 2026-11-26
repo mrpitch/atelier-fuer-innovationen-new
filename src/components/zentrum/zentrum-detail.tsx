@@ -86,7 +86,6 @@ async function ZentrumDetail({ zentrum, locale, ...props }: ZentrumDetailProps) 
 					viertel={graph.viertel}
 					zentrum={graph.zentrum}
 					aktuellId={zentrum.id}
-					aktuellNummer={0}
 					className="mb-6"
 				/>
 				{(schauenGangart || lesenGangart) && (

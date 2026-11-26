@@ -111,7 +111,6 @@ async function ViertelDetail({ viertel, locale, ...props }: ViertelDetailProps) 
 						viertel={graph.viertel}
 						zentrum={graph.zentrum}
 						aktuellId={viertel.id}
-						aktuellNummer={viertel.number}
 						className="mb-6"
 					/>
 					<div className="flex flex-col gap-6 lg:flex-row">
