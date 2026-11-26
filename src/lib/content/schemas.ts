@@ -162,18 +162,31 @@ export type AbschnittFrontmatter = z.infer<typeof abschnittFrontmatterSchema>
 // A Rundgang (glossary) is an ordered sequence of Stationen with an
 // introduction — its body. Its Stationen sit in its own folder (issue #32),
 // ordered by their own meta.json; nothing here orders them, the same split
-// Kapitel/Abschnitt makes.
-export const rundgangFrontmatterSchema = z.object(baseShape)
+// Kapitel/Abschnitt makes. Its own number and order come from
+// rundgaenge/meta.json instead (issue #116), also not read here.
+// `leitsatz` and `kennzeichen` are optional, free-standing fields (a pull
+// quote and a badge text); `themaId` is an optional reference to the Thema
+// this Rundgang tells, checked against the actual Thema by `references.ts`,
+// not here — a published Rundgang naming a missing or Draft Thema fails.
+export const rundgangFrontmatterSchema = z.object({
+	...baseShape,
+	leitsatz: z.string().min(1).optional(),
+	kennzeichen: z.string().min(1).optional(),
+	themaId: z.string().min(1).optional(),
+})
 
 export type RundgangFrontmatter = z.infer<typeof rundgangFrontmatterSchema>
 
-// A Station (glossary) belongs to its Rundgang by folder location, and
-// stands at one Viertel or the Zentrum, by reference (issue #32) — the same
-// reference shape as Aufsatz's and Kapitel's `viertelId`, except its target
-// collection is the Viertel and the Zentrum together.
+// A Station (glossary) belongs to its Rundgang by folder location. It
+// usually stands at one Viertel or the Zentrum, by reference (issue #32, the
+// same reference shape as Aufsatz's and Kapitel's `viertelId`, except its
+// target collection is the Viertel and the Zentrum together) — but `ortId`
+// is optional (issue #116), since some Stationen stand at none. `lage` is
+// its own optional, free-standing location note.
 export const stationFrontmatterSchema = z.object({
 	...baseShape,
-	ortId: z.string().min(1),
+	ortId: z.string().min(1).optional(),
+	lage: z.string().min(1).optional(),
 })
 
 export type StationFrontmatter = z.infer<typeof stationFrontmatterSchema>

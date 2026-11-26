@@ -2,7 +2,7 @@ import { cn } from 'cn'
 import type * as React from 'react'
 
 import { MonoLabel } from '@/components/ui/mono-label'
-import type { Viertel, Zentrum } from '@/lib/content'
+import type { Ort, Viertel, Zentrum } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
 import { Stopp } from './stopp'
@@ -21,7 +21,7 @@ interface WegLeisteProps extends React.ComponentProps<'nav'> {
 	aktuellNummer: number
 }
 
-function stoppFor(ort: Viertel | Zentrum, nummer: number, aktuellId: string) {
+function stoppFor(ort: Ort, nummer: number, aktuellId: string) {
 	return (
 		<Stopp
 			key={ort.id}

@@ -53,6 +53,10 @@ export interface Viertel extends BaseDocument {
 // The Zentrum: its own type, not a Viertel, with no number.
 export type Zentrum = BaseDocument
 
+// Wherever a Station can stand (glossary: Ort): a Viertel or the Zentrum.
+// Named once here instead of writing out the union at every call site.
+export type Ort = Viertel | Zentrum
+
 // An Aufsatz (issue #29) with its Viertel reference checked and its reading
 // time computed (aufsatz.ts).
 export interface Aufsatz extends BaseDocument {
@@ -87,21 +91,35 @@ export interface Thema extends BaseDocument {
 	readonly kapitelId?: string
 }
 
-// A Rundgang (issue #32) with its Stationen count and duration derived
-// (rundgang.ts).
+// A Rundgang (issue #32, #116) with its Stationen count and duration derived
+// (rundgang.ts). `leitsatz` and `kennzeichen` are its own optional pull-quote
+// and badge text; `themaId` optionally names the Thema it tells (checked
+// against the actual Thema by references.ts, not here — a published Rundgang
+// naming a missing or Draft Thema fails). `number` is its 1-based position in
+// rundgaenge/meta.json, never written in frontmatter.
 export interface Rundgang extends BaseDocument {
+	readonly leitsatz?: string
+	readonly kennzeichen?: string
+	readonly themaId?: string
+	readonly number: number
 	readonly stationenCount: number
 	readonly durationMinutes: number
 }
 
-// A Station (issue #32): `ortId` is the Viertel or Zentrum it stands at,
-// `rundgangId` its folder's ID; number, URL and reading time are derived
-// (station.ts).
+// A Station (issue #32, #116): `ortId` is the Viertel or Zentrum it stands
+// at — optional, since some Stationen stand at none (glossary) — `lage` its
+// own optional location note, `rundgangId` its folder's ID; number, URL and
+// reading time are derived (station.ts). `lastNumber` is the last Station's
+// own number in the same Rundgang ("Station n von N"); `remainingMinutes`
+// sums this Station's and every following Station's reading time.
 export interface Station extends BaseDocument {
-	readonly ortId: string
+	readonly ortId?: string
+	readonly lage?: string
 	readonly rundgangId: string
 	readonly number: number
+	readonly lastNumber: number
 	readonly readingTimeMinutes: number
+	readonly remainingMinutes: number
 }
 
 // One resolved document type per kind.

@@ -10,8 +10,6 @@ const graph = contentGraph()
 
 // Every Viertel, the Zentrum, every Thema and every Rundgang in the content
 // graph, so a new document is covered without a test edit (issues #88-#91).
-// rundgaenge/besuch-in-der-umgebung has no content yet, so it's covered by
-// name below.
 const DOCUMENTS = [
 	...graph.viertel,
 	...(graph.zentrum ? [graph.zentrum] : []),
@@ -24,16 +22,6 @@ describe('Illustration registry', () => {
 		const html = renderToStaticMarkup(<Illustration id={id} label={title} />)
 
 		expect(html).toContain(`aria-label="${title.replaceAll('&', '&amp;')}"`)
-		expectTokenColouredSvg(html)
-	})
-
-	it('renders the real drawing for rundgaenge/besuch-in-der-umgebung, which has no content yet', () => {
-		const html = renderToStaticMarkup(
-			<Illustration id="rundgaenge/besuch-in-der-umgebung" label="Besuch in der Umgebung" />,
-		)
-
-		expect(html).toContain('data-slot="illustration-besuch-in-der-umgebung"')
-		expect(html).toContain('aria-label="Besuch in der Umgebung"')
 		expectTokenColouredSvg(html)
 	})
 

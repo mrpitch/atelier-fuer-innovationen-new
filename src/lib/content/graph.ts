@@ -4,7 +4,12 @@ import { orderAbschnitte } from './abschnitt'
 import { resolveAufsaetze } from './aufsatz'
 import { validateViertelTeaserReferences } from './body'
 import { flattenSet, lookupSet } from './documents'
-import { ABSCHNITT_ORDER_FIELD, STATION_ORDER_FIELD, VIERTEL_ORDER_FIELD } from './errors'
+import {
+	ABSCHNITT_ORDER_FIELD,
+	RUNDGANG_ORDER_FIELD,
+	STATION_ORDER_FIELD,
+	VIERTEL_ORDER_FIELD,
+} from './errors'
 import { resolveKapitel } from './kapitel'
 import {
 	listLoaded,
@@ -16,11 +21,11 @@ import {
 	loadTranslations,
 	validateBodyImages,
 } from './loader'
-import { parentId, STADT_DIR } from './locations'
+import { parentId, RUNDGAENGE_DIR, STADT_DIR } from './locations'
 import type { FlatMenuName, GroupedMenuName, MenuGroupLink, MenuLink, ResolvedMenu } from './menu'
 import { resolveMenus } from './menu'
 import { buildNavigation } from './navigation'
-import { summarizeRundgang } from './rundgang'
+import { orderRundgaenge, summarizeRundgang } from './rundgang'
 import { listSitemap } from './sitemap'
 import { orderStationen } from './station'
 import { resolveThemen } from './thema'
@@ -280,10 +285,17 @@ export function buildContentGraph(
 	const leitthema = themen.find((thema) => thema.kapitelId === undefined)
 
 	const orte = [...loaded.viertel, ...loaded.zentrum]
+	const orderedRundgaenge = orderRundgaenge(
+		loadOrder(contentDir, RUNDGAENGE_DIR, RUNDGANG_ORDER_FIELD),
+		loaded.rundgang,
+		loaded.thema,
+		isVisible,
+	)
 	const stationDocuments = groupByParent(loaded.station)
 	const stationenByRundgang = new Map<string, readonly Station[]>()
 	const rundgaenge: Rundgang[] = []
-	for (const document of loaded.rundgang) {
+	let rundgangNumber = 0
+	for (const document of orderedRundgaenge) {
 		const stationen = orderStationen(
 			document,
 			isVisible(document) ? { id: document.id, url: pathUrl(document.id) } : undefined,
@@ -294,8 +306,9 @@ export function buildContentGraph(
 			isVisible,
 		)
 		if (!isVisible(document)) continue
+		rundgangNumber += 1
 		stationenByRundgang.set(document.id, stationen)
-		rundgaenge.push(summarizeRundgang(document, stationen))
+		rundgaenge.push(summarizeRundgang(document, stationen, rundgangNumber))
 	}
 	const stationen = rundgaenge.flatMap((item) => stationenByRundgang.get(item.id) ?? [])
 	// The Schauen Rundgang of a Viertel or the Zentrum (issue #95): the first
