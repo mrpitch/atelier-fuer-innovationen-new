@@ -83,7 +83,9 @@ async function RundgangDetail({ rundgang, locale, ...props }: RundgangDetailProp
 				<Body components={bodyImageComponents(rundgang.id)} />
 			</BildHero>
 
-			<PageSection data-slot="route-section">
+			{/* `id="route"` is the Rundgang-Leiste's own "Route" action's deep-link
+			    target (issue #120). */}
+			<PageSection id="route" data-slot="route-section">
 				<div className="mb-10 flex flex-wrap items-center justify-between gap-3">
 					<h2 className="heading-sm text-foreground">{t('rundgang.routeHeading')}</h2>
 					{firstStation && (

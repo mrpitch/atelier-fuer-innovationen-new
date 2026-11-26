@@ -38,7 +38,7 @@ describe('RundgangEintrag', () => {
 		expect(html.match(/data-slot="stopp"/g)).toHaveLength(1)
 		expect(html.match(/data-slot="routen-stopp"/g)).toHaveLength(1)
 		expect(html).not.toContain('data-status="aktuell"')
-		expect(html.match(/data-status="offen"/g)).toHaveLength(1)
+		expect(html.match(/data-status="offen"/g)).toHaveLength(2)
 	})
 
 	it('renders only a Routen-Stopp for a Rundgang whose only Station has no Ort', () => {

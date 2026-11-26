@@ -50,6 +50,25 @@ describe('Stopp', () => {
 		expect(html).toContain('aria-current="page"')
 	})
 
+	it('marks a Stopp already passed "gesehen", with no aria-current (issue #120)', () => {
+		const graph = buildContentGraph(path.join(fixturesDir, 'weg-leiste-valid'))
+		const kontexte = graph.viertel.find((viertel) => viertel.id === 'stadt/kontexte')
+		if (!kontexte) throw new Error('fixture missing stadt/kontexte')
+
+		const html = renderToStaticMarkup(
+			<Stopp
+				href={kontexte.url}
+				nummer={kontexte.number}
+				illustrationId={kontexte.id}
+				illustrationLabel={kontexte.title}
+				status="gesehen"
+			/>,
+		)
+
+		expect(html).toContain('data-status="gesehen"')
+		expect(html).not.toContain('aria-current')
+	})
+
 	it('defaults to "offen" when no status is given', () => {
 		const graph = buildContentGraph(path.join(fixturesDir, 'weg-leiste-valid'))
 		const kontexte = graph.viertel.find((viertel) => viertel.id === 'stadt/kontexte')

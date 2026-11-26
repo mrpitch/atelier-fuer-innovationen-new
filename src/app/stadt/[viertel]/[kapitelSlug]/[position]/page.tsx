@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { AbschnittDetail } from '@/components/abschnitt/abschnitt-detail'
+import { SiteShell } from '@/components/layout/site-shell'
 import { contentGraph, findDocument, urlSegments } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
 
@@ -32,11 +33,15 @@ export default async function AbschnittPage({
 	const { viertel, kapitelSlug, position } = await params
 
 	return (
-		<main>
-			<AbschnittDetail
-				abschnitt={findDocument('abschnitt', 'stadt', viertel, kapitelSlug, position) ?? notFound()}
-			/>
-		</main>
+		<SiteShell>
+			<main>
+				<AbschnittDetail
+					abschnitt={
+						findDocument('abschnitt', 'stadt', viertel, kapitelSlug, position) ?? notFound()
+					}
+				/>
+			</main>
+		</SiteShell>
 	)
 }
 

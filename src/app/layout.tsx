@@ -3,9 +3,6 @@ import '@/lib/styles/globals.css'
 import { cn } from 'cn'
 import type { Metadata } from 'next'
 
-import { Footer } from '@/components/layout/footer'
-import { Header } from '@/components/layout/header'
-import { Wortmarke } from '@/components/layout/wortmarke'
 import { ThemeProvider } from '@/components/utils/theme-provider'
 import { contentGraph, siteWordmark } from '@/lib/content'
 import { heading, mono, sans, serif } from '@/lib/styles/fonts'
@@ -21,13 +18,11 @@ export function generateMetadata(): Metadata {
 	}
 }
 
+// The site Header and Footer are not here: a Station page (issue #120) has
+// its own Rundgang-Leiste instead, and a single root layout wraps every
+// route, so neither can live here unconditionally. Every other route wraps
+// its own content with SiteShell (site-shell.tsx).
 export default function RootLayout({ children }: LayoutProps<'/'>) {
-	const graph = contentGraph()
-	const headerMenu = graph.getMenu('header')
-	const footerMenu = graph.getMenu('footer')
-	const footerLegalMenu = graph.getMenu('footer-legal')
-	const wortmarke = <Wortmarke site={graph.site} homeUrl={graph.navigation.url} />
-
 	return (
 		<html
 			lang="de"
@@ -51,14 +46,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<Header wortmarke={wortmarke} menu={headerMenu} />
 					{children}
-					<Footer
-						wortmarke={wortmarke}
-						copyright={graph.site.copyright}
-						groups={footerMenu}
-						legalMenu={footerLegalMenu}
-					/>
 				</ThemeProvider>
 			</body>
 		</html>
