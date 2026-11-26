@@ -87,6 +87,24 @@ describe('WegLeiste', () => {
 			expect(html).not.toContain('Sie stehen bei')
 		})
 
+		it('renders an optional Hinweis when passed, for a future Rundgang that has one', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'weg-leiste-valid'))
+			const rundgang = graph.getRundgang('rundgaenge/besuch-im-zentrum')
+			if (!rundgang) throw new Error('fixture missing rundgaenge/besuch-im-zentrum')
+			const stationen = graph.getStationenByRundgang(rundgang.id)
+
+			const html = renderToStaticMarkup(
+				<WegLeiste
+					mode="rundgang"
+					rundgang={rundgang}
+					stationen={stationen}
+					hinweis="Ca. 45 Minuten"
+				/>,
+			)
+
+			expect(html).toContain('Ca. 45 Minuten')
+		})
+
 		it('links every Station to its own page', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'weg-leiste-valid'))
 			const rundgang = graph.getRundgang('rundgaenge/besuch-im-zentrum')

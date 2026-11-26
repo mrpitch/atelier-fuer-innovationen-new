@@ -29,6 +29,11 @@ interface RundgangModeProps {
 	rundgang: Rundgang
 	// In route order (station.ts's orderStationen) — not renumbered here.
 	stationen: readonly Station[]
+	// Optional and empty on every current Rundgang-Übersicht (issue #118): a
+	// Rundgang-Übersicht has no "current position" to report, unlike Stadt
+	// mode's derived "Sie stehen bei n". Kept as an input, not hardcoded away,
+	// so a future Rundgang that does have one doesn't need a new prop.
+	hinweis?: string
 }
 
 type WegLeisteProps = React.ComponentProps<'nav'> & (StadtModeProps | RundgangModeProps)
@@ -139,16 +144,17 @@ function WegLeisteShell({
 // since Figma's own worked example (T05, "Besuch im Zentrum") types ad hoc
 // copy here ("Stadtplatz · Viertel 01–08") that doesn't trace to any
 // Rundgang field, and predates the placeholder content issue #116 settled
-// on. Hinweis stays empty: a Rundgang-Übersicht has no "current position" to
-// report.
+// on. Hinweis is optional and empty on every current Rundgang-Übersicht: a
+// Rundgang-Übersicht has no "current position" to report.
 function WegLeiste(props: WegLeisteProps) {
 	if (props.mode === 'rundgang') {
-		const { mode: _mode, rundgang, stationen, className, ...rest } = props
+		const { mode: _mode, rundgang, stationen, hinweis, className, ...rest } = props
 		return (
 			<WegLeisteShell
 				navigationLabel={t('rundgang.routeHeading')}
 				label={rundgang.title}
 				titel={rundgang.description}
+				hinweis={hinweis}
 				className={className}
 				{...rest}
 			>
