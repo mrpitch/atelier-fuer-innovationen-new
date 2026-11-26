@@ -5,11 +5,10 @@ import { KapitelHero } from '@/components/kapitel/kapitel-hero'
 import { KapitelRandspalte } from '@/components/kapitel/kapitel-randspalte'
 import { KapitelEbenenLeiste } from '@/components/navigation/kapitel-ebenen-leiste'
 import { ReadingLayout } from '@/components/navigation/reading-layout'
-import { buttonVariants } from '@/components/ui/button'
 import { Illustration } from '@/components/ui/illustration'
 import {
+	decorativeCta,
 	Item,
-	ItemActions,
 	ItemContent,
 	ItemDescription,
 	ItemMedia,
@@ -24,20 +23,6 @@ import { bodyImageComponents } from '@/mdx-components'
 interface KapitelDetailProps extends React.ComponentProps<'div'> {
 	kapitel: Kapitel
 	locale?: string
-}
-
-// An Item's trailing CTA that only restates its own, single destination
-// (the whole Item is already the Link): a visual affordance, not a second
-// interactive target, so it's a plain `<span>` with `aria-hidden`, not
-// another Button or Link.
-function decorativeCta(variant: 'default' | 'outline', label: string) {
-	return (
-		<ItemActions>
-			<span aria-hidden="true" className={buttonVariants({ variant, size: 'sm' })}>
-				{label}
-			</span>
-		</ItemActions>
-	)
 }
 
 // A Kapitel's own page content (Figma T03, issue #100): the Kapitel-Hero,

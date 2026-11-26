@@ -116,6 +116,16 @@ export const de = {
 	'zentrum.wege.tagline': 'Wege vom Zentrum aus',
 	'zentrum.wege.lesenEinfuehrung': 'Einführung lesen',
 	'zentrum.weiterTitle': 'Sie sind hier: Zentrum',
+	'rundgang.heroEyebrow': 'RUNDGANG {number} · STATION {von}–{bis} · CA. {minuten} MIN.',
+	'rundgang.heroStarten': 'Rundgang starten',
+	'rundgang.routeHeading': 'Die Route',
+	'rundgang.routeHinweis': 'Station {von}–{bis} in fester Reihenfolge',
+	'rundgang.stationenHeading': 'Stationen im Detail',
+	'rundgang.stationenHinweis': 'Jederzeit an einer Station einsteigen',
+	'rundgang.nachDemRundgangHeading': 'Nach dem Rundgang',
+	'rundgang.naechsterRundgang': 'Nächster Rundgang',
+	'rundgang.themaVertiefen': 'Thema vertiefen',
+	'station.hierEinsteigen': 'Hier einsteigen',
 } as const
 
 export type DictionaryKey = keyof typeof de
