@@ -51,12 +51,13 @@ function stoppFor(ort: Ort, nummer: number, aktuellId: string) {
 	)
 }
 
-// A Rundgang-Übersicht's own Stopp row (issue #118): a Stopp with the
-// Station's Ort's illustration, or, when it stands at none, a Routen-Stopp
-// with no illustration at all. The accessible label is the Station's own
-// name, not the Ort's — the link goes to the Station, not the Ort page.
-// Every Stopp here is "offen": a Rundgang-Übersicht tracks no current
-// position and no reading state (Stopp's own comment).
+// A Station's own Stopp row (issue #118): a Stopp with the Station's Ort's
+// illustration, or, when it stands at none, a Routen-Stopp with no
+// illustration at all. The accessible label is the Station's own name, not
+// the Ort's — the link goes to the Station, not the Ort page. Every Stopp
+// here is "offen": neither a Rundgang-Übersicht nor a Rundgang-Eintrag
+// (issue #119) tracks a current position or reading state (Stopp's own
+// comment). Exported for RundgangEintrag's own route row, the same shape.
 function stationStopp(station: Station) {
 	const name = shortTitleOrTitle(station)
 	return station.ortId ? (
@@ -184,4 +185,4 @@ function WegLeiste(props: WegLeisteProps) {
 	)
 }
 
-export { WegLeiste }
+export { stationStopp, WegLeiste }

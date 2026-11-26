@@ -6,7 +6,7 @@ import { AufsatzDetail } from '@/components/aufsatz/aufsatz-detail'
 import { KapitelDetail } from '@/components/kapitel/kapitel-detail'
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
-import { RundgaengeListe } from '@/components/rundgang/rundgaenge-liste'
+import { RundgaengeHub } from '@/components/rundgang/rundgaenge-hub'
 import { RundgangDetail } from '@/components/rundgang/rundgang-detail'
 import { StationDetail } from '@/components/rundgang/station-detail'
 import { StadtplanHub } from '@/components/stadt/stadtplan-hub'
@@ -24,8 +24,9 @@ import { bodyImageComponents } from '@/mdx-components'
 // landing Seite below gets.
 const STADT_SEITE_ID = 'stadt'
 
-// The Rundgänge area's landing Seite (issue #32): the one Seite ID that also
-// lists every Rundgang, the same pattern as the Stadt area above.
+// The Rundgänge area's landing Seite: the Rundgänge-Hub (issue #119), its
+// own full-page layout rather than the generic Seite + area list every other
+// landing Seite below gets — the same pattern as the Stadt area above.
 const RUNDGAENGE_SEITE_ID = 'rundgaenge'
 // The Themen area's landing Seite (issue #31): the one Seite ID that also
 // lists the three Themen, derived from the content graph.
@@ -79,6 +80,17 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 		)
 	}
 
+	// The Rundgänge-Hub (issue #119) is its own full-page layout — Bild-Hero,
+	// one Rundgang-Eintrag per Rundgang and "So funktioniert ein Rundgang" —
+	// not the generic Seite shape every other landing Seite below still gets.
+	if (seite.id === RUNDGAENGE_SEITE_ID) {
+		return (
+			<main>
+				<RundgaengeHub seite={seite} locale={locale} />
+			</main>
+		)
+	}
+
 	const graph = contentGraph()
 	const Body = await graph.getBody(seite.id, locale)
 
@@ -87,7 +99,6 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 			<Breadcrumbs items={graph.getBreadcrumbs(seite.id)} />
 			<h1>{seite.title}</h1>
 			<Body components={bodyImageComponents(seite.id)} />
-			{seite.id === RUNDGAENGE_SEITE_ID && <RundgaengeListe rundgaenge={graph.rundgaenge} />}
 			{seite.id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
 			<PreviousNext previous={graph.getPrevious(seite.id)} next={graph.getNext(seite.id)} />
 		</main>
