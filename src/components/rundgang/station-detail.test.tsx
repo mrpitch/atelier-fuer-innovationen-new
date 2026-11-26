@@ -64,4 +64,33 @@ describe('StationDetail', () => {
 			last.slice(last.indexOf('data-slot="stationsnavigation"')).match(/data-slot="item"/g),
 		).toHaveLength(1)
 	})
+
+	it('shows the Stations-Bühne, the Gangart item and the Viertel link for a Station at a Viertel', async () => {
+		const html = await render('rundgaenge/besuch-im-zentrum/im-ersten-viertel')
+
+		expect(html).toContain('data-slot="stations-buehne"')
+		expect(html).toContain('data-slot="mini-stadtplan"')
+		expect(html).toContain('VIERTEL 01')
+		expect(html).toContain('Kapitel 1 lesen')
+		expect(html).toContain('oder Viertel 01 frei erkunden')
+	})
+
+	it("shows the Zentrum's own Gangart item and Zentrum link for a Station at the Zentrum", async () => {
+		const html = await render('rundgaenge/besuch-im-zentrum/am-zentrum')
+
+		expect(html).toContain('ZENTRUM')
+		expect(html).toContain('Einführung lesen')
+		expect(html).toContain('oder das Zentrum frei erkunden')
+	})
+
+	it('omits the Mini-Stadtplan, the Ort label and the Gangart switch for a Station without an Ort', async () => {
+		const html = await render('rundgaenge/besuch-im-zentrum/ohne-ort-zwei')
+
+		expect(html).toContain('data-slot="stations-buehne"')
+		expect(html).not.toContain('data-slot="mini-stadtplan"')
+		expect(html).not.toContain('VIERTEL')
+		expect(html).not.toContain('ZENTRUM')
+		expect(html).not.toContain('Gangart wechseln')
+		expect(html).not.toContain('frei erkunden')
+	})
 })

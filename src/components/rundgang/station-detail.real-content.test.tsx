@@ -59,4 +59,39 @@ describe('StationDetail against the real content graph (issue #120)', () => {
 		expect(html).toContain(`Station ${station.number} von ${station.lastNumber}`)
 		expect(html).toContain(`ca. ${station.remainingMinutes} Min.`)
 	})
+
+	it('shows the Stations-Bühne with its Mini-Stadtplan, Gangart item and Viertel link for a Besuch im Zentrum Station (issue #121)', async () => {
+		const station = graph.getStation('rundgaenge/besuch-im-zentrum/kontexte')
+		if (!station) throw new Error('missing rundgaenge/besuch-im-zentrum/kontexte')
+		if (station.ortId === undefined) throw new Error('fixture expectation: this Station has an Ort')
+
+		const html = renderToStaticMarkup(await StationDetail({ station }))
+
+		expect(html).toContain('data-slot="stations-buehne"')
+		expect(html).toContain('data-slot="mini-stadtplan"')
+		expect(html).toContain('Gangart wechseln')
+		expect(html).toContain('frei erkunden')
+	})
+
+	it('shows only the Rundgang illustration, no Ort parts, for Erste Annäherung and Besuch in der Umgebung Stationen (issue #121)', async () => {
+		for (const rundgangId of [
+			'rundgaenge/erste-annaeherung',
+			'rundgaenge/besuch-in-der-umgebung',
+		]) {
+			const rundgang = graph.getRundgang(rundgangId)
+			if (!rundgang) throw new Error(`missing ${rundgangId}`)
+
+			for (const station of graph.getStationenByRundgang(rundgang.id)) {
+				if (station.ortId !== undefined) {
+					throw new Error(`fixture expectation: ${station.id} has no Ort`)
+				}
+
+				const html = renderToStaticMarkup(await StationDetail({ station }))
+
+				expect(html).not.toContain('data-slot="mini-stadtplan"')
+				expect(html).not.toContain('Gangart wechseln')
+				expect(html).not.toContain('frei erkunden')
+			}
+		}
+	})
 })
