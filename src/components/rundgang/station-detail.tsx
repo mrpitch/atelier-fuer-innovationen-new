@@ -27,7 +27,9 @@ interface StationDetailProps extends React.ComponentProps<'div'> {
 // rendering (issue #36). The illustration/text split switches at `xl`
 // (kartei-design-system.md, Breakpoints: "Stations-Bühne"), so this
 // placeholder stage keeps the same reveal point the full Stations-Bühne
-// will once it replaces it.
+// will once it replaces it. The heading is the full title, not the Short
+// title (issue #23), same as AbschnittDetail's own; Short title stays for
+// neighbor labels and the Illustration's accessible name.
 async function StationDetail({ station, locale, ...props }: StationDetailProps) {
 	const graph = contentGraph()
 	const Body = await graph.getBody(station.id, locale)
@@ -54,7 +56,7 @@ async function StationDetail({ station, locale, ...props }: StationDetailProps) 
 						})}
 					</Tagline>
 					<h1 className="font-heading text-[40px] leading-none tracking-[-0.02em] text-foreground xl:text-[48px]">
-						{shortTitleOrTitle(station)}
+						{station.title}
 					</h1>
 					<RichText>
 						<Body components={bodyImageComponents(station.id)} />
