@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { KapitelDetail } from '@/components/kapitel/kapitel-detail'
+import { SiteShell } from '@/components/layout/site-shell'
 import { contentGraph, findDocument, urlSegments } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
 
@@ -26,11 +27,13 @@ export default async function KapitelPage({ params }: PageProps<'/stadt/[viertel
 	const { viertel, kapitelSlug } = await params
 
 	return (
-		<main>
-			<KapitelDetail
-				kapitel={findDocument('kapitel', 'stadt', viertel, kapitelSlug) ?? notFound()}
-			/>
-		</main>
+		<SiteShell>
+			<main>
+				<KapitelDetail
+					kapitel={findDocument('kapitel', 'stadt', viertel, kapitelSlug) ?? notFound()}
+				/>
+			</main>
+		</SiteShell>
 	)
 }
 

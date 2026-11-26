@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { AbschnittDetail } from '@/components/abschnitt/abschnitt-detail'
 import { AufsatzDetail } from '@/components/aufsatz/aufsatz-detail'
 import { KapitelDetail } from '@/components/kapitel/kapitel-detail'
+import { SiteShell } from '@/components/layout/site-shell'
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
 import { RundgaengeListe } from '@/components/rundgang/rundgaenge-liste'
@@ -73,9 +74,11 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 	// Seite below still gets.
 	if (seite.id === STADT_SEITE_ID) {
 		return (
-			<main>
-				<StadtplanHub seite={seite} locale={locale} />
-			</main>
+			<SiteShell>
+				<main>
+					<StadtplanHub seite={seite} locale={locale} />
+				</main>
+			</SiteShell>
 		)
 	}
 
@@ -83,14 +86,16 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 	const Body = await graph.getBody(seite.id, locale)
 
 	return (
-		<main>
-			<Breadcrumbs items={graph.getBreadcrumbs(seite.id)} />
-			<h1>{seite.title}</h1>
-			<Body components={bodyImageComponents(seite.id)} />
-			{seite.id === RUNDGAENGE_SEITE_ID && <RundgaengeListe rundgaenge={graph.rundgaenge} />}
-			{seite.id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
-			<PreviousNext previous={graph.getPrevious(seite.id)} next={graph.getNext(seite.id)} />
-		</main>
+		<SiteShell>
+			<main>
+				<Breadcrumbs items={graph.getBreadcrumbs(seite.id)} />
+				<h1>{seite.title}</h1>
+				<Body components={bodyImageComponents(seite.id)} />
+				{seite.id === RUNDGAENGE_SEITE_ID && <RundgaengeListe rundgaenge={graph.rundgaenge} />}
+				{seite.id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
+				<PreviousNext previous={graph.getPrevious(seite.id)} next={graph.getNext(seite.id)} />
+			</main>
+		</SiteShell>
 	)
 }
 
@@ -102,47 +107,63 @@ export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
 	switch (resolved.kind) {
 		case 'viertel':
 			return (
-				<main>
-					<ViertelDetail viertel={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<ViertelDetail viertel={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'zentrum':
 			return (
-				<main>
-					<ZentrumDetail zentrum={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<ZentrumDetail zentrum={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'aufsatz':
 			return (
-				<main>
-					<AufsatzDetail aufsatz={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<AufsatzDetail aufsatz={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'kapitel':
 			return (
-				<main>
-					<KapitelDetail kapitel={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<KapitelDetail kapitel={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'abschnitt':
 			return (
-				<main>
-					<AbschnittDetail abschnitt={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<AbschnittDetail abschnitt={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'thema':
 			return (
-				<main>
-					<ThemaDetail thema={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<ThemaDetail thema={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'rundgang':
 			return (
-				<main>
-					<RundgangDetail rundgang={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<RundgangDetail rundgang={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'station':
+			// A Station page (issue #120) has its own Rundgang-Leiste in place of
+			// the site Header and Footer, so this is the one case SiteShell skips.
 			return (
 				<main>
 					<StationDetail station={resolved.document} locale={locale} />

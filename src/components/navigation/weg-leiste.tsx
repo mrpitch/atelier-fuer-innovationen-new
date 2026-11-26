@@ -7,7 +7,7 @@ import { shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
 import { RoutenStopp } from './routen-stopp'
-import { Stopp } from './stopp'
+import { Stopp, type StoppStatus } from './stopp'
 
 interface StadtModeProps {
 	mode?: 'stadt'
@@ -51,13 +51,15 @@ function stoppFor(ort: Ort, nummer: number, aktuellId: string) {
 	)
 }
 
-// A Rundgang-Übersicht's own Stopp row (issue #118): a Stopp with the
-// Station's Ort's illustration, or, when it stands at none, a Routen-Stopp
-// with no illustration at all. The accessible label is the Station's own
-// name, not the Ort's — the link goes to the Station, not the Ort page.
-// Every Stopp here is "offen": a Rundgang-Übersicht tracks no current
-// position and no reading state (Stopp's own comment).
-function stationStopp(station: Station) {
+// A Station's own Stopp (issue #118): a Stopp with the Station's Ort's
+// illustration, or, when it stands at none, a Routen-Stopp with no
+// illustration at all. The accessible label is the Station's own name, not
+// the Ort's — the link goes to the Station, not the Ort page. Shared by the
+// Weg-Leiste's Rundgang mode below, where every Stopp is "offen" (a
+// Rundgang-Übersicht tracks no current position), and by a Station's own
+// Stationsnavigation (issue #120), which passes the Station's actual
+// "gesehen"/"aktuell"/"offen" status.
+function stationStopp(station: Station, status: StoppStatus = 'offen') {
 	const name = shortTitleOrTitle(station)
 	return station.ortId ? (
 		<Stopp
@@ -66,10 +68,16 @@ function stationStopp(station: Station) {
 			nummer={station.number}
 			illustrationId={station.ortId}
 			illustrationLabel={name}
-			status="offen"
+			status={status}
 		/>
 	) : (
-		<RoutenStopp key={station.id} href={station.url} nummer={station.number} name={name} />
+		<RoutenStopp
+			key={station.id}
+			href={station.url}
+			nummer={station.number}
+			name={name}
+			status={status}
+		/>
 	)
 }
 
@@ -158,7 +166,7 @@ function WegLeiste(props: WegLeisteProps) {
 				className={className}
 				{...rest}
 			>
-				{stationen.map(stationStopp)}
+				{stationen.map((station) => stationStopp(station))}
 			</WegLeisteShell>
 		)
 	}
@@ -184,4 +192,4 @@ function WegLeiste(props: WegLeisteProps) {
 	)
 }
 
-export { WegLeiste }
+export { stationStopp, WegLeiste }

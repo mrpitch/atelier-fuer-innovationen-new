@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { SiteShell } from '@/components/layout/site-shell'
 import { ViertelDetail } from '@/components/viertel/viertel-detail'
 import { contentGraph, findDocument, urlSegments } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
@@ -26,9 +27,11 @@ export default async function ViertelPage({ params }: PageProps<'/stadt/[viertel
 	const { viertel: slug } = await params
 
 	return (
-		<main>
-			<ViertelDetail viertel={findDocument('viertel', 'stadt', slug) ?? notFound()} />
-		</main>
+		<SiteShell>
+			<main>
+				<ViertelDetail viertel={findDocument('viertel', 'stadt', slug) ?? notFound()} />
+			</main>
+		</SiteShell>
 	)
 }
 
