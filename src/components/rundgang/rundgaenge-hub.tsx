@@ -21,7 +21,7 @@ interface RundgaengeHubProps extends React.ComponentProps<'div'> {
 // /rundgaenge, the Rundgänge-Hub (Figma T07 "Rundgänge-Hub", issue #119): the
 // Bild-Hero, "Die Rundgänge des Stadtführers" (one Rundgang-Eintrag per
 // Rundgang) and "So funktioniert ein Rundgang" — the Rundgänge area's
-// landing Seite, replacing the placeholder RundgaengeListe. No "Fortsetzen"
+// landing Seite. No "Fortsetzen"
 // section and no Banner "Zu den Dossiers" (both in Figma): reading state
 // stays out of scope (epic #115) and the Dossiers banner belongs to the
 // Bibliothek area, not named by this issue.
