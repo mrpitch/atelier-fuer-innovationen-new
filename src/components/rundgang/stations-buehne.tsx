@@ -9,6 +9,7 @@ import { t } from '@/lib/dictionary'
 import { formatTwoDigits } from '@/lib/utils/format-two-digits'
 
 import { ortIsViertel } from './gangarten'
+import { stationIllustrationId } from './station-stopp'
 
 interface StationsBuehneProps extends React.ComponentProps<'div'> {
 	station: Station
@@ -39,7 +40,7 @@ function StationsBuehne({
 	className,
 	...props
 }: StationsBuehneProps) {
-	const illustrationId = ort?.id ?? rundgang.id
+	const illustrationId = stationIllustrationId(station, rundgang)
 	const ortLabel =
 		ort === undefined
 			? undefined

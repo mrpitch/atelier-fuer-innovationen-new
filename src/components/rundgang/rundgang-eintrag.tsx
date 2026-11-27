@@ -2,7 +2,7 @@ import { cn } from 'cn'
 import Link from 'next/link'
 import type * as React from 'react'
 
-import { stationStopp } from '@/components/navigation/weg-leiste'
+import { stationStopp } from '@/components/rundgang/station-stopp'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icons'
@@ -23,7 +23,7 @@ interface RundgangEintragProps extends React.ComponentProps<'article'> {
 // Kennzeichen (none without one, "Known deviations from Figma" doesn't apply
 // here, it's an optional field already), title, Stationen count and
 // duration, introduction and actions beside its own route (every
-// Stopp/Routen-Stopp "offen", stationStopp reused from weg-leiste.tsx), its
+// Stopp/Routen-Stopp "offen", stationStopp from station-stopp.tsx), its
 // Leitsatz and Station badges. Reading state stays out of scope (epic #115,
 // "No reading state"): one button, "Rundgang starten", to the first
 // Station, instead of Figma's own "Begonnen · n/N" badge and "Fortsetzen bei

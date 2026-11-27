@@ -2,14 +2,13 @@ import { cn } from 'cn'
 import Link from 'next/link'
 import type * as React from 'react'
 
+import { stationIllustrationId, stationStopp } from '@/components/rundgang/station-stopp'
 import { Icon } from '@/components/ui/icons'
 import { Illustration } from '@/components/ui/illustration'
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/components/ui/item'
 import type { Rundgang, Station } from '@/lib/content'
 import { shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
-
-import { stationStopp } from './weg-leiste'
 
 interface StationsnavigationProps extends React.ComponentProps<'nav'> {
 	rundgang: Rundgang
@@ -28,7 +27,10 @@ function previousItem(rundgang: Rundgang, station: Station) {
 	return (
 		<Item render={<Link href={station.url} />} variant="outline" className="flex-1">
 			<ItemMedia className="hidden size-10 lg:flex">
-				<Illustration id={station.ortId ?? rundgang.id} label={shortTitleOrTitle(station)} />
+				<Illustration
+					id={stationIllustrationId(station, rundgang)}
+					label={shortTitleOrTitle(station)}
+				/>
 			</ItemMedia>
 			<ItemContent>
 				<ItemDescription>
@@ -50,7 +52,10 @@ function nextItem(rundgang: Rundgang, station: Station) {
 			className="flex-1 border-transparent bg-primary text-primary-foreground [a]:hover:bg-primary/80"
 		>
 			<ItemMedia className="hidden size-10 lg:flex">
-				<Illustration id={station.ortId ?? rundgang.id} label={shortTitleOrTitle(station)} />
+				<Illustration
+					id={stationIllustrationId(station, rundgang)}
+					label={shortTitleOrTitle(station)}
+				/>
 			</ItemMedia>
 			<ItemContent>
 				<ItemDescription className="text-primary-foreground/80">

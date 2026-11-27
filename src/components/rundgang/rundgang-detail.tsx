@@ -3,6 +3,7 @@ import type * as React from 'react'
 
 import { Ortsleiste } from '@/components/navigation/ortsleiste'
 import { WegLeiste } from '@/components/navigation/weg-leiste'
+import { stationIllustrationId } from '@/components/rundgang/station-stopp'
 import { PageSection } from '@/components/stadt/page-section'
 import { BildHero } from '@/components/ui/bild-hero'
 import { buttonVariants } from '@/components/ui/button'
@@ -117,7 +118,7 @@ async function RundgangDetail({ rundgang, locale, ...props }: RundgangDetailProp
 								</span>
 								<ItemMedia>
 									<Illustration
-										id={station.ortId ?? rundgang.id}
+										id={stationIllustrationId(station, rundgang)}
 										label={shortTitleOrTitle(station)}
 									/>
 								</ItemMedia>

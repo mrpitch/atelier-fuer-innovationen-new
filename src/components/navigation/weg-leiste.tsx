@@ -1,13 +1,12 @@
 import { cn } from 'cn'
 import type * as React from 'react'
 
+import { stationStopp } from '@/components/rundgang/station-stopp'
 import { MonoLabel } from '@/components/ui/mono-label'
 import type { Ort, Rundgang, Station, Viertel, Zentrum } from '@/lib/content'
-import { shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
-import { RoutenStopp } from './routen-stopp'
-import { Stopp, type StoppStatus } from './stopp'
+import { Stopp } from './stopp'
 
 interface StadtModeProps {
 	mode?: 'stadt'
@@ -47,37 +46,6 @@ function stoppFor(ort: Ort, nummer: number, aktuellId: string) {
 			illustrationId={ort.id}
 			illustrationLabel={ort.title}
 			status={ort.id === aktuellId ? 'aktuell' : 'offen'}
-		/>
-	)
-}
-
-// A Station's own Stopp (issue #118): a Stopp with the Station's Ort's
-// illustration, or, when it stands at none, a Routen-Stopp with no
-// illustration at all. The accessible label is the Station's own name, not
-// the Ort's — the link goes to the Station, not the Ort page. Shared by the
-// Weg-Leiste's Rundgang mode below and by RundgangEintrag's own route row
-// (issue #119), where every Stopp is "offen" (neither tracks a current
-// position or reading state), and by a Station's own Stationsnavigation
-// (issue #120), which passes the Station's actual
-// "gesehen"/"aktuell"/"offen" status.
-function stationStopp(station: Station, status: StoppStatus = 'offen') {
-	const name = shortTitleOrTitle(station)
-	return station.ortId ? (
-		<Stopp
-			key={station.id}
-			href={station.url}
-			nummer={station.number}
-			illustrationId={station.ortId}
-			illustrationLabel={name}
-			status={status}
-		/>
-	) : (
-		<RoutenStopp
-			key={station.id}
-			href={station.url}
-			nummer={station.number}
-			name={name}
-			status={status}
 		/>
 	)
 }
@@ -148,7 +116,7 @@ function WegLeisteShell({
 // keys, since there is only one Stadt to walk.
 //
 // Rundgang mode (issue #118): the Stationen of one specific Rundgang, in its
-// own route order, each a Stopp or a Routen-Stopp (stationStopp above).
+// own route order, each a Stopp or a Routen-Stopp (rundgang/station-stopp.tsx).
 // Label and Titel come from the Rundgang itself — its title and description,
 // since Figma's own worked example (T05, "Besuch im Zentrum") types ad hoc
 // copy here ("Stadtplatz · Viertel 01–08") that doesn't trace to any
@@ -193,4 +161,4 @@ function WegLeiste(props: WegLeisteProps) {
 	)
 }
 
-export { stationStopp, WegLeiste }
+export { WegLeiste }
