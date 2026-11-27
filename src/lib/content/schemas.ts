@@ -169,7 +169,7 @@ export const themaFrontmatterSchema = z
 		kapitelId: z.string().min(1).optional(),
 		leitsatz: z.string().min(1).optional(),
 		zitat: zitatSchema.optional(),
-		weiterfuehrendIds: z.array(z.string().min(1)).min(1, 'weiterfuehrendIds is empty').optional(),
+		weiterfuehrendIds: z.array(z.string().min(1)).optional(),
 	})
 	.superRefine((thema, ctx) => {
 		if (thema.kapitelId === undefined && thema.weiterfuehrendIds !== undefined) {

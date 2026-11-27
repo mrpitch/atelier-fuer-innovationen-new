@@ -1150,6 +1150,14 @@ describe('buildContentGraph', () => {
 			])
 		})
 
+		it('accepts an empty weiterfuehrendIds and resolves it to no Aufsätze (issue #125)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-weiterfuehrend-empty'))
+
+			const themenOrt = graph.getThema('themen/mein-themen-ort')
+			expect(themenOrt?.weiterfuehrendIds).toEqual([])
+			expect(themenOrt?.weiterfuehrend).toEqual([])
+		})
+
 		it('fails when a Themen-Ort references a missing Aufsatz in weiterfuehrendIds, naming the file, field and ID', () => {
 			expect.assertions(4)
 

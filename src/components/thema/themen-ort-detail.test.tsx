@@ -73,6 +73,16 @@ describe('ThemenOrtDetail', () => {
 		expect(html).not.toContain('WEITERFÜHREND')
 	})
 
+	it('leaves out "Weiterführend" when weiterfuehrendIds is empty', async () => {
+		const thema = graph.getThema('themen/futursysteme')
+		if (!thema) throw new Error('fixture content has no themen/futursysteme')
+		const html = renderToStaticMarkup(
+			await ThemenOrtDetail({ thema: { ...thema, weiterfuehrendIds: [], weiterfuehrend: [] } }),
+		)
+
+		expect(html).not.toContain('WEITERFÜHREND')
+	})
+
 	it('shows the Ortsleiste previous link to the Leitthema for the first Themen-Ort, and no next for the last', async () => {
 		const first = await render('themen/futursysteme')
 		expect(first).toContain('← Eine Welt für morgen')
