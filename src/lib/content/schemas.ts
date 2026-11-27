@@ -13,9 +13,33 @@ const baseShape = {
 	draft: z.boolean().default(false),
 }
 
+// A quote with its source (issue #124): `zusatz` is the speaker's role or the
+// quote's origin, not the quote itself. The Leitthema's `zitat` and the
+// Startseite's (issue #129, epic #128) share this one shape instead of each
+// declaring their own text/quelle/zusatz fields.
+export const zitatSchema = z.object({
+	text: z.string().min(1),
+	quelle: z.string().min(1),
+	zusatz: z.string().min(1).optional(),
+})
+
+export type Zitat = z.infer<typeof zitatSchema>
+
 // The first content type (ADR-0002). Each type gets its own schema here as the
 // content layer grows.
-export const seiteFrontmatterSchema = z.object(baseShape)
+//
+// `tagline`, `heading` and `intro` are the Start document's own Hero copy,
+// and `zitat` its own testimonial, in the shared Zitat shape above (issue
+// #129, epic #128). All four are optional on every Seite, since the schema
+// can't tell the root Seite (the Start document, ID `''`) from any other by
+// its frontmatter alone; only the Startseite reads them.
+export const seiteFrontmatterSchema = z.object({
+	...baseShape,
+	tagline: z.string().min(1).optional(),
+	heading: z.string().min(1).optional(),
+	intro: z.string().min(1).optional(),
+	zitat: zitatSchema.optional(),
+})
 
 export type SeiteFrontmatter = z.infer<typeof seiteFrontmatterSchema>
 
@@ -137,18 +161,6 @@ export const kapitelFrontmatterSchema = z.object({
 })
 
 export type KapitelFrontmatter = z.infer<typeof kapitelFrontmatterSchema>
-
-// A quote with its source (issue #124): `zusatz` is the speaker's role or the
-// quote's origin, not the quote itself. The Leitthema's `zitat` and the
-// Startseite's (epic #128) share this one shape instead of each declaring
-// their own text/quelle/zusatz fields.
-export const zitatSchema = z.object({
-	text: z.string().min(1),
-	quelle: z.string().min(1),
-	zusatz: z.string().min(1).optional(),
-})
-
-export type Zitat = z.infer<typeof zitatSchema>
 
 // A Thema (glossary) is the Leitthema or a Themen-Ort (issue #31). The
 // Leitthema has no Kapitel reference; a Themen-Ort's `kapitelId` names the

@@ -185,6 +185,13 @@ export const de = {
 	'rundgaenge.hub.schritt3Titel': '03 · Abstecher jederzeit',
 	'rundgaenge.hub.schritt3Text':
 		'„Gangart wechseln“ führt zum Kapitel oder Viertel. Über „Route“ kehren Sie jederzeit zum Rundgang zurück.',
+	'start.hub.navigation': 'Bereiche der Wissensstadt',
+	'start.hub.stadtplanHeading': 'Der Stadtplan',
+	'start.hub.stadtplanLink': 'Zum Stadtplan →',
+	'start.hub.rundgaengeHeading': 'Die Rundgänge',
+	'start.hub.rundgaengeLink': 'Alle Rundgänge →',
+	'start.hub.themenHeading': 'Die Themen',
+	'start.hub.themenLink': 'Alle Themen →',
 } as const
 
 export type DictionaryKey = keyof typeof de
