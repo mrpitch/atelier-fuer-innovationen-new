@@ -89,6 +89,7 @@ export const de = {
 	'thema.abzweige.karteLabel':
 		'Themen-Ort · Viertel {viertelNumber} · zweigt bei Kapitel {kapitelNumber} ab',
 	'thema.abzweige.karteAction': '{title} öffnen',
+	'thema.leitthemaKarteLabel': 'LEITTHEMA · 8 KAPITEL IN 8 VIERTELN',
 	'ortsleiste.previous': '← {label}',
 	'ortsleiste.next': '{label} →',
 	'ebenenLeiste.ortTitle': 'Viertel {number} · {title}',
@@ -188,8 +189,6 @@ export const de = {
 	'start.hub.navigation': 'Bereiche der Wissensstadt',
 	'start.hub.rundgaengeHeading': 'Die Rundgänge',
 	'start.hub.rundgaengeLink': 'Alle Rundgänge →',
-	'start.hub.themenHeading': 'Die Themen',
-	'start.hub.themenLink': 'Alle Themen →',
 	'start.hero.rundgangAction': 'Rundgang starten',
 	'start.hero.stadtplanAction': 'Zum Stadtplan',
 	'start.stadtplan.tagline': 'Der Stadtplan',
@@ -197,6 +196,11 @@ export const de = {
 	'start.stadtplan.description':
 		'Der Stadtplan ist die Landkarte der Inhalte: Wählen Sie ein Viertel, um seine Texte, Rundgänge und Bausteine zu sehen.',
 	'start.stadtplan.cta': 'Zum Stadtplan →',
+	'start.themen.tagline': 'Drei Themen',
+	'start.themen.heading': 'Ein Leitthema, zwei Abzweige.',
+	'start.themen.description':
+		'Das Leitthema zieht sich durch alle acht Viertel. Zwei Themen-Orte zweigen unterwegs ab und eröffnen je eine eigene Perspektive.',
+	'start.themen.cta': 'Alle Themen →',
 } as const
 
 export type DictionaryKey = keyof typeof de
