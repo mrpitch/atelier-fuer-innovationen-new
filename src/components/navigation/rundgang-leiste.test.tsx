@@ -2,14 +2,19 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { buildContentGraph } from '@/lib/content'
 
-import { RundgangLeiste } from './rundgang-leiste'
-
 const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '__fixtures__')
 const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-station-valid'))
+
+vi.mock('@/lib/content', async (importOriginal) => ({
+	...(await importOriginal<typeof import('@/lib/content')>()),
+	contentGraph: () => graph,
+}))
+
+const { RundgangLeiste } = await import('./rundgang-leiste')
 
 const rundgang = graph.getRundgang('rundgaenge/besuch-im-zentrum')
 if (!rundgang) throw new Error('fixture missing rundgaenge/besuch-im-zentrum')
