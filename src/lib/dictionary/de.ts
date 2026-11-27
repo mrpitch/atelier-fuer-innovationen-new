@@ -133,6 +133,7 @@ export const de = {
 	'station.navigationLabel': 'Stationsnavigation',
 	'station.previousPosition': 'Station {number}',
 	'station.nextPosition': 'Weiter zu Station {number}',
+	'rundgang.eintrag.starten': 'Rundgang starten',
 	'rundgang.eintrag.routeAnsehen': 'Route ansehen',
 	'rundgang.eintrag.stationBadge': '{number} · {name}',
 	'station.buehneLabel': 'Station {number}',

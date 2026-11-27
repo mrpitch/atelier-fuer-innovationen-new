@@ -67,7 +67,7 @@ function RundgangEintrag({ rundgang, stationen, className, ...props }: RundgangE
 				<div className="flex flex-wrap items-center gap-3">
 					{firstStation && (
 						<Link href={firstStation.url} className={buttonVariants({ variant: 'default' })}>
-							{t('rundgang.heroStarten')}
+							{t('rundgang.eintrag.starten')}
 							<Icon iconName="arrowRight" data-icon="inline-end" />
 						</Link>
 					)}
