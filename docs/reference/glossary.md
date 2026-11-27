@@ -4,7 +4,7 @@ title: Glossary
 description: Canonical definitions for domain terms — the shared vocabulary used by the codebase, docs, and AI agents.
 tags: [glossary, domain, language]
 status: stable
-last_reviewed: 2026-11-25
+last_reviewed: 2026-11-27
 authoritative: true
 ---
 
@@ -76,11 +76,31 @@ _Avoid_: place, location
 
 **Rundgang**
 A guided walk through the Wissensstadt: an ordered sequence of Stationen with an introduction.
-_Avoid_: tour, Stadtrundgang, Route
+_Avoid_: tour, Stadtrundgang
+
+**Route**
+The order in which a Rundgang visits its Stationen, shown as "Die Route" on the Rundgang-Übersicht, in the Weg-Leiste and on the Rundgänge-Hub. It is a view of the Rundgang's Stationen, not a thing of its own, and not another word for the Rundgang.
+_Avoid_: Rundgang (for the sequence alone), path
 
 **Station**
-One stop on a Rundgang, with the city guide's text for that place. It usually stands at an Ort; some stand at none.
+One place on a Rundgang, with the city guide's text for that place. It usually stands at an Ort; some stand at none. Its marker on the Route is a Routen-Stopp, a numbered UI element; the Station itself is never called a stop.
 _Avoid_: stop, step
+
+**Rundgänge-Hub**
+The landing Seite of the Rundgänge area (`/rundgaenge`): all Rundgänge in their order, each with its route, and a short explanation of how a Rundgang works. It is a Seite with its own layout.
+_Avoid_: Rundgänge-Liste, Rundgang overview (that is a single Rundgang's page)
+
+**Rundgang-Leiste**
+The top bar of a Station page, in place of the site Header: the Rundgang's name, "Station n von N", remaining time, progress, and the links "Route" and "Rundgang beenden".
+_Avoid_: Rundgang header, progress bar
+
+**Stationsnavigation**
+The bar at the foot of a Station page with the previous and next Station and the Stopps of the whole Rundgang. Not the Navigation, which is the hierarchy of content.
+_Avoid_: Station pager, previous/next (for the Station links alone)
+
+**Stations-Bühne**
+The stage beside a Station's text: the Ort's name and number, its illustration, the Mini-Stadtplan with the Ort marked, the Gangart switch and the link to explore the Viertel freely. A Station without an Ort shows only the Station number and the Rundgang's illustration.
+_Avoid_: Station header, Station sidebar
 
 **Thema**
 One of the three XENIA themes. The Leitthema is the one told as a walk through the Viertel; the other two are Themen-Orte.
