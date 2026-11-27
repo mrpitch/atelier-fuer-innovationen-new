@@ -65,7 +65,7 @@ async function StadtplanHub({ seite, locale, className, ...props }: StadtplanHub
 						)}
 						{erstesKapitel && (
 							<Link href={erstesKapitel.url} className={buttonVariants({ variant: 'secondary' })}>
-								{t('stadt.hub.themenWegAction')}
+								{t('themenWeg.beginnen')}
 								<Icon iconName="arrowRight" data-icon="inline-end" />
 							</Link>
 						)}

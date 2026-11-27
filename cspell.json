@@ -37,12 +37,17 @@
 		// A frontmatter key (issue #124), lowercase like every other one here;
 		// first used in real content by issue #126's Leitthema Zitat.
 		"zitat",
+		// A frontmatter key (issue #149), lowercase like every other one here.
+		"teaser",
 		// Proper nouns (PRODUCT.md).
 		"Xenia",
 		"Xeniapolis",
 		"Volkmann",
 		// A Themen-Ort's own name (issue #31), not a German dictionary word.
 		"Futursysteme",
+		// The Futursysteme Themen-Ort's own Teaser (issue #149) names the
+		// singular "Futursystem XENIA", not the Themen-Ort's own plural name.
+		"Futursystem",
 		// A Station's placeholder title (issue #116, Figma): the Kondratiev
 		// waves of economic theory, spelled as the Figma design's own copy
 		// has it, not the German-literature "Kondratjew".
