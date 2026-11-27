@@ -136,6 +136,8 @@ export const de = {
 	'rundgang.eintrag.routeAnsehen': 'Route ansehen',
 	'rundgang.eintrag.stationBadge': '{number} · {name}',
 	'station.buehneLabel': 'Station {number}',
+	'station.buehneViertel': 'VIERTEL {number}',
+	'station.buehneZentrum': 'ZENTRUM',
 	'rundgang.gangartWechseln': 'Gangart wechseln',
 	'rundgang.gangartViertelErkunden': 'oder Viertel {number} frei erkunden',
 	'rundgang.gangartZentrumErkunden': 'oder das Zentrum frei erkunden',

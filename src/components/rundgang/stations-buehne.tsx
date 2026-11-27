@@ -45,8 +45,8 @@ function StationsBuehne({
 		ort === undefined
 			? undefined
 			: ortIsViertel(ort)
-				? t('stadt.hub.kachelNummer', { number: formatTwoDigits(ort.number) })
-				: t('stadt.hub.zentrumNummer')
+				? t('station.buehneViertel', { number: formatTwoDigits(ort.number) })
+				: t('station.buehneZentrum')
 	const hasLageBlock = ort !== undefined || station.lage !== undefined
 
 	return (
