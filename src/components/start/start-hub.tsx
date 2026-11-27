@@ -194,7 +194,7 @@ function StartHub({ seite, className, ...props }: StartHubProps) {
 											href={erstesKapitel.url}
 											className={buttonVariants({ variant: 'default' })}
 										>
-											{t('thema.leitthemaHeroWegAction')}
+											{t('themenWeg.beginnen')}
 											<Icon iconName="arrowRight" data-icon="inline-end" />
 										</Link>
 									)}
