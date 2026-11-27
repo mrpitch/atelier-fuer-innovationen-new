@@ -33,8 +33,7 @@ async function ThemenOrtDetail({ thema, locale, ...props }: ThemenOrtDetailProps
 	const Body = await graph.getBody(thema.id, locale)
 	const kapitel = thema.kapitelId !== undefined ? graph.getKapitel(thema.kapitelId) : undefined
 	if (!kapitel) throw new Error(`ThemenOrtDetail: unknown Kapitel ID: ${thema.kapitelId}`)
-	const viertel = graph.getViertel(kapitel.viertelId)
-	if (!viertel) throw new Error(`ThemenOrtDetail: unknown Viertel ID: ${kapitel.viertelId}`)
+	const viertel = graph.getViertelOfKapitel(kapitel)
 	const { leitthema } = graph
 	const weiterfuehrend = thema.weiterfuehrend ?? []
 

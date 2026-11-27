@@ -156,6 +156,10 @@ export interface ContentGraph {
 	readonly kapitel: readonly Kapitel[]
 	getKapitel(id: string, locale?: string): Kapitel | undefined
 	getKapitelByViertel(viertelId: string): Kapitel | undefined
+	// A Kapitel's own Viertel (its `viertelId`, checked while the graph is
+	// built); throws if it is missing instead of returning undefined, so a
+	// caller never carries its own lookup and throw.
+	getViertelOfKapitel(kapitel: Kapitel): Viertel
 	// A Kapitel's published Abschnitte, ordered by its own meta.json — never
 	// listed by hand on the Kapitel itself; "N Abschnitte" is this list's
 	// length.
@@ -469,6 +473,13 @@ export function buildContentGraph(
 		kapitel,
 		getKapitel: (id, locale) => find('kapitel', id, locale),
 		getKapitelByViertel: (viertelId) => kapitel.find((item) => item.viertelId === viertelId),
+		getViertelOfKapitel: (item) => {
+			const viertelOfKapitel = find('viertel', item.viertelId)
+			if (!viertelOfKapitel) {
+				throw new Error(`Kapitel ${item.id} names an unknown Viertel: ${item.viertelId}`)
+			}
+			return viertelOfKapitel
+		},
 		getAbschnitteByKapitel: (kapitelId) => abschnitteByKapitel.get(kapitelId) ?? [],
 		getAbschnitt: (id, locale) => find('abschnitt', id, locale),
 		rundgaenge,

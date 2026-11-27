@@ -57,11 +57,8 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 	// heading and each Thema-Karte.
 	const themenOrte = graph.themenOrte.map((item) => {
 		const kapitel = graph.getKapitel(item.kapitelId)
-		const viertel = kapitel && graph.getViertel(kapitel.viertelId)
-		if (!kapitel || !viertel) {
-			throw new Error(`LeitthemaDetail: unknown Kapitel/Viertel for ${item.id}`)
-		}
-		return { thema: item, kapitel, viertel }
+		if (!kapitel) throw new Error(`LeitthemaDetail: unknown Kapitel ID: ${item.kapitelId}`)
+		return { thema: item, kapitel, viertel: graph.getViertelOfKapitel(kapitel) }
 	})
 	const [ersterThemenOrt, zweiterThemenOrt] = themenOrte
 
@@ -115,9 +112,7 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 				/>
 				<ol className="flex flex-col gap-3">
 					{graph.kapitel.map((kapitel) => {
-						const viertel = graph.getViertel(kapitel.viertelId)
-						if (!viertel)
-							throw new Error(`LeitthemaDetail: unknown Viertel ID: ${kapitel.viertelId}`)
+						const viertel = graph.getViertelOfKapitel(kapitel)
 						const abschnitteCount = graph.getAbschnitteByKapitel(kapitel.id).length
 
 						return (

@@ -588,6 +588,9 @@ describe('buildContentGraph', () => {
 			expect(zweites?.id).toBe('leitthema/zweites-kapitel')
 			expect(zweites?.number).toBe(2)
 			expect(zweites?.url).toBe('/stadt/zweite-viertel/kapitel-2')
+
+			const kapitelViertel = zweites && graph.getViertelOfKapitel(zweites)
+			expect(kapitelViertel?.id).toBe('stadt/zweite-viertel')
 		})
 
 		it('accepts an optional Untertitel on a Kapitel and Leitsatz/Jahr on an Abschnitt', () => {
