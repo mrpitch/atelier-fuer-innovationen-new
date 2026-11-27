@@ -27,35 +27,60 @@ function renderFixture(name: string) {
 }
 
 describe('StartHub', () => {
-	it('renders the Hero copy and the testimonial, never the MDX body (issue #129)', () => {
+	it('renders the Hero copy and the testimonial, never the MDX body (issue #130)', () => {
 		const html = renderFixture('start-hub-valid')
 
+		expect(html).toContain('data-slot="hero-section-7"')
 		expect(html).toContain('Testtagline der Startseite')
 		expect(html).toContain('Testüberschrift der Startseite')
 		expect(html).toContain('Testintro der Startseite.')
+		expect(html).toContain('data-slot="testimonials-section-1"')
 		expect(html).toContain('Ein Zitat für Tests.')
 		expect(html).not.toContain('Testinhalt, der nicht gerendert werden darf.')
 	})
 
-	it('links to the Stadtplan, the Rundgänge and the Themen with the dictionary labels', () => {
+	it('links the Hero buttons to the first Station of the first Rundgang and the Stadtplan-Hub', () => {
+		const html = renderFixture('start-hub-valid')
+		const [firstRundgang] = graph.rundgaenge
+		if (!firstRundgang) throw new Error('fixture missing a Rundgang')
+		const [firstStation] = graph.getStationenByRundgang(firstRundgang.id)
+		if (!firstStation) throw new Error('fixture missing a Station')
+
+		expect(html).toContain(`href="${firstStation.url}"`)
+		expect(html).toContain('Rundgang starten')
+		expect(html).toContain('href="/stadt"')
+		expect(html).toContain('Zum Stadtplan')
+	})
+
+	it('reuses the Stadt epic’s Stadtplan, whose Zentrum tile opens the Zentrum page', () => {
 		const html = renderFixture('start-hub-valid')
 
-		expect(html).toContain('href="/stadt"')
-		expect(html).toContain('Zum Stadtplan →')
+		expect(html).toContain('data-slot="start-stadtplan-section"')
+		expect(html).toContain('data-slot="stadtplan"')
+		expect(html).toContain('data-slot="viertel-kachel" data-variant="zentrum"')
+		expect(html).toContain('href="/stadt/zentrum"')
+	})
+
+	it('links to the Rundgänge and the Themen with the dictionary labels', () => {
+		const html = renderFixture('start-hub-valid')
+
 		expect(html).toContain('href="/rundgaenge"')
 		expect(html).toContain('Alle Rundgänge →')
 		expect(html).toContain('href="/themen"')
 		expect(html).toContain('Alle Themen →')
 	})
 
-	it('leaves out the tagline, intro and testimonial a document never sets, falling back to the title as its heading (issue #129)', () => {
+	it('leaves out the tagline, intro, testimonial and Rundgang-starten button a document never sets, falling back to the title for the heading (issue #130)', () => {
 		const html = renderFixture('start-hub-empty')
+		const heroMatch = /<section data-slot="hero-section-7"[^]*?<\/section>/.exec(html)
+		if (!heroMatch) throw new Error('Hero section missing from the render')
+		const hero = heroMatch[0]
 
-		expect(html).not.toContain('data-slot="tagline"')
+		expect(hero).not.toContain('data-slot="tagline"')
+		expect(hero).toContain('<h1')
+		expect(hero).toContain('Start</h1>')
 		expect(html).not.toContain('data-slot="testimonials-section-1"')
-		expect(html).not.toContain('<p')
-		expect(html).toContain(
-			'<h1 class="font-heading text-[48px] leading-none tracking-[-0.02em] hyphens-auto text-foreground xl:text-[88px]">Start</h1>',
-		)
+		expect(html).not.toContain('Rundgang starten')
+		expect(html).toContain('href="/stadt"')
 	})
 })
