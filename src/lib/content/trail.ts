@@ -29,6 +29,20 @@ function logicalParent(entry: ContentDocument): string | undefined {
 	}
 }
 
+// The Themen order for the Ortsleiste (issue #124): the Leitthema (no
+// `kapitelId`), then every Themen-Ort by its own branch Kapitel's number —
+// not `set.thema`'s own order, which stays the order their files are read in
+// (issue #82) for `graph.themen`, the Sitemap and every other caller. No
+// wrap-around: `neighbour` below already stops at either end of any sequence.
+function ortsleisteThemenOrder(set: ContentSet): ContentSet['thema'] {
+	const kapitelNumberById = new Map(set.kapitel.map((kapitel) => [kapitel.id, kapitel.number]))
+	return [...set.thema].sort((a, b) => {
+		if (a.kapitelId === undefined) return -1
+		if (b.kapitelId === undefined) return 1
+		return (kapitelNumberById.get(a.kapitelId) ?? 0) - (kapitelNumberById.get(b.kapitelId) ?? 0)
+	})
+}
+
 // `entries` is every published document, one list across the types; `siblingsOf`
 // is Navigation's own sibling sequence for a Seite (navigation.ts).
 //
@@ -37,9 +51,9 @@ function logicalParent(entry: ContentDocument): string | undefined {
 // rundgaenge/meta.json order (issue #116); Kapitel all Kapitel in number
 // order; Abschnitte every Abschnitt in Kapitel number order, crossing from
 // the last of one Kapitel to the first of the next; Stationen only their own
-// Rundgang's; Themen their own resolved list order, since that folder takes
-// no meta.json (issue #82). The Zentrum and every other type have none: a
-// one-document "sequence" never has a previous or a next.
+// Rundgang's; Themen their own Ortsleiste order (issue #124, above). The
+// Zentrum and every other type have none: a one-document "sequence" never
+// has a previous or a next.
 export function buildTrail(
 	set: ContentSet,
 	entries: readonly ContentDocument[],
@@ -63,7 +77,8 @@ export function buildTrail(
 		addSequence(stationen, stationen.map(toLink))
 	}
 	addSequence(set.rundgang, set.rundgang.map(toLink))
-	addSequence(set.thema, set.thema.map(toLink))
+	const themenOrder = ortsleisteThemenOrder(set)
+	addSequence(themenOrder, themenOrder.map(toLink))
 
 	function sequenceFor(id: string): readonly NavigationLink[] | undefined {
 		return byId.get(id)?.kind === 'seite' ? siblingsOf(id) : sequenceById.get(id)

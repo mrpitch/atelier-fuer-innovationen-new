@@ -38,23 +38,24 @@ The rules of the content layer and why they hold. For the API, read the code: `s
 
 A document's type is decided by where its file sits under `src/content`, not by a frontmatter field. Every type has `title`, `description`, an optional `shortTitle` and an optional `draft`, through one shared `BaseDocument`.
 
-| Type      | Location                                    | Frontmatter beyond the shared fields                                                          |
-| --------- | ------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Seite     | anywhere not listed below                   | none                                                                                          |
-| Viertel   | `stadt/<slug>/` (slug is not `zentrum`)     | `leitsatz`, `steckbrief`, `untertitel` (optional), `hinweisId` (optional, any-type reference) |
-| Zentrum   | `stadt/zentrum/`                            | none                                                                                          |
-| Aufsatz   | `bibliothek/aufsaetze/<slug>/`              | `viertelId` (reference)                                                                       |
-| Kapitel   | `leitthema/<slug>/`                         | `viertelId` (reference), `untertitel` (optional)                                              |
-| Abschnitt | `leitthema/<kapitel>/<slug>/`               | `leitsatz` (optional), `jahr` (optional)                                                      |
-| Rundgang  | `rundgaenge/<slug>/`                        | `leitsatz` (optional), `kennzeichen` (optional), `themaId` (optional reference)               |
-| Station   | `rundgaenge/<rundgang>/<slug>/`             | `ortId` (optional reference to an Ort), `lage` (optional)                                     |
-| Thema     | `themen/<slug>/` (Leitthema and Themen-Ort) | `kapitelId` (optional reference)                                                              |
+| Type      | Location                                    | Frontmatter beyond the shared fields                                                                                                                              |
+| --------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Seite     | anywhere not listed below                   | none                                                                                                                                                              |
+| Viertel   | `stadt/<slug>/` (slug is not `zentrum`)     | `leitsatz`, `steckbrief`, `untertitel` (optional), `hinweisId` (optional, any-type reference)                                                                     |
+| Zentrum   | `stadt/zentrum/`                            | none                                                                                                                                                              |
+| Aufsatz   | `bibliothek/aufsaetze/<slug>/`              | `viertelId` (reference)                                                                                                                                           |
+| Kapitel   | `leitthema/<slug>/`                         | `viertelId` (reference), `untertitel` (optional)                                                                                                                  |
+| Abschnitt | `leitthema/<kapitel>/<slug>/`               | `leitsatz` (optional), `jahr` (optional)                                                                                                                          |
+| Rundgang  | `rundgaenge/<slug>/`                        | `leitsatz` (optional), `kennzeichen` (optional), `themaId` (optional reference)                                                                                   |
+| Station   | `rundgaenge/<rundgang>/<slug>/`             | `ortId` (optional reference to an Ort), `lage` (optional)                                                                                                         |
+| Thema     | `themen/<slug>/` (Leitthema and Themen-Ort) | `kapitelId` (optional reference), `leitsatz` (optional), `zitat` (optional, Leitthema's own), `weiterfuehrendIds` (optional list of references, Themen-Ort's own) |
 
 - A Kapitel belongs to the Leitthema, not to the Viertel it is set in, so its files sit under `leitthema/`.
 - A Thema without `kapitelId` is the Leitthema; with one it is a Themen-Ort branching off that Kapitel.
 - The Steckbrief is a nested object: `prozessansatz`, `bauform`, `prozessdokument`, `imStadtzentrum`.
 - `Ort` (glossary) is the TypeScript alias for `Viertel | Zentrum`, the one place that union is named — `ortId` and every other spot the code needs either type write `Ort` instead of writing the union out again.
 - A Rundgang's `themaId` (issue #116) names the Thema it tells, checked against the actual Thema like any other reference; a published Rundgang naming a missing or Draft Thema fails. `leitsatz` and `kennzeichen` are its own free-standing fields, not references. A Station's `lage` is the same: a free-standing field, passed through unchanged.
+- A Thema's `leitsatz` (issue #124) is the same kind of free-standing field. Its `zitat` (Leitthema's own) holds a quote in the shared Zitat shape `{ text, quelle, zusatz? }` — `zusatz` is the speaker's role or the quote's origin — which the Startseite reuses (epic #128), so the shape lives in `schemas.ts` once instead of twice. `weiterfuehrendIds` (a Themen-Ort's own) is a list of references to Aufsätze, each checked the same way a single reference field is; a missing or Draft target fails the build the same way. Its resolution (`thema.ts`) takes the target Aufsatz's label and description, the URL from the graph — never restated in frontmatter. A Themen-Ort's Viertel and branch Kapitel (its number included) are never stored either: `graph.getKapitel(kapitelId)`, then `graph.getViertel` from that Kapitel's own `viertelId`, already derive both. `themaFrontmatterSchema`'s own `superRefine` holds each field to its role: a Themen-Ort setting `zitat`, or the Leitthema setting `weiterfuehrendIds`, fails the same way a wrong-shaped Menu does (`menuSchema`'s own `superRefine`, below).
 - Schemas live in `src/lib/content/schemas.ts`; types are inferred from them, with no code generation step. A key a schema doesn't know (e.g. a `number`) is dropped, so a number can never be typed into frontmatter.
 - Frontmatter is parsed with the `yaml` package, not `gray-matter` 4, which is unmaintained.
 
@@ -73,7 +74,7 @@ A URL is built from these rules and parsed in one place, `graph.resolveUrl`, whi
 
 ## References
 
-A reference is a frontmatter field holding another document's ID (`viertelId`, `ortId`, `kapitelId`, `themaId`), or an ID prop of a body component (`<ViertelTeaser id>`). A reference field may be optional, like `ortId` or `themaId`: unset, it resolves to nothing; set, it is checked exactly like a required one. A Zod schema can't see other documents, so the schema checks only that the field is a string; one generic resolver (`resolveReference`) checks every same-type reference once all documents are loaded. A new reference field reuses it and needs no resolution code of its own.
+A reference is a frontmatter field holding another document's ID (`viertelId`, `ortId`, `kapitelId`, `themaId`), or an ID prop of a body component (`<ViertelTeaser id>`). A reference field may be optional, like `ortId` or `themaId`: unset, it resolves to nothing; set, it is checked exactly like a required one. A Zod schema can't see other documents, so the schema checks only that the field is a string; one generic resolver (`resolveReference`) checks every same-type reference once all documents are loaded. A new reference field reuses it and needs no resolution code of its own. A Thema's `weiterfuehrendIds` (issue #124) is a list of references instead of one: each listed ID is checked against the Aufsätze by that same resolver, in a loop, so a missing or Draft target fails exactly like a single reference does.
 
 A reference to a missing document fails naming the referring file, the field and the ID. References resolve against the full set, Drafts included, so a Draft may reference a Draft. For a published document referencing a Draft, see [Drafts](#drafts).
 
@@ -105,7 +106,7 @@ Numbers are assigned after Drafts are left out, so a production graph has no gap
 
 - The **Navigation** tree is the Seite folder hierarchy in `meta.json` order, rooted at the start Seite. Only Seiten are in it.
 - **Breadcrumbs** cover every type: Seite ancestors, then type ancestors, the document last. A Kapitel is read inside its Viertel, an Abschnitt inside its Kapitel, a Station inside its Rundgang (Start › Stadt › Viertel › Kapitel › Abschnitt).
-- **Previous/next** walks one sequence per type: Seiten their Navigation siblings; Viertel their `stadt/meta.json` number order; Rundgänge their `rundgaenge/meta.json` order (issue #116); Kapitel in number order; Abschnitte in number order across Kapitel boundaries; Stationen within their own Rundgang; Themen in the order their files are read, since that folder takes no `meta.json` (issue #82). The Zentrum and every other type have none: a one-document "sequence" never has a previous or a next.
+- **Previous/next** walks one sequence per type: Seiten their Navigation siblings; Viertel their `stadt/meta.json` number order; Rundgänge their `rundgaenge/meta.json` order (issue #116); Kapitel in number order; Abschnitte in number order across Kapitel boundaries; Stationen within their own Rundgang; Themen in the Ortsleiste order (issue #124): the Leitthema, then every Themen-Ort by its own branch Kapitel's number, never wrapping around — not the order their files are read in, which `graph.themen` itself keeps, since that folder takes no `meta.json` (issue #82). The Zentrum and every other type have none: a one-document "sequence" never has a previous or a next.
 - A link's label is the target's Short title, else its title. The page's own `<h1>` is always the full title.
 
 ## Drafts

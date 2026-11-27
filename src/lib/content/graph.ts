@@ -282,7 +282,7 @@ export function buildContentGraph(
 		]),
 	)
 	const abschnitte = kapitel.flatMap((item) => abschnitteByKapitel.get(item.id) ?? [])
-	const themen = resolveThemen(loaded.thema, loaded.kapitel, isVisible)
+	const themen = resolveThemen(loaded.thema, loaded.kapitel, loaded.aufsatz, isVisible)
 	const leitthema = themen.find((thema) => thema.kapitelId === undefined)
 
 	const orte = [...loaded.viertel, ...loaded.zentrum]
