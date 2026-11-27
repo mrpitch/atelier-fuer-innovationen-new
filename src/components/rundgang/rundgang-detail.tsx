@@ -9,8 +9,8 @@ import { buttonVariants } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icons'
 import { Illustration } from '@/components/ui/illustration'
 import {
+	decorativeCta,
 	Item,
-	ItemActions,
 	ItemContent,
 	ItemDescription,
 	ItemMedia,
@@ -125,20 +125,16 @@ async function RundgangDetail({ rundgang, locale, ...props }: RundgangDetailProp
 									<ItemTitle>{shortTitleOrTitle(station)}</ItemTitle>
 									<ItemDescription>{station.description}</ItemDescription>
 								</ItemContent>
-								<ItemActions>
-									{/* Figma's own Item drops the "ca." StationDetail's heading already
-									    carries ("station.readingTime"); reused as-is here for one phrasing
-									    sitewide rather than a second, Figma-only reading-time key. */}
+								{decorativeCta(
+									'outline',
+									t('station.hierEinsteigen'),
+									// Figma's own Item drops the "ca." StationDetail's heading already
+									// carries ("station.readingTime"); reused as-is here for one phrasing
+									// sitewide rather than a second, Figma-only reading-time key.
 									<span className="text-sm text-muted-foreground">
 										{t('station.readingTime', { n: station.readingTimeMinutes })}
-									</span>
-									<span
-										aria-hidden="true"
-										className={buttonVariants({ variant: 'outline', size: 'sm' })}
-									>
-										{t('station.hierEinsteigen')}
-									</span>
-								</ItemActions>
+									</span>,
+								)}
 							</Item>
 						</li>
 					))}

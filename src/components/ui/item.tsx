@@ -136,12 +136,12 @@ function ItemActions({ className, ...props }: React.ComponentProps<'div'>) {
 // whole Item is already the Link): a visual affordance, not a second
 // interactive target, so it's a plain `<span>` with `aria-hidden`, not
 // another Button or Link (issue #100's own "Hier beginnen"/"Weiter" CTAs).
-// A Rundgang Station's own "Hier einsteigen" (issue #118) sits beside a
-// reading-time span in the same ItemActions, so it builds that span inline
-// instead of reusing this one-span shape.
-function decorativeCta(variant: 'default' | 'outline', label: string) {
+// A Rundgang Station's "Hier einsteigen" (issue #118) passes its reading
+// time as `lead`, rendered before the span inside the same ItemActions.
+function decorativeCta(variant: 'default' | 'outline', label: string, lead?: React.ReactNode) {
 	return (
 		<ItemActions>
+			{lead}
 			<span aria-hidden="true" className={buttonVariants({ variant, size: 'sm' })}>
 				{label}
 			</span>
