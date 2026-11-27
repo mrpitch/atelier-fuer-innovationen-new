@@ -55,13 +55,15 @@ async function ThemenOrtDetail({ thema, locale, ...props }: ThemenOrtDetailProps
 				}
 				title={thema.title}
 				zitat={thema.leitsatz}
+				zitatItalic
+				eyebrowTone="primary"
 				illustration={
 					<Illustration
 						id={thema.id}
 						label={thema.title}
-						// 420px: the Bild-Hero illustration size (Figma Bild-Hero 36584:15357).
+						// 220px below xl, 420px from xl (Figma T09b 36626:29971, 36603:14391).
 						// eslint-disable-next-line restrictions/arbitrary-size-classes
-						className="size-[420px]"
+						className="size-[220px] xl:size-[420px]"
 					/>
 				}
 				actions={
