@@ -36,10 +36,15 @@ function logicalParent(entry: ContentDocument): string | undefined {
 // wrap-around: `neighbour` below already stops at either end of any sequence.
 function ortsleisteThemenOrder(set: ContentSet): ContentSet['thema'] {
 	const kapitelNumberById = new Map(set.kapitel.map((kapitel) => [kapitel.id, kapitel.number]))
+	function kapitelNumber(kapitelId: string): number {
+		const number = kapitelNumberById.get(kapitelId)
+		if (number === undefined) throw new Error(`Unknown Kapitel ID in Themen order: ${kapitelId}`)
+		return number
+	}
 	return [...set.thema].sort((a, b) => {
 		if (a.kapitelId === undefined) return -1
 		if (b.kapitelId === undefined) return 1
-		return (kapitelNumberById.get(a.kapitelId) ?? 0) - (kapitelNumberById.get(b.kapitelId) ?? 0)
+		return kapitelNumber(a.kapitelId) - kapitelNumber(b.kapitelId)
 	})
 }
 
