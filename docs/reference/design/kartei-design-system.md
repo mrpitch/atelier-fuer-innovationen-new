@@ -5,7 +5,7 @@ description: The decisions of the Kartei style that neither Figma nor the token 
 tags:
   [design, design-system, design-tokens, kartei, figma, colors, typography, layout, illustrations]
 status: stable
-last_reviewed: 2026-11-25
+last_reviewed: 2026-11-27
 authoritative: true
 ---
 
@@ -114,26 +114,27 @@ Sizes per screen are in Figma; the roles decide which face a text gets.
 
 Every screen on the Figma pages 1–6 is drawn at 1440, 1024, 768 and 390px, with a `Breakpoint` variant on each component. The code switches at Tailwind's `sm` (640), `md` (768), `lg` (1024) and `xl` (1280), or at a container width. The table maps one to the other; a ticket spec names the row it relies on instead of restating "Desktop at 768".
 
-| Component                         | 390             | 768             | 1024                     | 1440          | Switch           |
-| --------------------------------- | --------------- | --------------- | ------------------------ | ------------- | ---------------- |
-| Header, Footer, Ebenen-Leiste     | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-| Ortsleiste                        | Mobile          | Mobile          | Mobile                   | Desktop       | `xl`             |
-| Bild-Hero                         | Mobile          | Mobile          | Mobile                   | Desktop       | `xl`             |
-| Home / Hero                       | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-| Stadtplan                         | 1 column        | 3 × 3           | 3 × 3                    | 3 × 3         | `sm`             |
-| Steckbrief                        | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-| Weg-Leiste                        | Mobile          | Desktop         | Desktop                  | Desktop       | `@xl`, `@3xl`    |
-| Gangart cards                     | stacked         | stacked         | side by side             | side by side  | `lg`             |
-| "Weiter im Stadtplan" Items       | stacked         | side by side    | side by side             | side by side  | `sm`             |
-| Reading layout                    | 1 column, Sheet | 1 column, Sheet | text + Randspalte, Sheet | three columns | `lg`, `xl`       |
-| Kapitel-Hero                      | Mobile          | Desktop         | Desktop                  | Desktop       | container, 512px |
-| Thema-Karte, Typ Leitthema        | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-| Thema-Karte, Typ Themen-Ort       | Mobile          | Desktop         | Desktop                  | Desktop       | `md`             |
-| Rundgang-Eintrag, Rundgang-Leiste | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-| Stationsnavigation                | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-| Stations-Bühne                    | Mobile          | Mobile          | Mobile                   | Desktop       | `xl`             |
-| Bibliothek / Listen-Eintrag       | Mobile          | Mobile          | Desktop                  | Desktop       | `lg`             |
-| Chronik / Zeitleisten-Eintrag     | Mobile          | Desktop         | Desktop                  | Desktop       | `md`             |
+| Component                         | 390             | 768                               | 1024                     | 1440          | Switch           |
+| --------------------------------- | --------------- | --------------------------------- | ------------------------ | ------------- | ---------------- |
+| Header, Footer, Ebenen-Leiste     | Mobile          | Mobile                            | Desktop                  | Desktop       | `lg`             |
+| Ortsleiste                        | Mobile          | Mobile                            | Mobile                   | Desktop       | `xl`             |
+| Bild-Hero                         | Mobile          | Mobile                            | Mobile                   | Desktop       | `xl`             |
+| Home / Hero                       | Mobile          | Mobile                            | Desktop                  | Desktop       | `lg`             |
+| Stadtplan                         | 1 column        | 3 × 3                             | 3 × 3                    | 3 × 3         | `sm`             |
+| Steckbrief                        | Mobile          | Mobile                            | Desktop                  | Desktop       | `lg`             |
+| Weg-Leiste                        | Mobile          | Desktop                           | Desktop                  | Desktop       | `@xl`, `@3xl`    |
+| Gangart cards                     | stacked         | stacked                           | side by side             | side by side  | `lg`             |
+| "Weiter im Stadtplan" Items       | stacked         | side by side                      | side by side             | side by side  | `sm`             |
+| Reading layout                    | 1 column, Sheet | 1 column, Sheet                   | text + Randspalte, Sheet | three columns | `lg`, `xl`       |
+| Kapitel-Hero                      | Mobile          | Desktop                           | Desktop                  | Desktop       | container, 512px |
+| Thema-Karte, Typ Leitthema        | Mobile          | Mobile                            | Desktop                  | Desktop       | `lg`             |
+| Thema-Karte, Typ Themen-Ort       | Mobile          | Desktop                           | Desktop                  | Desktop       | `md`             |
+| Themen-Triptychon                 | stacked         | Leitthema full width, Orte 2 cols | 3 columns                | 3 columns     | `md`, `lg`       |
+| Rundgang-Eintrag, Rundgang-Leiste | Mobile          | Mobile                            | Desktop                  | Desktop       | `lg`             |
+| Stationsnavigation                | Mobile          | Mobile                            | Desktop                  | Desktop       | `lg`             |
+| Stations-Bühne                    | Mobile          | Mobile                            | Mobile                   | Desktop       | `xl`             |
+| Bibliothek / Listen-Eintrag       | Mobile          | Mobile                            | Desktop                  | Desktop       | `lg`             |
+| Chronik / Zeitleisten-Eintrag     | Mobile          | Desktop                           | Desktop                  | Desktop       | `md`             |
 
 The Ortsleiste and the Bild-Hero switch at `xl` because their desktop rows don't fit 1024: long neighbour names ("Besuch in der Umgebung →") clip beside the breadcrumb, and the hero's text column would be too narrow for its title (issue #110). The Rundgang-Eintrag route wraps onto a second row when its column is narrower than the route. The Stationsnavigation's Mobile variant drops the stop illustrations from its two buttons; at 390 they don't fit beside each other.
 
@@ -145,6 +146,7 @@ The Ortsleiste and the Bild-Hero switch at `xl` because their desktop rows don't
 - **Page hero (Bild-Hero):** below `xl` the illustration comes first, then the text. The title hyphenates, so a one-word title breaks at a syllable ("Futur-systeme").
 - **Place bar:** Viertel, Rundgang and Thema pages and every Übersicht, Inhaltsseite and Chronik page have an Ortsleiste under the header: the breadcrumb on the left, the neighbouring places on the right, named after them ("← 02 Märkte", "04 Inszenierung →"). Kapitel and Abschnitt pages use the Ebenen-Leiste instead: the current place with "Sie sind hier", the breadcrumb, and a progress count ("KAPITEL 4 · 3 VON 8").
 - **Stadtplan:** a 3 × 3 grid of square-cornered tiles sharing Haarlinie borders. The eight Viertel run clockwise from top left, with the Zentrum in the middle. On mobile the tiles stack in one column in the desktop reading order (01, 02, 03, 08, Zentrum, 04, 07, 06, 05).
+- **Themen-Hub** (`/themen`, Figma "Themen-Übersicht"): the Ortsleiste (Place bar), a Seitenkopf (eyebrow, title, introduction) and the Themen-Triptychon, closed by the Rundgänge-Hinweis. The Triptychon is a Stadtplan-style grid of square-cornered Thema-Kachel tiles sharing Haarlinie borders on one Karteikarte surface: three in a row at `lg` and `xl`; at `md` the Leitthema tile spans the full row with its Illustration beside its text, the two Themen-Orte in a row below it; below `md` all three stack. The Rundgänge-Hinweis stacks below `sm`.
 - **Reading pages (Kapitel, Abschnitt):** at `xl` three columns: the Themen-Weg sidebar, the text column and a right column with the "Gangart wechseln" box and "Im Viertel außerdem". At `lg` the sidebar becomes the Themen-Weg button, because three columns would leave the text too narrow (the Text Leads Rule). Below `lg` the right-column content follows the text.
 - **Rundgang station pages:** on mobile the illustration stage and the text stack, and the bottom bar keeps only the previous and next buttons, without their stop illustrations.
 - **Inhaltsseite** (Dossier, Mosaik-Baustein, Aufsatz, Ereignis, Idee and Menschen pages): three columns aligned with the header and the Ortsleiste. The left column is always navigation, in one of two forms: the sections of the page as jump links ("Inhalt") on long texts, or the siblings of a collection entry with the current one active ("Alle Dossiers · 4"). The right column holds links to related places as outline list items under a section label ("Zum Dossier"). The content column opens with the Seitenkopf and then carries only the blocks the page needs: Steckbrief, Fließtext, Inhaltsliste.
@@ -170,9 +172,9 @@ The theme maps no shadow tokens, so `shadow-*` utilities carry Tailwind's defaul
 | Buttons, inputs, selects, list items, nav items | `rounded-lg`         |
 | Cards, dialogs, the Gangart box                 | `rounded-xl`         |
 | Badges                                          | `rounded-4xl` (pill) |
-| Stadtplan tiles, Rundgang cards                 | `rounded-none`       |
+| Stadtplan tiles, Rundgang cards, Thema-Kachel   | `rounded-none`       |
 
-Stadtplan tiles and Rundgang cards are square-cornered so the grid reads as one continuous map rather than a set of cards.
+Stadtplan tiles, Rundgang cards and the Thema-Kachel are square-cornered so their grid reads as one continuous surface rather than a set of cards.
 
 **Illustrations** each sit on a full circle of Petrolschleier with a thin horizon line and a flat shadow at its base. The Figma page `Illustrationen` holds the catalogue and the reasoning.
 

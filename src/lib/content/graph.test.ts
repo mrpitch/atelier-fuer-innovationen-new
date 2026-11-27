@@ -1139,6 +1139,26 @@ describe('buildContentGraph', () => {
 			expect(anfang?.weiterfuehrend).toBeUndefined()
 		})
 
+		it('parses teaser as optional; a Thema without one builds with teaser undefined (issue #149)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-optional-fields-valid'))
+
+			expect(graph.getThema('themen/eine-welt-fuer-morgen')?.teaser).toBe(
+				'Platzhalter-Teaser des Leitthemas.',
+			)
+			expect(graph.getThema('themen/anfang-im-weg')?.teaser).toBeUndefined()
+		})
+
+		it("translates a Thema's teaser (issue #149)", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'translation-thema-valid'), {
+				locales: ['xx'],
+			})
+
+			expect(graph.getThema('themen/eine-welt-fuer-morgen')?.teaser).toBe('Platzhalter-Teaser.')
+			expect(graph.getThema('themen/eine-welt-fuer-morgen', 'xx')?.teaser).toBe(
+				'Translated teaser.',
+			)
+		})
+
 		it("resolves weiterfuehrendIds to the target Aufsatz's label and description, and the URL from the graph (issue #124)", () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'thema-optional-fields-valid'))
 

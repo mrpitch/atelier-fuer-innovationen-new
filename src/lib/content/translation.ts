@@ -1,5 +1,5 @@
 import type { Translation } from './loader'
-import type { Abschnitt, BaseDocument, ContentSet, Kapitel, Viertel } from './types'
+import type { Abschnitt, BaseDocument, ContentSet, Kapitel, Thema, Viertel } from './types'
 import type { UrlScope } from './urls'
 import { abschnittUrl, kapitelUrl, pathUrl, stationUrl } from './urls'
 
@@ -45,6 +45,14 @@ function localizeKapitel(kapitel: Kapitel, translation: Translation | undefined,
 	return {
 		...localizeBase(kapitel, translation, url),
 		untertitel: translation?.frontmatter.untertitel ?? kapitel.untertitel,
+	}
+}
+
+// A Thema additionally translates its own Teaser (issue #149).
+function localizeThema(thema: Thema, translation: Translation | undefined, url: string) {
+	return {
+		...localizeBase(thema, translation, url),
+		teaser: translation?.frontmatter.teaser ?? thema.teaser,
 	}
 }
 
@@ -134,6 +142,14 @@ export function localizeSet(
 		),
 	)
 
+	const thema = set.thema.map((document) =>
+		localizeThema(
+			document,
+			translations.get(document.id),
+			pathUrl(document.id, scope, slugOf(document.id)),
+		),
+	)
+
 	return {
 		seite: localizeAtPath(set.seite),
 		viertel,
@@ -141,7 +157,7 @@ export function localizeSet(
 		aufsatz: localizeAtPath(set.aufsatz),
 		kapitel,
 		abschnitt,
-		thema: localizeAtPath(set.thema),
+		thema,
 		rundgang,
 		station,
 	}

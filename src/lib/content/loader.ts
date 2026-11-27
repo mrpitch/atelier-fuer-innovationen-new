@@ -38,6 +38,7 @@ import {
 	siteSchema,
 	stationFrontmatterSchema,
 	themaFrontmatterSchema,
+	themaTranslationFrontmatterSchema,
 	translationFrontmatterSchema,
 	viertelFrontmatterSchema,
 	viertelTranslationFrontmatterSchema,
@@ -63,7 +64,8 @@ const FRONTMATTER_SCHEMAS = {
 
 // A translation file may set exactly the keys of its type's translation
 // schema (issue #36): every type's title, Short title, description and slug,
-// plus a Viertel's Leitsatz and Steckbrief.
+// plus a Viertel's Leitsatz and Steckbrief, a Kapitel's or Thema's Untertitel
+// or Teaser.
 const TRANSLATION_SCHEMAS = {
 	seite: translationFrontmatterSchema,
 	viertel: viertelTranslationFrontmatterSchema,
@@ -71,7 +73,7 @@ const TRANSLATION_SCHEMAS = {
 	aufsatz: translationFrontmatterSchema,
 	kapitel: kapitelTranslationFrontmatterSchema,
 	abschnitt: abschnittTranslationFrontmatterSchema,
-	thema: translationFrontmatterSchema,
+	thema: themaTranslationFrontmatterSchema,
 	rundgang: translationFrontmatterSchema,
 	station: translationFrontmatterSchema,
 } as const satisfies Record<ContentKind, z.ZodObject>

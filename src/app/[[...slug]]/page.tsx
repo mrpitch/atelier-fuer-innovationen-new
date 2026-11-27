@@ -12,7 +12,7 @@ import { RundgangDetail } from '@/components/rundgang/rundgang-detail'
 import { StationDetail } from '@/components/rundgang/station-detail'
 import { StadtplanHub } from '@/components/stadt/stadtplan-hub'
 import { ThemaDetail } from '@/components/thema/thema-detail'
-import { ThemenListe } from '@/components/thema/themen-liste'
+import { ThemenHub } from '@/components/thema/themen-hub'
 import { ViertelDetail } from '@/components/viertel/viertel-detail'
 import { ZentrumDetail } from '@/components/zentrum/zentrum-detail'
 import type { Seite } from '@/lib/content'
@@ -25,8 +25,9 @@ import { bodyImageComponents } from '@/mdx-components'
 // landing Seite below gets.
 const STADT_SEITE_ID = 'stadt'
 
-// The Themen area's landing Seite (issue #31): the one Seite ID that also
-// lists the three Themen, derived from the content graph.
+// The Themen area's landing Seite: the Themen-Hub (issue #149), its own
+// full-page layout rather than the generic Seite + area list every other
+// landing Seite below gets.
 const THEMEN_SEITE_ID = 'themen'
 
 // A slug param's segments, joined back into the URL graph.resolveUrl expects
@@ -92,6 +93,20 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 		)
 	}
 
+	// The Themen-Hub (issue #149) is its own full-page layout — Ortsleiste,
+	// Seitenkopf, Themen-Triptychon and Rundgänge-Hinweis — not the generic
+	// Seite shape every other landing Seite below still gets, and not the
+	// placeholder ThemenListe it replaces.
+	if (seite.id === THEMEN_SEITE_ID) {
+		return (
+			<SiteShell>
+				<main>
+					<ThemenHub seite={seite} locale={locale} />
+				</main>
+			</SiteShell>
+		)
+	}
+
 	const graph = contentGraph()
 	const Body = await graph.getBody(seite.id, locale)
 
@@ -101,7 +116,6 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 				<Breadcrumbs items={graph.getBreadcrumbs(seite.id)} />
 				<h1>{seite.title}</h1>
 				<Body components={bodyImageComponents(seite.id)} />
-				{seite.id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
 				<PreviousNext previous={graph.getPrevious(seite.id)} next={graph.getNext(seite.id)} />
 			</main>
 		</SiteShell>
