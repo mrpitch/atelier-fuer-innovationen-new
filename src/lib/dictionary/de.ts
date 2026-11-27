@@ -190,7 +190,6 @@ export const de = {
 	'rundgaenge.hub.schritt3Titel': '03 · Abstecher jederzeit',
 	'rundgaenge.hub.schritt3Text':
 		'„Gangart wechseln“ führt zum Kapitel oder Viertel. Über „Route“ kehren Sie jederzeit zum Rundgang zurück.',
-	'start.hub.navigation': 'Bereiche der Wissensstadt',
 	'start.hero.rundgangAction': 'Rundgang starten',
 	'start.hero.stadtplanAction': 'Zum Stadtplan',
 	'start.stadtplan.tagline': 'Der Stadtplan',
