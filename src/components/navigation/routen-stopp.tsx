@@ -73,4 +73,4 @@ function RoutenStopp({
 	)
 }
 
-export { RoutenStopp, routenStoppVariants }
+export { RoutenStopp, routenStoppNummerVariants, routenStoppVariants }
