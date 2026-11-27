@@ -11,12 +11,20 @@ const stoppVariants = cva(
 		variants: {
 			status: {
 				aktuell: 'border border-primary bg-secondary text-primary',
+				// Figma's own Status=gesehen variant (36585:8190) renders identically
+				// to Status=offen (36585:8228): same fills, same Nummer colour. A
+				// Stationsnavigation (issue #120) still sets the two apart with
+				// `data-status`, for the reader's own position in the route, not a
+				// visual difference Figma never drew.
+				gesehen: 'text-muted-foreground',
 				offen: 'text-muted-foreground',
 			},
 		},
 		defaultVariants: { status: 'offen' },
 	},
 )
+
+type StoppStatus = NonNullable<VariantProps<typeof stoppVariants>['status']>
 
 interface StoppProps
 	extends Omit<React.ComponentProps<typeof Link>, 'href'>, VariantProps<typeof stoppVariants> {
@@ -30,9 +38,10 @@ interface StoppProps
 // on the Weg-Leiste — its 36px illustration over its own number. "aktuell"
 // is the Figma variant: Petrolschleier with a Petrol ring and a Petrol
 // Nummer (Kartei design system, Mist Rule and the Ink Rule's current-Stopp
-// exception; issue #109). The set's third
-// variant, Status=gesehen, has no code counterpart: this page tracks no
-// reading state, so every other place is "offen".
+// exception; issue #109). A Rundgang-Übersicht (issue #118) tracks no
+// current position and sets every Stopp "offen"; a Station's own
+// Stationsnavigation (issue #120) does, so "gesehen" marks a Stopp before it
+// in the route.
 function Stopp({
 	href,
 	nummer,
@@ -57,4 +66,4 @@ function Stopp({
 	)
 }
 
-export { Stopp, stoppVariants }
+export { Stopp, type StoppStatus, stoppVariants }

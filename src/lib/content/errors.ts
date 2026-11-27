@@ -48,6 +48,13 @@ export const ABSCHNITT_ORDER_FIELD = '(abschnitt-order)'
 // directly, the same way the Abschnitt order file does.
 export const STATION_ORDER_FIELD = '(station-order)'
 
+// The field name when the Rundgang order file (rundgaenge/meta.json, issue
+// #116) isn't tied to one listed ID: the file is missing, invalid JSON, or a
+// schema issue with no path of its own. A listed ID with no matching
+// Rundgang, or a Rundgang missing from the list, instead names that ID
+// directly, the same way the Viertel order file does.
+export const RUNDGANG_ORDER_FIELD = '(rundgang-order)'
+
 // The field name when a translation file's problem isn't tied to one
 // frontmatter key: it sits next to no document of the configured locale's
 // own type (issue #36).

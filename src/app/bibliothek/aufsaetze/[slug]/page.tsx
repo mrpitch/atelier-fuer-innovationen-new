@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { AufsatzDetail } from '@/components/aufsatz/aufsatz-detail'
+import { SiteShell } from '@/components/layout/site-shell'
 import { contentGraph, findDocument, urlSegments } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
 
@@ -26,11 +27,13 @@ export default async function AufsatzPage({ params }: PageProps<'/bibliothek/auf
 	const { slug } = await params
 
 	return (
-		<main>
-			<AufsatzDetail
-				aufsatz={findDocument('aufsatz', 'bibliothek', 'aufsaetze', slug) ?? notFound()}
-			/>
-		</main>
+		<SiteShell>
+			<main>
+				<AufsatzDetail
+					aufsatz={findDocument('aufsatz', 'bibliothek', 'aufsaetze', slug) ?? notFound()}
+				/>
+			</main>
+		</SiteShell>
 	)
 }
 

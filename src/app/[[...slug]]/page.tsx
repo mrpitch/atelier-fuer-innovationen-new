@@ -4,9 +4,10 @@ import { notFound } from 'next/navigation'
 import { AbschnittDetail } from '@/components/abschnitt/abschnitt-detail'
 import { AufsatzDetail } from '@/components/aufsatz/aufsatz-detail'
 import { KapitelDetail } from '@/components/kapitel/kapitel-detail'
+import { SiteShell } from '@/components/layout/site-shell'
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
-import { RundgaengeListe } from '@/components/rundgang/rundgaenge-liste'
+import { RundgaengeHub } from '@/components/rundgang/rundgaenge-hub'
 import { RundgangDetail } from '@/components/rundgang/rundgang-detail'
 import { StationDetail } from '@/components/rundgang/station-detail'
 import { StadtplanHub } from '@/components/stadt/stadtplan-hub'
@@ -15,7 +16,7 @@ import { ThemenListe } from '@/components/thema/themen-liste'
 import { ViertelDetail } from '@/components/viertel/viertel-detail'
 import { ZentrumDetail } from '@/components/zentrum/zentrum-detail'
 import type { Seite } from '@/lib/content'
-import { contentGraph, urlFromSegments, urlSegments } from '@/lib/content'
+import { contentGraph, RUNDGAENGE_SEITE_ID, urlFromSegments, urlSegments } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
 import { bodyImageComponents } from '@/mdx-components'
 
@@ -24,9 +25,6 @@ import { bodyImageComponents } from '@/mdx-components'
 // landing Seite below gets.
 const STADT_SEITE_ID = 'stadt'
 
-// The Rundgänge area's landing Seite (issue #32): the one Seite ID that also
-// lists every Rundgang, the same pattern as the Stadt area above.
-const RUNDGAENGE_SEITE_ID = 'rundgaenge'
 // The Themen area's landing Seite (issue #31): the one Seite ID that also
 // lists the three Themen, derived from the content graph.
 const THEMEN_SEITE_ID = 'themen'
@@ -73,9 +71,24 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 	// Seite below still gets.
 	if (seite.id === STADT_SEITE_ID) {
 		return (
-			<main>
-				<StadtplanHub seite={seite} locale={locale} />
-			</main>
+			<SiteShell>
+				<main>
+					<StadtplanHub seite={seite} locale={locale} />
+				</main>
+			</SiteShell>
+		)
+	}
+
+	// The Rundgänge-Hub (issue #119) is its own full-page layout — Bild-Hero,
+	// one Rundgang-Eintrag per Rundgang and "So funktioniert ein Rundgang" —
+	// not the generic Seite shape every other landing Seite below still gets.
+	if (seite.id === RUNDGAENGE_SEITE_ID) {
+		return (
+			<SiteShell>
+				<main>
+					<RundgaengeHub seite={seite} locale={locale} />
+				</main>
+			</SiteShell>
 		)
 	}
 
@@ -83,14 +96,15 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 	const Body = await graph.getBody(seite.id, locale)
 
 	return (
-		<main>
-			<Breadcrumbs items={graph.getBreadcrumbs(seite.id)} />
-			<h1>{seite.title}</h1>
-			<Body components={bodyImageComponents(seite.id)} />
-			{seite.id === RUNDGAENGE_SEITE_ID && <RundgaengeListe rundgaenge={graph.rundgaenge} />}
-			{seite.id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
-			<PreviousNext previous={graph.getPrevious(seite.id)} next={graph.getNext(seite.id)} />
-		</main>
+		<SiteShell>
+			<main>
+				<Breadcrumbs items={graph.getBreadcrumbs(seite.id)} />
+				<h1>{seite.title}</h1>
+				<Body components={bodyImageComponents(seite.id)} />
+				{seite.id === THEMEN_SEITE_ID && <ThemenListe themen={graph.themen} />}
+				<PreviousNext previous={graph.getPrevious(seite.id)} next={graph.getNext(seite.id)} />
+			</main>
+		</SiteShell>
 	)
 }
 
@@ -102,47 +116,63 @@ export default async function Page({ params }: PageProps<'/[[...slug]]'>) {
 	switch (resolved.kind) {
 		case 'viertel':
 			return (
-				<main>
-					<ViertelDetail viertel={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<ViertelDetail viertel={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'zentrum':
 			return (
-				<main>
-					<ZentrumDetail zentrum={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<ZentrumDetail zentrum={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'aufsatz':
 			return (
-				<main>
-					<AufsatzDetail aufsatz={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<AufsatzDetail aufsatz={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'kapitel':
 			return (
-				<main>
-					<KapitelDetail kapitel={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<KapitelDetail kapitel={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'abschnitt':
 			return (
-				<main>
-					<AbschnittDetail abschnitt={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<AbschnittDetail abschnitt={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'thema':
 			return (
-				<main>
-					<ThemaDetail thema={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<ThemaDetail thema={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'rundgang':
 			return (
-				<main>
-					<RundgangDetail rundgang={resolved.document} locale={locale} />
-				</main>
+				<SiteShell>
+					<main>
+						<RundgangDetail rundgang={resolved.document} locale={locale} />
+					</main>
+				</SiteShell>
 			)
 		case 'station':
+			// A Station page (issue #120) has its own Rundgang-Leiste in place of
+			// the site Header and Footer, so this is the one case SiteShell skips.
 			return (
 				<main>
 					<StationDetail station={resolved.document} locale={locale} />

@@ -33,12 +33,13 @@ function logicalParent(entry: ContentDocument): string | undefined {
 // is Navigation's own sibling sequence for a Seite (navigation.ts).
 //
 // Previous/next walk a sequence per type: Seiten their Navigation siblings;
-// Viertel their stadt/meta.json number order; Kapitel all Kapitel in number
+// Viertel their stadt/meta.json number order; Rundgänge their own
+// rundgaenge/meta.json order (issue #116); Kapitel all Kapitel in number
 // order; Abschnitte every Abschnitt in Kapitel number order, crossing from
 // the last of one Kapitel to the first of the next; Stationen only their own
-// Rundgang's; Rundgänge and Themen their own resolved list order (issue #82).
-// The Zentrum and every other type have none: a one-document "sequence"
-// never has a previous or a next.
+// Rundgang's; Themen their own resolved list order, since that folder takes
+// no meta.json (issue #82). The Zentrum and every other type have none: a
+// one-document "sequence" never has a previous or a next.
 export function buildTrail(
 	set: ContentSet,
 	entries: readonly ContentDocument[],

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { SiteShell } from '@/components/layout/site-shell'
 import { RundgangDetail } from '@/components/rundgang/rundgang-detail'
 import { contentGraph, findDocument, urlSegments } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
@@ -26,9 +27,11 @@ export default async function RundgangPage({ params }: PageProps<'/rundgaenge/[r
 	const { rundgang } = await params
 
 	return (
-		<main>
-			<RundgangDetail rundgang={findDocument('rundgang', 'rundgaenge', rundgang) ?? notFound()} />
-		</main>
+		<SiteShell>
+			<main>
+				<RundgangDetail rundgang={findDocument('rundgang', 'rundgaenge', rundgang) ?? notFound()} />
+			</main>
+		</SiteShell>
 	)
 }
 

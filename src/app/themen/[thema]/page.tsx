@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { SiteShell } from '@/components/layout/site-shell'
 import { ThemaDetail } from '@/components/thema/thema-detail'
 import { contentGraph, findDocument, urlSegments } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
@@ -26,9 +27,11 @@ export default async function ThemaPage({ params }: PageProps<'/themen/[thema]'>
 	const { thema } = await params
 
 	return (
-		<main>
-			<ThemaDetail thema={findDocument('thema', 'themen', thema) ?? notFound()} />
-		</main>
+		<SiteShell>
+			<main>
+				<ThemaDetail thema={findDocument('thema', 'themen', thema) ?? notFound()} />
+			</main>
+		</SiteShell>
 	)
 }
 

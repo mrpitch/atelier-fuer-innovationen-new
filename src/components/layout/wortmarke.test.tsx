@@ -21,4 +21,11 @@ describe('Wortmarke', () => {
 		expect(html).toContain(site.tagline)
 		expect(html).toContain('data-slot="wortmarke"')
 	})
+
+	it('omits the tagline when showTagline is false (the Rundgang-Leiste, issue #120)', () => {
+		const html = renderToStaticMarkup(<Wortmarke site={site} homeUrl="/" showTagline={false} />)
+
+		expect(html).toContain(site.name)
+		expect(html).not.toContain(site.tagline)
+	})
 })

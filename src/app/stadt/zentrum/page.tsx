@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { SiteShell } from '@/components/layout/site-shell'
 import { ZentrumDetail } from '@/components/zentrum/zentrum-detail'
 import { contentGraph } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
@@ -17,8 +18,10 @@ export default function ZentrumPage() {
 	if (!zentrum) notFound()
 
 	return (
-		<main>
-			<ZentrumDetail zentrum={zentrum} />
-		</main>
+		<SiteShell>
+			<main>
+				<ZentrumDetail zentrum={zentrum} />
+			</main>
+		</SiteShell>
 	)
 }

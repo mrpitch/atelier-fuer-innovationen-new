@@ -4,6 +4,8 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from 'cn'
 import * as React from 'react'
 
+import { buttonVariants } from '@/components/ui/button'
+
 const itemVariants = cva(
 	'group/item flex w-full flex-wrap items-center rounded-lg border text-sm transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors [a]:hover:bg-muted',
 	{
@@ -130,4 +132,21 @@ function ItemActions({ className, ...props }: React.ComponentProps<'div'>) {
 	)
 }
 
-export { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle }
+// An Item's trailing CTA that only restates its own, single destination (the
+// whole Item is already the Link): a visual affordance, not a second
+// interactive target, so it's a plain `<span>` with `aria-hidden`, not
+// another Button or Link (issue #100's own "Hier beginnen"/"Weiter" CTAs).
+// A Rundgang Station's "Hier einsteigen" (issue #118) passes its reading
+// time as `lead`, rendered before the span inside the same ItemActions.
+function decorativeCta(variant: 'default' | 'outline', label: string, lead?: React.ReactNode) {
+	return (
+		<ItemActions>
+			{lead}
+			<span aria-hidden="true" className={buttonVariants({ variant, size: 'sm' })}>
+				{label}
+			</span>
+		</ItemActions>
+	)
+}
+
+export { decorativeCta, Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle }
