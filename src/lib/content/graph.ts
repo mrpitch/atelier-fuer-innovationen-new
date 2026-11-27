@@ -25,6 +25,7 @@ import { parentId, RUNDGAENGE_DIR, STADT_DIR } from './locations'
 import type { FlatMenuName, GroupedMenuName, MenuGroupLink, MenuLink, ResolvedMenu } from './menu'
 import { resolveMenus } from './menu'
 import { buildNavigation } from './navigation'
+import { shortTitleOrTitle } from './presentation'
 import { orderRundgaenge, summarizeRundgang } from './rundgang'
 import { stationOrderSchema } from './schemas'
 import { listSitemap } from './sitemap'
@@ -295,6 +296,9 @@ export function buildContentGraph(
 	const leitthema = themen.find((thema) => thema.kapitelId === undefined)
 
 	const orte = [...loaded.viertel, ...loaded.zentrum]
+	// A Rundgang's route (rundgang.ts's routeOrte) needs an Ort's title, not
+	// just its id — built once here rather than per Rundgang.
+	const ortTitleById = new Map(orte.map((ort) => [ort.id, shortTitleOrTitle(ort)]))
 	const orderedRundgaenge = orderRundgaenge(
 		loadOrder(contentDir, RUNDGAENGE_DIR, RUNDGANG_ORDER_FIELD),
 		loaded.rundgang,
@@ -318,7 +322,7 @@ export function buildContentGraph(
 		if (!isVisible(document)) continue
 		rundgangNumber += 1
 		stationenByRundgang.set(document.id, stationen)
-		rundgaenge.push(summarizeRundgang(document, stationen, rundgangNumber))
+		rundgaenge.push(summarizeRundgang(document, stationen, rundgangNumber, ortTitleById))
 	}
 	const stationen = rundgaenge.flatMap((item) => stationenByRundgang.get(item.id) ?? [])
 	// The Schauen Rundgang of a Viertel or the Zentrum (issue #95): the first
