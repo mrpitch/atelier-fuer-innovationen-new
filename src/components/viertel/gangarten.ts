@@ -5,10 +5,10 @@ import { t } from '@/lib/dictionary'
 import type { GangartKarteLink, GangartKarteProps } from './gangart-karte'
 
 // The Viertel or Zentrum name a Station stands at: "Station n · <Viertel>"
-// (issue #97's own acceptance criteria) names the place, not the Station's
-// own narrative title ("Bei den Kontexten"), which stadt-tabelle-rows.ts's
-// identical dictionary key shows instead for its own, differently-scoped
-// table cell. A Station without an Ort (issue #116) falls back to its own
+// (issue #97's own acceptance criteria) names the place, read from the Ort,
+// not the Station's own title: placeholder Stationen carry the Ort's title
+// today, but a Station's title is its own and may differ later. A Station
+// without an Ort (issue #116) falls back to its own
 // title, since there is no place to name — this only shows up here as a
 // previous/next neighbour on the one Rundgang with a Schauen Gangart, which
 // is never such a Station in the placeholder content.
