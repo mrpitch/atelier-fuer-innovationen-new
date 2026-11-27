@@ -89,7 +89,7 @@ Order lives in one place per folder: a `meta.json` that is a bare JSON array of 
 
 - **Strict.** When a `meta.json` exists, every child appears exactly once. A duplicate, an unknown ID or an unlisted child fails, naming the `meta.json` and the ID, so order can't drift silently. One reconciliation function handles every order file.
 - **Optional for Seiten.** A folder of Seiten without `meta.json` sorts by natural key: date (once a type has one), then title.
-- **Required** for `stadt/meta.json` (the Viertel), `rundgaenge/meta.json` (the Rundgänge, issue #116), each Kapitel's `meta.json` (its Abschnitte) and each Rundgang's `meta.json` (its Stationen).
+- **Required** for `stadt/meta.json` (the Viertel), `rundgaenge/meta.json` (the Rundgänge, issue #116), each Kapitel's `meta.json` (its Abschnitte) and each Rundgang's `meta.json` (its Stationen, at least one).
 
 Numbers are positions, never frontmatter:
 

@@ -176,9 +176,14 @@ function readJsonFile(relativePath: string, absolutePath: string, field: string)
 
 const META_FILE_NAME = 'meta.json'
 
-function parseMeta(file: string, absolutePath: string, field: string): Meta {
+function parseMeta(
+	file: string,
+	absolutePath: string,
+	field: string,
+	schema: typeof metaSchema,
+): Meta {
 	const data = readJsonFile(file, absolutePath, field)
-	const parsed = metaSchema.safeParse(data)
+	const parsed = schema.safeParse(data)
 	if (!parsed.success) {
 		throw new ContentValidationError(file, field, parsed.error.issues[0].message)
 	}
@@ -210,7 +215,12 @@ export function loadMeta(contentDir: string): Map<string, Meta> {
 	const result = new Map<string, Meta>()
 
 	for (const relativePath of listMetaFiles(contentDir)) {
-		const meta = parseMeta(relativePath, path.join(contentDir, relativePath), META_FIELD)
+		const meta = parseMeta(
+			relativePath,
+			path.join(contentDir, relativePath),
+			META_FIELD,
+			metaSchema,
+		)
 		result.set(folderIdFromMetaPath(relativePath), meta)
 	}
 
@@ -222,14 +232,19 @@ export function loadMeta(contentDir: string): Map<string, Meta> {
 // the Viertel, a Kapitel's ID for its Abschnitte, a Rundgang's ID for its
 // Stationen. Required, since an explicit order is the source of a number,
 // not a natural-key fallback. `field` names the file's own error kind
-// (errors.ts).
-export function loadOrder(contentDir: string, folderId: string, field: string): Meta {
+// (errors.ts); `schema` is the list's own shape, non-empty for Stationen.
+export function loadOrder(
+	contentDir: string,
+	folderId: string,
+	field: string,
+	schema: typeof metaSchema = metaSchema,
+): Meta {
 	const file = path.join(folderId, META_FILE_NAME)
 	const absolutePath = path.join(contentDir, file)
 	if (!fs.existsSync(absolutePath)) {
 		throw new ContentValidationError(file, field, 'file not found')
 	}
-	return parseMeta(file, absolutePath, field)
+	return parseMeta(file, absolutePath, field, schema)
 }
 
 const SITE_FILE_NAME = 'site.json'

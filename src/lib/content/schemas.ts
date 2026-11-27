@@ -22,9 +22,12 @@ export type SeiteFrontmatter = z.infer<typeof seiteFrontmatterSchema>
 // meta.json holds only an ordered list of child IDs (issue #26) — nothing else,
 // so the schema is the list itself, not a wrapping object. The same schema
 // reads every order file: a folder's Seite order, the Viertel order
-// (stadt/meta.json), a Kapitel's Abschnitt order and a Rundgang's Station
-// order.
+// (stadt/meta.json) and a Kapitel's Abschnitt order.
 export const metaSchema = z.array(z.string().min(1))
+
+// A Rundgang's Station order: the same list, but never empty. A Rundgang with
+// no Station has nowhere to start ("Rundgang starten") and no Route.
+export const stationOrderSchema = metaSchema.min(1, 'lists no Station')
 
 // Site-wide facts (issue #27): one data file, read by the header, footer and
 // metadata instead of each restating the same facts.

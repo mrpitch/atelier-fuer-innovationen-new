@@ -26,6 +26,7 @@ import type { FlatMenuName, GroupedMenuName, MenuGroupLink, MenuLink, ResolvedMe
 import { resolveMenus } from './menu'
 import { buildNavigation } from './navigation'
 import { orderRundgaenge, summarizeRundgang } from './rundgang'
+import { stationOrderSchema } from './schemas'
 import { listSitemap } from './sitemap'
 import { orderStationen } from './station'
 import { resolveThemen } from './thema'
@@ -299,7 +300,7 @@ export function buildContentGraph(
 		const stationen = orderStationen(
 			document,
 			isVisible(document) ? { id: document.id, url: pathUrl(document.id) } : undefined,
-			loadOrder(contentDir, document.id, STATION_ORDER_FIELD),
+			loadOrder(contentDir, document.id, STATION_ORDER_FIELD, stationOrderSchema),
 			stationDocuments.get(document.id) ?? [],
 			orte,
 			loaded.zentrum[0]?.id,

@@ -833,6 +833,19 @@ describe('buildContentGraph', () => {
 			}
 		})
 
+		it("fails when a Rundgang's Station order is empty, naming the file", () => {
+			expect.assertions(3)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'rundgang-no-station'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('rundgaenge', 'einziger-rundgang', 'meta.json'))
+				expect(validationError.reason).toMatch(/no station/i)
+			}
+		})
+
 		it('builds a Station without an ortId, and passes leitsatz, kennzeichen and lage through unchanged (issue #116)', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-optional-fields-valid'))
 
