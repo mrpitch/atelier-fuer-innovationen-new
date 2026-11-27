@@ -70,14 +70,15 @@ describe('StartHub', () => {
 		expect(html).toContain('Alle Themen →')
 	})
 
-	it('leaves out the tagline, heading, intro, testimonial and Rundgang-starten button a document never sets (issue #130)', () => {
+	it('leaves out the tagline, intro, testimonial and Rundgang-starten button a document never sets, falling back to the title for the heading (issue #130)', () => {
 		const html = renderFixture('start-hub-empty')
 		const heroMatch = /<section data-slot="hero-section-7"[^]*?<\/section>/.exec(html)
 		if (!heroMatch) throw new Error('Hero section missing from the render')
 		const hero = heroMatch[0]
 
 		expect(hero).not.toContain('data-slot="tagline"')
-		expect(hero).not.toContain('<h1')
+		expect(hero).toContain('<h1')
+		expect(hero).toContain('Start</h1>')
 		expect(html).not.toContain('data-slot="testimonials-section-1"')
 		expect(html).not.toContain('Rundgang starten')
 		expect(html).toContain('href="/stadt"')

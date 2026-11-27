@@ -42,7 +42,7 @@ function StartHub({ seite, className, ...props }: StartHubProps) {
 		<div data-slot="start-hub" className={cn(className)} {...props}>
 			<HeroSection7
 				tagline={seite.tagline}
-				heading={seite.heading}
+				heading={seite.heading ?? seite.title}
 				intro={seite.intro}
 				actions={
 					<>
