@@ -62,10 +62,13 @@ function ThemaKarte({
 			<div className="flex min-w-0 flex-col gap-3 text-center md:text-left">
 				<p className="font-mono text-xs font-medium text-muted-foreground">{label}</p>
 				<p className="font-heading text-2xl text-foreground">{title}</p>
-				<p className="text-sm text-muted-foreground">{text}</p>
+				<p className="font-serif text-base text-muted-foreground">{text}</p>
 				<Link
 					href={href}
-					className={buttonVariants({ variant: 'outline', className: 'self-center md:self-start' })}
+					className={buttonVariants({
+						variant: 'outline',
+						className: 'self-center bg-card md:self-start',
+					})}
 				>
 					{actionLabel}
 				</Link>

@@ -58,7 +58,7 @@ function GangartBox({
 			</div>
 			<Link
 				href={action.href}
-				className={buttonVariants({ variant: 'outline', className: 'w-full' })}
+				className={buttonVariants({ variant: 'outline', className: 'self-start' })}
 			>
 				{action.label}
 				<Icon iconName="arrowRight" data-icon="inline-end" />

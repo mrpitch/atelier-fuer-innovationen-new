@@ -11,6 +11,11 @@ interface BildHeroProps extends React.ComponentProps<'section'> {
 	badge?: React.ReactNode
 	title: string
 	zitat?: string
+	// Petrol marks the Thema heroes' eyebrow (Figma T09a/T09b, issue #145).
+	eyebrowTone?: 'primary' | 'muted'
+	// The Thema Leitsatz is set in italic display serif (Figma T09a/T09b,
+	// issue #144), not as the upright Zitat of the other heroes.
+	zitatItalic?: boolean
 	// Unset on the Thema page's Themen-Ort hero (issue #125), whose intro
 	// sits in the page body below instead of inside the hero.
 	children?: React.ReactNode
@@ -33,6 +38,8 @@ function BildHero({
 	children,
 	actions,
 	illustration,
+	eyebrowTone = 'muted',
+	zitatItalic = false,
 	className,
 	...props
 }: BildHeroProps) {
@@ -49,13 +56,23 @@ function BildHero({
 			{/* eslint-disable-next-line restrictions/arbitrary-size-classes */}
 			<div className="flex max-w-[748px] flex-col gap-6">
 				<div className="flex flex-wrap items-center gap-3">
-					<MonoLabel tone="muted">{eyebrow}</MonoLabel>
+					<MonoLabel tone={eyebrowTone}>{eyebrow}</MonoLabel>
 					{badge}
 				</div>
 				<h1 className="font-heading text-[48px] leading-none tracking-[-0.02em] hyphens-auto text-foreground xl:text-[88px]">
 					{title}
 				</h1>
-				{zitat && <p className="font-serif text-[28px] text-foreground xl:text-[40px]">{zitat}</p>}
+				{zitat && (
+					<p
+						className={
+							zitatItalic
+								? 'font-heading text-[28px] text-foreground italic xl:text-[32px]'
+								: 'font-serif text-[28px] text-foreground xl:text-[40px]'
+						}
+					>
+						{zitat}
+					</p>
+				)}
 				{children && <div className="text-lg text-muted-foreground">{children}</div>}
 				{actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
 			</div>

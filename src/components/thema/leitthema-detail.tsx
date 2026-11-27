@@ -80,13 +80,15 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 				eyebrow={t('thema.leitthemaHeroEyebrow')}
 				title={thema.title}
 				zitat={thema.leitsatz}
+				zitatItalic
+				eyebrowTone="primary"
 				illustration={
 					<Illustration
 						id={thema.id}
 						label={thema.title}
-						// 420px: the Bild-Hero illustration size (Figma Bild-Hero 36584:15357).
+						// 220px below xl, 420px from xl (Figma T09a 36626:28730, 36603:12965).
 						// eslint-disable-next-line restrictions/arbitrary-size-classes
-						className="size-[420px]"
+						className="size-[220px] xl:size-[420px]"
 					/>
 				}
 				actions={
@@ -108,7 +110,7 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 				<p>{thema.description}</p>
 			</BildHero>
 
-			<PageSection data-slot="themen-weg-section">
+			<PageSection data-slot="themen-weg-section" className="md:px-5 xl:px-24">
 				<SectionTitle
 					tagline={t('thema.weg.tagline')}
 					title={t('thema.weg.title')}
@@ -156,7 +158,7 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 
 			{thema.zitat && <TestimonialsSection1 zitat={thema.zitat} />}
 
-			<PageSection data-slot="abzweige-section">
+			<PageSection data-slot="abzweige-section" className="md:px-5 xl:px-24">
 				<SectionTitle
 					tagline={t('thema.abzweige.tagline')}
 					title={t('thema.abzweige.title')}
