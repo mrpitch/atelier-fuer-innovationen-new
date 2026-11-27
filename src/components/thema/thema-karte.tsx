@@ -60,7 +60,7 @@ function ThemaKarte({
 				className="size-[140px] shrink-0"
 			/>
 			<div className="flex min-w-0 flex-col gap-3 text-center md:text-left">
-				<p className="font-mono text-xs font-medium text-muted-foreground">{label}</p>
+				<p className="font-mono text-xs font-medium text-primary">{label}</p>
 				<p className="font-heading text-2xl text-foreground">{title}</p>
 				<p className="font-serif text-base text-muted-foreground">{text}</p>
 				<Link
