@@ -47,6 +47,7 @@ import type {
 	Site,
 	Station,
 	Thema,
+	ThemenOrt,
 	Viertel,
 	Zentrum,
 } from './types'
@@ -155,6 +156,10 @@ export interface ContentGraph {
 	readonly kapitel: readonly Kapitel[]
 	getKapitel(id: string, locale?: string): Kapitel | undefined
 	getKapitelByViertel(viertelId: string): Kapitel | undefined
+	// A Kapitel's own Viertel (its `viertelId`, checked while the graph is
+	// built); throws if it is missing instead of returning undefined, so a
+	// caller never carries its own lookup and throw.
+	getViertelOfKapitel(kapitel: Kapitel): Viertel
 	// A Kapitel's published Abschnitte, ordered by its own meta.json — never
 	// listed by hand on the Kapitel itself; "N Abschnitte" is this list's
 	// length.
@@ -192,6 +197,10 @@ export interface ContentGraph {
 	// A Kapitel's Themen-Ort(e), derived from each Thema's Kapitel reference
 	// — never listed by hand on the Kapitel itself.
 	getThemenByKapitel(kapitelId: string): readonly Thema[]
+	// The Themen-Orte in Ortsleiste order — by branch Kapitel number, the
+	// Leitthema excluded: the one source for every list that follows the
+	// Ortsleiste (getPrevious/getNext) instead of re-sorting `themen`.
+	readonly themenOrte: readonly ThemenOrt[]
 	// The Leitthema itself (the one Thema with no kapitelId), looked up once
 	// instead of each caller re-deriving it from `themen` (issue #95's
 	// zentrumRow/headings did; issue #96's Viertel Bild-Hero badge is the
@@ -282,7 +291,7 @@ export function buildContentGraph(
 		]),
 	)
 	const abschnitte = kapitel.flatMap((item) => abschnitteByKapitel.get(item.id) ?? [])
-	const themen = resolveThemen(loaded.thema, loaded.kapitel, isVisible)
+	const themen = resolveThemen(loaded.thema, loaded.kapitel, loaded.aufsatz, isVisible)
 	const leitthema = themen.find((thema) => thema.kapitelId === undefined)
 
 	const orte = [...loaded.viertel, ...loaded.zentrum]
@@ -464,6 +473,13 @@ export function buildContentGraph(
 		kapitel,
 		getKapitel: (id, locale) => find('kapitel', id, locale),
 		getKapitelByViertel: (viertelId) => kapitel.find((item) => item.viertelId === viertelId),
+		getViertelOfKapitel: (item) => {
+			const viertelOfKapitel = find('viertel', item.viertelId)
+			if (!viertelOfKapitel) {
+				throw new Error(`Kapitel ${item.id} names an unknown Viertel: ${item.viertelId}`)
+			}
+			return viertelOfKapitel
+		},
 		getAbschnitteByKapitel: (kapitelId) => abschnitteByKapitel.get(kapitelId) ?? [],
 		getAbschnitt: (id, locale) => find('abschnitt', id, locale),
 		rundgaenge,
@@ -482,6 +498,7 @@ export function buildContentGraph(
 		themen,
 		getThema: (id, locale) => find('thema', id, locale),
 		getThemenByKapitel: (kapitelId) => themen.filter((item) => item.kapitelId === kapitelId),
+		themenOrte: trail.themenOrte,
 		leitthema,
 		bodyImages: [...bodyImages],
 	}

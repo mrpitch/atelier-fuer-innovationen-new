@@ -138,14 +138,56 @@ export const kapitelFrontmatterSchema = z.object({
 
 export type KapitelFrontmatter = z.infer<typeof kapitelFrontmatterSchema>
 
+// A quote with its source (issue #124): `zusatz` is the speaker's role or the
+// quote's origin, not the quote itself. The Leitthema's `zitat` and the
+// Startseite's (epic #128) share this one shape instead of each declaring
+// their own text/quelle/zusatz fields.
+export const zitatSchema = z.object({
+	text: z.string().min(1),
+	quelle: z.string().min(1),
+	zusatz: z.string().min(1).optional(),
+})
+
+export type Zitat = z.infer<typeof zitatSchema>
+
 // A Thema (glossary) is the Leitthema or a Themen-Ort (issue #31). The
 // Leitthema has no Kapitel reference; a Themen-Ort's `kapitelId` names the
 // one Kapitel it branches off from, checked against the actual Kapitel by
 // `references.ts`, not here — the same split Aufsatz's `viertelId` makes.
-export const themaFrontmatterSchema = z.object({
-	...baseShape,
-	kapitelId: z.string().min(1).optional(),
-})
+// `leitsatz` (issue #124) is any Thema's own optional hero quote. `zitat` is
+// the Leitthema's own pull-quote in the shared shape above, and
+// `weiterfuehrendIds` a Themen-Ort's own optional list of further Aufsätze,
+// each checked against the actual Aufsatz by `references.ts`'s same
+// resolver a single reference field uses, once per listed ID; its label and
+// description come from the target, its URL from the graph (thema.ts). The
+// superRefine below holds each to its own role — the same kind of
+// within-schema cross-field check menuSchema's superRefine makes for a Menu's
+// entries and groups.
+export const themaFrontmatterSchema = z
+	.object({
+		...baseShape,
+		kapitelId: z.string().min(1).optional(),
+		leitsatz: z.string().min(1).optional(),
+		zitat: zitatSchema.optional(),
+		weiterfuehrendIds: z.array(z.string().min(1)).optional(),
+	})
+	.superRefine((thema, ctx) => {
+		if (thema.kapitelId === undefined && thema.weiterfuehrendIds !== undefined) {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['weiterfuehrendIds'],
+				message:
+					'weiterfuehrendIds is a Themen-Ort field; the Leitthema has no Kapitel to branch from',
+			})
+		}
+		if (thema.kapitelId !== undefined && thema.zitat !== undefined) {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['zitat'],
+				message: 'zitat is the Leitthema field; a Themen-Ort has none',
+			})
+		}
+	})
 
 export type ThemaFrontmatter = z.infer<typeof themaFrontmatterSchema>
 

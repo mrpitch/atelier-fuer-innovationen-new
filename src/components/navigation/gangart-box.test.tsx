@@ -1,35 +1,46 @@
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
+import Link from 'next/link'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { buildContentGraph } from '@/lib/content'
-
 import { GangartBox } from './gangart-box'
 
-const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '__fixtures__')
-const graph = buildContentGraph(path.join(fixturesDir, 'gangart-box-valid'))
-
 describe('GangartBox', () => {
-	it('names the Rundgang Station and the Viertel, and links to the Station', () => {
-		const viertel = graph.getViertel('stadt/testviertel')
-		if (!viertel) throw new Error('fixture content has no stadt/testviertel')
-		const rundgang = graph.getSchauenRundgang(viertel.id)
-		const station = graph.getSchauenStation(viertel.id)
-		if (!rundgang || !station) throw new Error('fixture content has no Schauen Rundgang/Station')
-
+	it('shows its label, titel, text and action, and links the action to its href', () => {
 		const html = renderToStaticMarkup(
-			<GangartBox rundgang={rundgang} station={station} viertel={viertel} />,
+			<GangartBox
+				label="GANGART WECHSELN"
+				illustration={<svg data-testid="illustration" />}
+				titel="Station 3 im Rundgang"
+				text="Das Viertel der Kontexte liegt auch auf diesem Rundgang."
+				action={{ label: 'Station 3 ansehen', href: '/test-rundgang/3' }}
+			/>,
 		)
 
 		expect(html).toContain('data-slot="gangart-box"')
 		expect(html).toContain('GANGART WECHSELN')
-		expect(html).toContain(`Station ${station.number} im Rundgang`)
-		expect(html).toContain(viertel.title)
-		expect(html).toContain(`href="${station.url}"`)
-		expect(html).toContain(`Station ${station.number} ansehen`)
-		// no bookmark line (issue #100 AC)
+		expect(html).toContain('Station 3 im Rundgang')
+		expect(html).toContain('Das Viertel der Kontexte liegt auch auf diesem Rundgang.')
+		expect(html).toContain('href="/test-rundgang/3"')
+		expect(html).toContain('Station 3 ansehen')
+		expect(html).toContain('data-testid="illustration"')
+		// no bookmark line (issue #100 AC) when no hinweis is given
 		expect(html).not.toContain('Lesezeichen')
+	})
+
+	it('renders the optional hinweis below the action', () => {
+		const leitthemaHref = '/test-leitthema'
+		const html = renderToStaticMarkup(
+			<GangartBox
+				label="ZURÜCK ZUM THEMEN-WEG"
+				illustration={<svg />}
+				titel="Kapitel 1 · Ankunft"
+				text="Im Viertel der Annäherung zweigt dieser Themen-Ort vom Leitthema ab."
+				action={{ label: 'Kapitel 1 lesen', href: '/test-kapitel' }}
+				hinweis={<Link href={leitthemaHref}>Leitthema „Eine Welt für morgen“</Link>}
+			/>,
+		)
+
+		expect(html).toContain('Leitthema „Eine Welt für morgen“')
+		expect(html).toContain(`href="${leitthemaHref}"`)
 	})
 })

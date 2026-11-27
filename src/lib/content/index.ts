@@ -32,7 +32,9 @@ export type {
 	Site,
 	Station,
 	Thema,
+	ThemenOrt,
 	Viertel,
 	ViertelSteckbrief,
 	Zentrum,
+	Zitat,
 } from './types'

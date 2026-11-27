@@ -1,6 +1,6 @@
-import type { ViertelSteckbrief } from './schemas'
+import type { ViertelSteckbrief, Zitat } from './schemas'
 
-export type { Site, ViertelSteckbrief } from './schemas'
+export type { Site, ViertelSteckbrief, Zitat } from './schemas'
 
 // Every content type (glossary), named as the discriminant `kind` carries it
 // through resolveUrl, getLocalizedDocuments and the document index.
@@ -85,11 +85,34 @@ export interface Abschnitt extends BaseDocument {
 	readonly readingTimeMinutes: number
 }
 
+// A Themen-Ort's further Aufsatz (issue #124: `weiterfuehrendIds`): label and
+// description come from the target Aufsatz, the URL from its own URL rule
+// (ADR-0003) — neither restated in frontmatter.
+export interface Weiterfuehrend {
+	readonly label: string
+	readonly description: string
+	readonly url: string
+}
+
 // A Thema (issue #31): the Leitthema (no `kapitelId`) or a Themen-Ort, whose
-// `kapitelId` names the one Kapitel it branches off from.
+// `kapitelId` names the one Kapitel it branches off from. `leitsatz` (issue
+// #124) is any Thema's own optional hero quote; `zitat` is the Leitthema's
+// own pull-quote in the shared Zitat shape. `weiterfuehrendIds` is a
+// Themen-Ort's own optional list of further Aufsätze, `weiterfuehrend` its
+// resolution (thema.ts) — undefined when the Thema sets no list. A
+// Themen-Ort's Viertel and branch Kapitel (its number included) are never
+// stored here: `graph.getKapitel(kapitelId)` and, from that Kapitel's own
+// `viertelId`, `graph.getViertel` already derive both.
 export interface Thema extends BaseDocument {
 	readonly kapitelId?: string
+	readonly leitsatz?: string
+	readonly zitat?: Zitat
+	readonly weiterfuehrendIds?: readonly string[]
+	readonly weiterfuehrend?: readonly Weiterfuehrend[]
 }
+
+// A Themen-Ort: a Thema that names its branch Kapitel.
+export type ThemenOrt = Thema & { readonly kapitelId: string }
 
 // A Rundgang (issue #32, #116) with its Stationen count and duration derived
 // (rundgang.ts). `leitsatz` and `kennzeichen` are its own optional pull-quote
