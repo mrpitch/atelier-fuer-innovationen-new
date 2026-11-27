@@ -51,22 +51,18 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 	// own "Rundgang durch alle Viertel" action uses (stadtplan-hub.tsx).
 	const ersteStation = zentrum && graph.getSchauenStation(zentrum.id)
 
-	// Every Themen-Ort with its branch Kapitel and that Kapitel's own Viertel
-	// resolved once, sorted by branch Kapitel number — the Ortsleiste order
-	// (trail.ts: Leitthema, then Themen-Orte by branch Kapitel number) for
-	// everything below that needs it: the Ortsleiste's own two actions, the
-	// Abzweige heading and each Thema-Karte.
-	const themenOrte = graph.themen
-		.filter((item): item is Thema & { kapitelId: string } => item.kapitelId !== undefined)
-		.map((item) => {
-			const kapitel = graph.getKapitel(item.kapitelId)
-			const viertel = kapitel && graph.getViertel(kapitel.viertelId)
-			if (!kapitel || !viertel) {
-				throw new Error(`LeitthemaDetail: unknown Kapitel/Viertel for ${item.id}`)
-			}
-			return { thema: item, kapitel, viertel }
-		})
-		.sort((a, b) => a.kapitel.number - b.kapitel.number)
+	// Every Themen-Ort in Ortsleiste order (graph.themenOrte) with its branch
+	// Kapitel and that Kapitel's own Viertel resolved once — for everything
+	// below that needs it: the Ortsleiste's own two actions, the Abzweige
+	// heading and each Thema-Karte.
+	const themenOrte = graph.themenOrte.map((item) => {
+		const kapitel = graph.getKapitel(item.kapitelId)
+		const viertel = kapitel && graph.getViertel(kapitel.viertelId)
+		if (!kapitel || !viertel) {
+			throw new Error(`LeitthemaDetail: unknown Kapitel/Viertel for ${item.id}`)
+		}
+		return { thema: item, kapitel, viertel }
+	})
 	const [ersterThemenOrt, zweiterThemenOrt] = themenOrte
 
 	return (

@@ -111,6 +111,9 @@ export interface Thema extends BaseDocument {
 	readonly weiterfuehrend?: readonly Weiterfuehrend[]
 }
 
+// A Themen-Ort: a Thema that names its branch Kapitel.
+export type ThemenOrt = Thema & { readonly kapitelId: string }
+
 // A Rundgang (issue #32, #116) with its Stationen count and duration derived
 // (rundgang.ts). `leitsatz` and `kennzeichen` are its own optional pull-quote
 // and badge text; `themaId` optionally names the Thema it tells (checked

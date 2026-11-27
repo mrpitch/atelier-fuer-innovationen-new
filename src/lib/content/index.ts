@@ -32,6 +32,7 @@ export type {
 	Site,
 	Station,
 	Thema,
+	ThemenOrt,
 	Viertel,
 	ViertelSteckbrief,
 	Zentrum,

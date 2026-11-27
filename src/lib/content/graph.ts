@@ -47,6 +47,7 @@ import type {
 	Site,
 	Station,
 	Thema,
+	ThemenOrt,
 	Viertel,
 	Zentrum,
 } from './types'
@@ -192,6 +193,10 @@ export interface ContentGraph {
 	// A Kapitel's Themen-Ort(e), derived from each Thema's Kapitel reference
 	// — never listed by hand on the Kapitel itself.
 	getThemenByKapitel(kapitelId: string): readonly Thema[]
+	// The Themen-Orte in Ortsleiste order — by branch Kapitel number, the
+	// Leitthema excluded: the one source for every list that follows the
+	// Ortsleiste (getPrevious/getNext) instead of re-sorting `themen`.
+	readonly themenOrte: readonly ThemenOrt[]
 	// The Leitthema itself (the one Thema with no kapitelId), looked up once
 	// instead of each caller re-deriving it from `themen` (issue #95's
 	// zentrumRow/headings did; issue #96's Viertel Bild-Hero badge is the
@@ -482,6 +487,7 @@ export function buildContentGraph(
 		themen,
 		getThema: (id, locale) => find('thema', id, locale),
 		getThemenByKapitel: (kapitelId) => themen.filter((item) => item.kapitelId === kapitelId),
+		themenOrte: trail.themenOrte,
 		leitthema,
 		bodyImages: [...bodyImages],
 	}

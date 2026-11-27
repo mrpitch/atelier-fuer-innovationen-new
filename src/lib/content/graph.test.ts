@@ -1214,6 +1214,11 @@ describe('buildContentGraph', () => {
 			expect(graph.getPrevious('themen/anfang-im-weg')?.id).toBe('themen/zuletzt-im-weg')
 			expect(graph.getNext('themen/anfang-im-weg')).toBeUndefined()
 
+			expect(graph.themenOrte.map((thema) => thema.id)).toEqual([
+				'themen/zuletzt-im-weg',
+				'themen/anfang-im-weg',
+			])
+
 			// graph.themen itself keeps the folders' own read order (issue #82),
 			// unaffected by the Ortsleiste order above.
 			expect(graph.themen.map((thema) => thema.id)).toEqual([

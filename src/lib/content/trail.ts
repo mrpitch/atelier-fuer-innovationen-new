@@ -1,6 +1,6 @@
 import { parentId } from './locations'
 import { toLink } from './presentation'
-import type { ContentDocument, ContentSet, NavigationLink } from './types'
+import type { ContentDocument, ContentSet, NavigationLink, ThemenOrt } from './types'
 
 // Breadcrumbs and previous/next for a document of any type (issue #23),
 // derived from the published documents alone: nothing here is written down
@@ -9,6 +9,8 @@ export interface Trail {
 	getBreadcrumbs(id: string): readonly NavigationLink[]
 	getPrevious(id: string): NavigationLink | undefined
 	getNext(id: string): NavigationLink | undefined
+	// The Themen-Orte in Ortsleiste order (below), without the Leitthema.
+	readonly themenOrte: readonly ThemenOrt[]
 }
 
 // The document a breadcrumb trail continues with above this one: where the
@@ -114,5 +116,6 @@ export function buildTrail(
 		getNext(id) {
 			return neighbour(id, 1)
 		},
+		themenOrte: themenOrder.filter((thema): thema is ThemenOrt => thema.kapitelId !== undefined),
 	}
 }
