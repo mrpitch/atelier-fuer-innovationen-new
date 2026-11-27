@@ -171,10 +171,11 @@ export type KapitelFrontmatter = z.infer<typeof kapitelFrontmatterSchema>
 // `weiterfuehrendIds` a Themen-Ort's own optional list of further Aufsätze,
 // each checked against the actual Aufsatz by `references.ts`'s same
 // resolver a single reference field uses, once per listed ID; its label and
-// description come from the target, its URL from the graph (thema.ts). The
-// superRefine below holds each to its own role — the same kind of
-// within-schema cross-field check menuSchema's superRefine makes for a Menu's
-// entries and groups.
+// description come from the target, its URL from the graph (thema.ts).
+// `teaser` (issue #149) is any Thema's own optional, translatable one-line
+// lead, shown on its Thema-Kachel and Thema-Karte. The superRefine below
+// holds each to its own role — the same kind of within-schema cross-field
+// check menuSchema's superRefine makes for a Menu's entries and groups.
 export const themaFrontmatterSchema = z
 	.object({
 		...baseShape,
@@ -182,6 +183,7 @@ export const themaFrontmatterSchema = z
 		leitsatz: z.string().min(1).optional(),
 		zitat: zitatSchema.optional(),
 		weiterfuehrendIds: z.array(z.string().min(1)).optional(),
+		teaser: z.string().min(1).optional(),
 	})
 	.superRefine((thema, ctx) => {
 		if (thema.kapitelId === undefined && thema.weiterfuehrendIds !== undefined) {
@@ -275,6 +277,11 @@ export const kapitelTranslationFrontmatterSchema = translationFrontmatterSchema.
 	untertitel: z.string().min(1).optional(),
 })
 
+// A Thema additionally translates its own Teaser (issue #149).
+export const themaTranslationFrontmatterSchema = translationFrontmatterSchema.extend({
+	teaser: z.string().min(1).optional(),
+})
+
 export const abschnittTranslationFrontmatterSchema = translationFrontmatterSchema.extend({
 	leitsatz: z.string().min(1).optional(),
 	jahr: z.number().int().optional(),
@@ -287,4 +294,5 @@ export const abschnittTranslationFrontmatterSchema = translationFrontmatterSchem
 // still enforces which fields its translation file may actually set.
 export type TranslationFrontmatter = z.infer<typeof viertelTranslationFrontmatterSchema> &
 	z.infer<typeof kapitelTranslationFrontmatterSchema> &
-	z.infer<typeof abschnittTranslationFrontmatterSchema>
+	z.infer<typeof abschnittTranslationFrontmatterSchema> &
+	z.infer<typeof themaTranslationFrontmatterSchema>

@@ -107,16 +107,19 @@ export interface Weiterfuehrend {
 // #124) is any Thema's own optional hero quote; `zitat` is the Leitthema's
 // own pull-quote in the shared Zitat shape. `weiterfuehrendIds` is a
 // Themen-Ort's own optional list of further Aufsätze, `weiterfuehrend` its
-// resolution (thema.ts) — undefined when the Thema sets no list. A
-// Themen-Ort's Viertel and branch Kapitel (its number included) are never
-// stored here: `graph.getKapitel(kapitelId)` and, from that Kapitel's own
-// `viertelId`, `graph.getViertel` already derive both.
+// resolution (thema.ts) — undefined when the Thema sets no list. `teaser`
+// (issue #149) is any Thema's own optional, translatable one-line lead,
+// shown on its Thema-Kachel and Thema-Karte. A Themen-Ort's Viertel and
+// branch Kapitel (its number included) are never stored here:
+// `graph.getKapitel(kapitelId)` and, from that Kapitel's own `viertelId`,
+// `graph.getViertel` already derive both.
 export interface Thema extends BaseDocument {
 	readonly kapitelId?: string
 	readonly leitsatz?: string
 	readonly zitat?: Zitat
 	readonly weiterfuehrendIds?: readonly string[]
 	readonly weiterfuehrend?: readonly Weiterfuehrend[]
+	readonly teaser?: string
 }
 
 // A Themen-Ort: a Thema that names its branch Kapitel.

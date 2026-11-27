@@ -3,6 +3,7 @@ import { de } from './de'
 import { interpolate } from './interpolate'
 
 export type { DictionaryKey }
+export { pluralForm } from './plural'
 
 // The one public interface for UI copy (issue #26): a component looks up a
 // string by key instead of writing it inline, so every German UI string
