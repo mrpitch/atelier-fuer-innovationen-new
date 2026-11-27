@@ -126,6 +126,30 @@ _Avoid_: mode, way
 A Thema presented as a single place instead of a walk. It branches off from one Kapitel of the Leitthema.
 _Avoid_: Abzweig, Themenseite
 
+**Themen-Hub**
+The `/themen` page: the landing page of the Themen area, showing the Themen-Triptychon and the Rundgänge-Hinweis. Not the Thema pages it links to (code: `ThemenHub`).
+_Avoid_: Themen-Übersicht (the Figma name), Themen-Liste
+
+**Themen-Triptychon**
+The Leitthema and the two Themen-Orte as three square-cornered tiles on one Karteikarte surface, on the Themen-Hub.
+_Avoid_: Themen-Liste
+
+**Thema-Kachel**
+One tile of the Themen-Triptychon: label, illustration, title, optional Teaser, meta line and one button. Not the Thema-Karte.
+_Avoid_: Karte (for the tile)
+
+**Thema-Karte**
+The bordered card with rounded corners that presents a Thema on the Startseite and the Thema pages. Not the Thema-Kachel.
+_Avoid_: Kachel (for the card)
+
+**Teaser**
+A Thema's optional, translatable one-line lead, shown on its Thema-Kachel and Thema-Karte. Not the meta description (`description`) and not the hero quote (Leitsatz).
+_Avoid_: Anreißer, Kurzbeschreibung
+
+**Rundgänge-Hinweis**
+The closing box of the Themen-Hub ("Lieber geführt als selbst gewählt?") with a button to the Rundgänge. Not a Hinweis, which is a Viertel's link field.
+_Avoid_: Hinweis (for this box)
+
 **Aufsatz**
 A self-contained essay belonging to a Viertel.
 _Avoid_: article, Artikel, Text
