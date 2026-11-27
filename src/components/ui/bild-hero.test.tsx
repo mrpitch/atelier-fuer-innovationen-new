@@ -41,7 +41,7 @@ describe('BildHero', () => {
 				eyebrow="THEMEN-ORT"
 				title="Futursysteme"
 				zitat="Der Weg ist das Ziel."
-				zitatItalic
+				zitatStyle="italic"
 				eyebrowTone="primary"
 				illustration={<span />}
 			/>,

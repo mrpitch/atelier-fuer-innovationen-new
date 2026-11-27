@@ -80,7 +80,7 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 				eyebrow={t('thema.leitthemaHeroEyebrow')}
 				title={thema.title}
 				zitat={thema.leitsatz}
-				zitatItalic
+				zitatStyle="italic"
 				eyebrowTone="primary"
 				illustration={
 					<Illustration

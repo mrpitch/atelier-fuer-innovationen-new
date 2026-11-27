@@ -1,7 +1,19 @@
+import { cva } from 'class-variance-authority'
 import { cn } from 'cn'
 import type * as React from 'react'
 
 import { MonoLabel } from '@/components/ui/mono-label'
+
+const zitatVariants = cva('text-[28px] text-foreground', {
+	variants: {
+		style: {
+			upright: 'font-serif xl:text-[40px]',
+			// The Thema Leitsatz: italic display serif (Figma T09a/T09b, issue #144).
+			italic: 'font-heading italic xl:text-[32px]',
+		},
+	},
+	defaultVariants: { style: 'upright' },
+})
 
 interface BildHeroProps extends React.ComponentProps<'section'> {
 	// The uppercase mono eyebrow that names the page and its position (Kartei
@@ -13,9 +25,9 @@ interface BildHeroProps extends React.ComponentProps<'section'> {
 	zitat?: string
 	// Petrol marks the Thema heroes' eyebrow (Figma T09a/T09b, issue #145).
 	eyebrowTone?: 'primary' | 'muted'
-	// The Thema Leitsatz is set in italic display serif (Figma T09a/T09b,
-	// issue #144), not as the upright Zitat of the other heroes.
-	zitatItalic?: boolean
+	// `zitatStyle` italic sets the Thema Leitsatz in italic display serif, not
+	// as the upright Zitat of the other heroes.
+	zitatStyle?: 'upright' | 'italic'
 	// Unset on the Thema page's Themen-Ort hero (issue #125), whose intro
 	// sits in the page body below instead of inside the hero.
 	children?: React.ReactNode
@@ -39,7 +51,7 @@ function BildHero({
 	actions,
 	illustration,
 	eyebrowTone = 'muted',
-	zitatItalic = false,
+	zitatStyle = 'upright',
 	className,
 	...props
 }: BildHeroProps) {
@@ -62,17 +74,7 @@ function BildHero({
 				<h1 className="font-heading text-[48px] leading-none tracking-[-0.02em] hyphens-auto text-foreground xl:text-[88px]">
 					{title}
 				</h1>
-				{zitat && (
-					<p
-						className={
-							zitatItalic
-								? 'font-heading text-[28px] text-foreground italic xl:text-[32px]'
-								: 'font-serif text-[28px] text-foreground xl:text-[40px]'
-						}
-					>
-						{zitat}
-					</p>
-				)}
+				{zitat && <p className={zitatVariants({ style: zitatStyle })}>{zitat}</p>}
 				{children && <div className="text-lg text-muted-foreground">{children}</div>}
 				{actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
 			</div>

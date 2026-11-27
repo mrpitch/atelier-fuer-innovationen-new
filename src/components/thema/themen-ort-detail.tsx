@@ -55,7 +55,7 @@ async function ThemenOrtDetail({ thema, locale, ...props }: ThemenOrtDetailProps
 				}
 				title={thema.title}
 				zitat={thema.leitsatz}
-				zitatItalic
+				zitatStyle="italic"
 				eyebrowTone="primary"
 				illustration={
 					<Illustration
