@@ -1,8 +1,8 @@
-import { cn } from 'cn'
 import type * as React from 'react'
 
 import type { Zitat } from '@/lib/content'
 import { t } from '@/lib/dictionary'
+import { cn } from '@/lib/utils/cn'
 
 interface TestimonialsSection1Props extends React.ComponentProps<'section'> {
 	zitat: Zitat

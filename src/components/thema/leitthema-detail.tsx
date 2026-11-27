@@ -125,7 +125,7 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 						return (
 							<li key={kapitel.id}>
 								<Item render={<Link href={kapitel.url} />} variant="outline">
-									<span aria-hidden="true" className="font-mono text-sm font-semibold text-primary">
+									<span aria-hidden="true" className="font-mono text-xs font-semibold text-primary">
 										{t('thema.weg.kapitelBadge', { number: kapitel.number })}
 									</span>
 									<ItemMedia className="size-10">
