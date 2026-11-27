@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
+import { Illustration } from '@/components/ui/illustration'
 import { buildContentGraph } from '@/lib/content'
 
 import { ThemaKarte } from './thema-karte'
@@ -17,13 +18,11 @@ describe('ThemaKarte', () => {
 	it('shows its label, title, text and action, linking the action to its href', () => {
 		const html = renderToStaticMarkup(
 			<ThemaKarte
-				href={thema.url}
 				label="Themen-Ort · Viertel 05 · zweigt bei Kapitel 5 ab"
-				title={thema.title}
+				illustration={<Illustration id={thema.id} label={thema.title} />}
+				titel={thema.title}
 				text="Den Wandel wollen: Der Weg ist das Ziel."
-				actionLabel="Futursysteme öffnen"
-				illustrationId={thema.id}
-				illustrationLabel={thema.title}
+				action={{ label: 'Futursysteme öffnen', href: thema.url }}
 			/>,
 		)
 
@@ -38,13 +37,11 @@ describe('ThemaKarte', () => {
 	it('does not force-capitalize its mixed-case label (kartei-design-system.md, Open deviations)', () => {
 		const html = renderToStaticMarkup(
 			<ThemaKarte
-				href={thema.url}
 				label="Themen-Ort · Viertel 05 · zweigt bei Kapitel 5 ab"
-				title={thema.title}
+				illustration={<Illustration id={thema.id} label={thema.title} />}
+				titel={thema.title}
 				text="Den Wandel wollen: Der Weg ist das Ziel."
-				actionLabel="Futursysteme öffnen"
-				illustrationId={thema.id}
-				illustrationLabel={thema.title}
+				action={{ label: 'Futursysteme öffnen', href: thema.url }}
 			/>,
 		)
 

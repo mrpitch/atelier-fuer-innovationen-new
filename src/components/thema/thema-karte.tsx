@@ -4,16 +4,18 @@ import type * as React from 'react'
 
 import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Illustration } from '@/components/ui/illustration'
 
-interface ThemaKarteProps extends Omit<React.ComponentProps<'div'>, 'title'> {
-	href: string
+interface ThemaKarteAction {
+	readonly label: string
+	readonly href: string
+}
+
+interface ThemaKarteProps extends React.ComponentProps<'div'> {
 	label: string
-	title: string
+	illustration: React.ReactNode
+	titel: string
 	text: string
-	actionLabel: string
-	illustrationId: string
-	illustrationLabel: string
+	action: ThemaKarteAction
 }
 
 // Xenia / Thema / Thema-Karte, Typ=Themen-Ort (Figma component set
@@ -22,20 +24,20 @@ interface ThemaKarteProps extends Omit<React.ComponentProps<'div'>, 'title'> {
 // Illustration centred above the body below `md`, side by side with the
 // Illustration on the left from `md` (Kartei design system, Breakpoints,
 // "Thema-Karte, Typ Themen-Ort"). The Typ=Leitthema variant isn't built here;
-// issue #125 only needs the Themen-Ort one.
+// issue #125 only needs the Themen-Ort one. Takes the same props as
+// GangartBox (label, illustration, titel, text, action), the caller sizing
+// the Illustration.
 //
 // `label` is set in mixed case ("Themen-Ort · Viertel 05 · zweigt bei Kapitel
 // 5 ab"), unlike every other DM Mono Label in the system, which is typed
 // uppercase (kartei-design-system.md, Open deviations). It therefore isn't a
 // `MonoLabel`, whose `uppercase` class would force-capitalize it.
 function ThemaKarte({
-	href,
 	label,
-	title,
+	illustration,
+	titel,
 	text,
-	actionLabel,
-	illustrationId,
-	illustrationLabel,
+	action,
 	className,
 	...props
 }: ThemaKarteProps) {
@@ -52,25 +54,19 @@ function ThemaKarte({
 			)}
 			{...props}
 		>
-			<Illustration
-				id={illustrationId}
-				label={illustrationLabel}
-				// 140px: the Thema-Karte's own Illustration size (Figma 36581:7874).
-				// eslint-disable-next-line restrictions/arbitrary-size-classes
-				className="size-[140px] shrink-0"
-			/>
+			{illustration}
 			<div className="flex min-w-0 flex-col gap-3 text-center md:text-left">
 				<p className="font-mono text-xs font-medium text-primary">{label}</p>
-				<p className="font-heading text-2xl text-foreground">{title}</p>
+				<p className="font-heading text-2xl text-foreground">{titel}</p>
 				<p className="font-serif text-base text-muted-foreground">{text}</p>
 				<Link
-					href={href}
+					href={action.href}
 					className={buttonVariants({
 						variant: 'outline',
 						className: 'self-center bg-card md:self-start',
 					})}
 				>
-					{actionLabel}
+					{action.label}
 				</Link>
 			</div>
 		</Card>

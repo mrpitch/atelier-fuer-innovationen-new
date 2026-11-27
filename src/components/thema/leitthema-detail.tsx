@@ -169,16 +169,25 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 					{themenOrte.map(({ thema: themenOrt, kapitel, viertel }) => (
 						<ThemaKarte
 							key={themenOrt.id}
-							href={themenOrt.url}
 							label={t('thema.abzweige.karteLabel', {
 								viertelNumber: formatTwoDigits(viertel.number),
 								kapitelNumber: kapitel.number,
 							})}
-							title={themenOrt.title}
+							illustration={
+								<Illustration
+									id={themenOrt.id}
+									label={themenOrt.title}
+									// 140px: the Thema-Karte's own Illustration size (Figma 36581:7874).
+									// eslint-disable-next-line restrictions/arbitrary-size-classes
+									className="size-[140px] shrink-0"
+								/>
+							}
+							titel={themenOrt.title}
 							text={themenOrt.description}
-							actionLabel={t('thema.abzweige.karteAction', { title: shortTitleOrTitle(themenOrt) })}
-							illustrationId={themenOrt.id}
-							illustrationLabel={themenOrt.title}
+							action={{
+								label: t('thema.abzweige.karteAction', { title: shortTitleOrTitle(themenOrt) }),
+								href: themenOrt.url,
+							}}
 							className="flex-1"
 						/>
 					))}
