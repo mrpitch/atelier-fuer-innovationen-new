@@ -242,6 +242,7 @@ Places where the screens break their own system. They are recorded here, not ado
 - On mobile, the Station and Abschnitt titles are set in Schibsted Grotesk ExtraBold instead of the display serif.
 - On mobile, the pull quotes on the Startseite and Thema-Seite are set in Schibsted Grotesk 500, which breaks the Source Text Rule.
 - The Thema-Karte uses a raw 12px corner radius instead of `rounded-xl`.
+- The Thema-Karte's label ("Themen-Ort · Viertel 05 · zweigt bei Kapitel 5 ab") is set in DM Mono 500 in mixed case, where the Label style is uppercase as typed (see Typography). It is therefore a plain `<p>`, not a `MonoLabel`, which would force it to uppercase.
 - Input borders are below 3:1 contrast (see Inputs).
 - Sheets and drawers have no shadow in the kit (`shadow/overlay` is zero). A proposal of `0 8px 24px` in Graphit at 12% is not in the Kartei theme; it stays provisional.
 - Reading state is drawn but not decided (issue #64): T01 Wiederkehr ("Hier waren Sie zuletzt", "Kapitel 1–2 gelesen") and the Datenschutz page ("Lesezeichen auf diesem Gerät"). The specs of the Startseite and Seiten epics (#72, #74) decide per screen once #64 is settled; until then these screens are not a reference for that copy. The Rundgang screens are decided: no reading state (epic #115). T05's "✓ Besucht", T07's "Sie waren zuletzt hier" and "Ihr Fortschritt bleibt gespeichert" are not built, and the Stopp's `gesehen` status (`stopp.tsx`) is derived from the Station's position in the Rundgang, not stored.
