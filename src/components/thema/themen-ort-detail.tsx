@@ -26,8 +26,8 @@ interface ThemenOrtDetailProps extends React.ComponentProps<'div'> {
 // the body text beside the Randspalte's Gangart-Box and "Weiterführend" —
 // shared between its dedicated German route and the catch-all route's
 // localized rendering (issue #36). Called only for a Themen-Ort (`thema`
-// with a `kapitelId`); the Leitthema keeps ThemaDetail's own bare rendering,
-// since only T09b is this issue's scope.
+// with a `kapitelId`); the Leitthema renders through LeitthemaDetail (issue
+// #126).
 async function ThemenOrtDetail({ thema, locale, ...props }: ThemenOrtDetailProps) {
 	const graph = contentGraph()
 	const Body = await graph.getBody(thema.id, locale)
