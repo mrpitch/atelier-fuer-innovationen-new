@@ -4,12 +4,13 @@ import type * as React from 'react'
 
 import { Wortmarke } from '@/components/layout/wortmarke'
 import { buttonVariants } from '@/components/ui/button'
-import { Fortschritt } from '@/components/ui/fortschritt'
 import { MonoLabel } from '@/components/ui/mono-label'
 import { Separator } from '@/components/ui/separator'
 import type { Rundgang, Station } from '@/lib/content'
 import { contentGraph, RUNDGAENGE_SEITE_ID, shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
+
+import { Fortschritt } from './fortschritt'
 
 interface RundgangLeisteProps extends React.ComponentProps<'div'> {
 	rundgang: Rundgang
