@@ -8,14 +8,8 @@ import { Fortschritt } from '@/components/ui/fortschritt'
 import { MonoLabel } from '@/components/ui/mono-label'
 import { Separator } from '@/components/ui/separator'
 import type { Rundgang, Station } from '@/lib/content'
-import { contentGraph, shortTitleOrTitle } from '@/lib/content'
+import { contentGraph, RUNDGAENGE_SEITE_ID, shortTitleOrTitle } from '@/lib/content'
 import { t } from '@/lib/dictionary'
-
-// The Rundgänge-Hub's own Seite ID (ADR-0003: the folder's landing Seite,
-// `src/app/[[...slug]]/page.tsx`'s own RUNDGAENGE_SEITE_ID) — "Rundgang
-// beenden"'s destination, distinct from `rundgang.url`, the one Rundgang's
-// own Rundgang-Übersicht "Route" already links to.
-const RUNDGAENGE_HUB_ID = 'rundgaenge'
 
 interface RundgangLeisteProps extends React.ComponentProps<'div'> {
 	rundgang: Rundgang
@@ -32,9 +26,11 @@ interface RundgangLeisteProps extends React.ComponentProps<'div'> {
 // other components — not `xl` as its 1024 frame's own wrapped single-row
 // Desktop instance might suggest at a glance.
 function RundgangLeiste({ rundgang, station, className, ...props }: RundgangLeisteProps) {
+	// "Rundgang beenden" leads to the Rundgänge-Hub, distinct from `rundgang.url`,
+	// the one Rundgang's own Rundgang-Übersicht "Route" already links to.
 	const graph = contentGraph()
-	const hub = graph.getSeite(RUNDGAENGE_HUB_ID)
-	if (!hub) throw new Error(`RundgangLeiste: unknown Seite ID: ${RUNDGAENGE_HUB_ID}`)
+	const hub = graph.getSeite(RUNDGAENGE_SEITE_ID)
+	if (!hub) throw new Error(`RundgangLeiste: unknown Seite ID: ${RUNDGAENGE_SEITE_ID}`)
 
 	return (
 		<div

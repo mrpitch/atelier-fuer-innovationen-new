@@ -16,7 +16,7 @@ import { ThemenListe } from '@/components/thema/themen-liste'
 import { ViertelDetail } from '@/components/viertel/viertel-detail'
 import { ZentrumDetail } from '@/components/zentrum/zentrum-detail'
 import type { Seite } from '@/lib/content'
-import { contentGraph, urlFromSegments, urlSegments } from '@/lib/content'
+import { contentGraph, RUNDGAENGE_SEITE_ID, urlFromSegments, urlSegments } from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
 import { bodyImageComponents } from '@/mdx-components'
 
@@ -25,10 +25,6 @@ import { bodyImageComponents } from '@/mdx-components'
 // landing Seite below gets.
 const STADT_SEITE_ID = 'stadt'
 
-// The Rundgänge area's landing Seite: the Rundgänge-Hub (issue #119), its
-// own full-page layout rather than the generic Seite + area list every other
-// landing Seite below gets — the same pattern as the Stadt area above.
-const RUNDGAENGE_SEITE_ID = 'rundgaenge'
 // The Themen area's landing Seite (issue #31): the one Seite ID that also
 // lists the three Themen, derived from the content graph.
 const THEMEN_SEITE_ID = 'themen'

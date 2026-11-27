@@ -8,6 +8,11 @@ import { pathUrl } from './urls'
 
 const THEMA_ID_FIELD = 'themaId'
 
+// The Rundgänge area's landing Seite, the Rundgänge-Hub (ADR-0003: a
+// folder's landing Seite). The page route and the Rundgang-Leiste's "Rundgang
+// beenden" both address it by this ID.
+export const RUNDGAENGE_SEITE_ID = 'rundgaenge'
+
 // Orders every Rundgang by rundgaenge/meta.json (issue #116): strict like
 // orderViertel, against every Rundgang document, Drafts included — a
 // Rundgang's own number, previous/next and the Schauen Gangart
