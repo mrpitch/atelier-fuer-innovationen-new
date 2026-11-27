@@ -68,6 +68,8 @@ async function StationDetail({ station, locale, ...props }: StationDetailProps) 
 							total: station.lastNumber,
 						})}
 					</Tagline>
+					{/* 40px, 48px from `xl`: the H1 size drawn in Figma T06's Station frame;
+					    no heading token matches it. */}
 					<h1 className="font-heading text-[40px] leading-none tracking-[-0.02em] text-foreground xl:text-[48px]">
 						{station.title}
 					</h1>
