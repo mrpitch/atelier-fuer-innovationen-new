@@ -25,13 +25,14 @@ async function render(themaId: string) {
 	return renderToStaticMarkup(await ThemaDetail({ thema }))
 }
 
-// ThemenOrtDetail's own content is covered by themen-ort-detail.test.tsx;
-// this only tests ThemaDetail's own job, deciding which of the two to render.
+// ThemenOrtDetail's own content is covered by themen-ort-detail.test.tsx and
+// LeitthemaDetail's own by leitthema-detail.test.tsx; this only tests
+// ThemaDetail's own job, deciding which of the two to render.
 describe('ThemaDetail', () => {
-	it('keeps the bare rendering for the Leitthema', async () => {
+	it('delegates the Leitthema to LeitthemaDetail', async () => {
 		const html = await render('themen/eine-welt-fuer-morgen')
 
-		expect(html).toContain('data-slot="thema-detail"')
+		expect(html).toContain('data-slot="leitthema-detail"')
 		expect(html).not.toContain('data-slot="themen-ort-detail"')
 	})
 
@@ -39,6 +40,6 @@ describe('ThemaDetail', () => {
 		const html = await render('themen/futursysteme')
 
 		expect(html).toContain('data-slot="themen-ort-detail"')
-		expect(html).not.toContain('data-slot="thema-detail"')
+		expect(html).not.toContain('data-slot="leitthema-detail"')
 	})
 })
