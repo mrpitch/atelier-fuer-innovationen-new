@@ -88,7 +88,7 @@ async function StationDetail({ station, locale, ...props }: StationDetailProps) 
 									</ItemMedia>
 									<ItemContent>
 										<ItemTitle>{gangart.aktion.title}</ItemTitle>
-										<ItemDescription>{t('rundgang.gangartWechseln')}</ItemDescription>
+										<ItemDescription>{t('station.gangartWechseln')}</ItemDescription>
 									</ItemContent>
 									<ItemActions>
 										<Link

@@ -139,7 +139,7 @@ export const de = {
 	'station.buehneLabel': 'Station {number}',
 	'station.buehneViertel': 'VIERTEL {number}',
 	'station.buehneZentrum': 'ZENTRUM',
-	'rundgang.gangartWechseln': 'Gangart wechseln',
+	'station.gangartWechseln': 'Gangart wechseln',
 	'rundgang.gangartViertelErkunden': 'oder Viertel {number} frei erkunden',
 	'rundgang.gangartZentrumErkunden': 'oder das Zentrum frei erkunden',
 	'rundgaenge.hub.eyebrow': 'STADTRUNDGÄNGE · {n} FÜHRUNGEN DES STADTFÜHRERS',
