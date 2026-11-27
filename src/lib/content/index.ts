@@ -35,4 +35,5 @@ export type {
 	Viertel,
 	ViertelSteckbrief,
 	Zentrum,
+	Zitat,
 } from './types'
