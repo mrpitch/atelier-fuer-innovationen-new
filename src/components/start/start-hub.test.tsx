@@ -80,13 +80,72 @@ describe('StartHub', () => {
 		expect(html).toContain(`href="${secondStation.url}"`)
 	})
 
-	it('links to the Rundgänge-Hub and the Themen-Hub with the dictionary labels', () => {
+	it('links to the Rundgänge with the dictionary label', () => {
 		const html = renderFixture('start-hub-valid')
 
 		expect(html).toContain('href="/rundgaenge"')
 		expect(html).toContain('Alle Rundgänge →')
-		expect(html).toContain('href="/themen"')
-		expect(html).toContain('Alle Themen →')
+	})
+
+	it('shows the Leitthema as a Thema-Karte, Leitthema variant, with the eight — here three — Viertel illustrations in Kapitel order (issue #132)', () => {
+		const html = renderFixture('start-hub-valid')
+
+		expect(html).toContain('data-slot="thema-karte" data-size="default"')
+		expect(html).toMatch(/data-variant="leitthema"/)
+		expect(html).toContain('LEITTHEMA · 8 KAPITEL IN 8 VIERTELN')
+		expect(html).toContain('Eine Welt für morgen')
+
+		const indexA = html.indexOf('>K1<')
+		const indexB = html.indexOf('>K2<')
+		const indexC = html.indexOf('>K3<')
+		expect(indexA).toBeGreaterThan(-1)
+		expect(indexB).toBeGreaterThan(indexA)
+		expect(indexC).toBeGreaterThan(indexB)
+	})
+
+	it('"Themen-Weg beginnen" opens Kapitel 1; "Als Rundgang ansehen" opens Station 0 of the first Rundgang', () => {
+		const html = renderFixture('start-hub-valid')
+		const kapitelEins = graph.getKapitel('leitthema/kapitel-a')
+		const { zentrum } = graph
+		if (!kapitelEins) throw new Error('fixture missing leitthema/kapitel-a')
+		if (!zentrum) throw new Error('fixture missing a Zentrum')
+		const station = graph.getSchauenStation(zentrum.id)
+		if (!station) throw new Error('fixture missing a Schauen Station at the Zentrum')
+
+		expect(kapitelEins.number).toBe(1)
+		expect(station.number).toBe(0)
+		expect(html).toContain(`href="${kapitelEins.url}"`)
+		expect(html).toContain('Themen-Weg beginnen')
+		expect(html).toContain(`href="${station.url}"`)
+		expect(html).toContain('Als Rundgang ansehen')
+	})
+
+	it('shows both Themen-Orte as a Thema-Karte, Themen-Ort variant, each opening its own Viertel', () => {
+		const html = renderFixture('start-hub-valid')
+		const netzwerk = graph.getThema('themen/netzwerk-der-innovatoren')
+		const futursysteme = graph.getThema('themen/futursysteme')
+		if (!netzwerk?.kapitelId || !futursysteme?.kapitelId)
+			throw new Error('fixture missing a Themen-Ort')
+		const netzwerkKapitel = graph.getKapitel(netzwerk.kapitelId)
+		const futursystemeKapitel = graph.getKapitel(futursysteme.kapitelId)
+		if (!netzwerkKapitel || !futursystemeKapitel) throw new Error('fixture missing a Kapitel')
+		const netzwerkViertel = graph.getViertelOfKapitel(netzwerkKapitel)
+		const futursystemeViertel = graph.getViertelOfKapitel(futursystemeKapitel)
+
+		expect(html.match(/data-slot="thema-karte" data-size="default"/g)).toHaveLength(3)
+		expect(html.match(/data-variant="themen-ort"/g)).toHaveLength(2)
+		expect(html).toContain('Netzwerk der Innovatoren')
+		expect(html).toContain('Futursysteme')
+		expect(html).toContain(`href="${netzwerkViertel.url}"`)
+		expect(html).toContain(`href="${futursystemeViertel.url}"`)
+		expect(html).toContain(`Ins Viertel der ${netzwerkViertel.title}`)
+		expect(html).toContain(`Ins Viertel der ${futursystemeViertel.title}`)
+	})
+
+	it('leaves out the Drei Themen section without a Leitthema', () => {
+		const html = renderFixture('start-hub-empty')
+
+		expect(html).not.toContain('data-slot="start-themen-section"')
 	})
 
 	it('leaves out the tagline, intro, testimonial and Rundgang-starten button a document never sets, falling back to the title for the heading (issue #130)', () => {

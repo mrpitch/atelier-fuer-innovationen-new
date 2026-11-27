@@ -184,10 +184,14 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 							}
 							titel={themenOrt.title}
 							text={themenOrt.description}
-							action={{
-								label: t('thema.abzweige.karteAction', { title: shortTitleOrTitle(themenOrt) }),
-								href: themenOrt.url,
-							}}
+							action={
+								<Link
+									href={themenOrt.url}
+									className={buttonVariants({ variant: 'outline', className: 'bg-card' })}
+								>
+									{t('thema.abzweige.karteAction', { title: shortTitleOrTitle(themenOrt) })}
+								</Link>
+							}
 							className="flex-1"
 						/>
 					))}
