@@ -57,7 +57,6 @@ export const de = {
 	'rundgang.stationenCount': '{n} Stationen',
 	'rundgang.duration': 'ca. {n} Min.',
 	'rundgang.summary': '{stationen} · {duration}',
-	'station.numberedTitle': 'Station {n}: {title}',
 	'station.readingTime': 'ca. {n} Min.',
 	'themen.navigation': 'Die drei Themen',
 	'thema.kapitelHeading': 'Kapitel',
