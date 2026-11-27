@@ -1083,6 +1083,137 @@ describe('buildContentGraph', () => {
 				expect(validationError.reason).toContain('leitthema/nichtvorhanden')
 			}
 		})
+
+		it('fails when a Themen-Ort sets zitat, naming the file and field', () => {
+			expect.assertions(3)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'thema-zitat-on-themen-ort'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('themen', 'mein-themen-ort', 'index.mdx'))
+				expect(validationError.field).toBe('zitat')
+			}
+		})
+
+		it('fails when the Leitthema sets weiterfuehrendIds, naming the file and field', () => {
+			expect.assertions(3)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'thema-weiterfuehrend-on-leitthema'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('themen', 'mein-leitthema', 'index.mdx'))
+				expect(validationError.field).toBe('weiterfuehrendIds')
+			}
+		})
+
+		it('parses zitat without its optional zusatz (issue #124)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-zitat-no-zusatz'))
+
+			expect(graph.getThema('themen/mein-leitthema')?.zitat).toEqual({
+				text: 'Ein Zitat ohne Zusatz.',
+				quelle: 'Eine Testperson',
+			})
+		})
+
+		it('parses leitsatz and zitat as optional; existing content without them still builds (issue #124)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-optional-fields-valid'))
+
+			const leitthema = graph.getThema('themen/eine-welt-fuer-morgen')
+			expect(leitthema?.leitsatz).toBe('Platzhalter-Leitsatz des Leitthemas.')
+			expect(leitthema?.zitat).toEqual({
+				text: 'Ein Zitat für Tests.',
+				quelle: 'Eine Testperson',
+				zusatz: 'Eine Testrolle',
+			})
+
+			const anfang = graph.getThema('themen/anfang-im-weg')
+			expect(anfang?.leitsatz).toBeUndefined()
+			expect(anfang?.zitat).toBeUndefined()
+			expect(anfang?.weiterfuehrend).toBeUndefined()
+		})
+
+		it("resolves weiterfuehrendIds to the target Aufsatz's label and description, and the URL from the graph (issue #124)", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-optional-fields-valid'))
+
+			const themenOrt = graph.getThema('themen/zuletzt-im-weg')
+			expect(themenOrt?.weiterfuehrendIds).toEqual(['bibliothek/aufsaetze/mein-aufsatz'])
+			expect(themenOrt?.weiterfuehrend).toEqual([
+				{
+					label: 'Aufsatz',
+					description: 'Die Beschreibung des Aufsatzes.',
+					url: '/bibliothek/aufsaetze/mein-aufsatz',
+				},
+			])
+		})
+
+		it('fails when a Themen-Ort references a missing Aufsatz in weiterfuehrendIds, naming the file, field and ID', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'thema-weiterfuehrend-missing'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('themen', 'mein-themen-ort', 'index.mdx'))
+				expect(validationError.field).toBe('weiterfuehrendIds')
+				expect(validationError.reason).toContain('bibliothek/aufsaetze/nicht-vorhanden')
+			}
+		})
+
+		it('fails when a Themen-Ort references a Draft Aufsatz in weiterfuehrendIds, naming both files', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'thema-weiterfuehrend-draft'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe(path.join('themen', 'mein-themen-ort', 'index.mdx'))
+				expect(validationError.field).toBe('weiterfuehrendIds')
+				expect(validationError.reason).toContain(
+					path.join('bibliothek', 'aufsaetze', 'entwurf', 'index.mdx'),
+				)
+			}
+		})
+
+		it("derives a Themen-Ort's Viertel and branch Kapitel, number included, from kapitelId alone (issue #124)", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-optional-fields-valid'))
+
+			const themenOrt = graph.getThema('themen/zuletzt-im-weg')
+			const kapitel = themenOrt?.kapitelId ? graph.getKapitel(themenOrt.kapitelId) : undefined
+			expect(kapitel?.id).toBe('leitthema/erstes-kapitel')
+			expect(kapitel?.number).toBe(1)
+
+			const viertel = kapitel && graph.getViertel(kapitel.viertelId)
+			expect(viertel?.id).toBe('stadt/erste-viertel')
+			expect(themenOrt).not.toHaveProperty('viertel')
+			expect(themenOrt).not.toHaveProperty('kapitelNumber')
+		})
+
+		it('orders Themen for the Ortsleiste as the Leitthema, then Themen-Orte by branch Kapitel number, no wrap-around, exposed as previous/next (issue #124)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'thema-optional-fields-valid'))
+
+			expect(graph.getPrevious('themen/eine-welt-fuer-morgen')).toBeUndefined()
+			expect(graph.getNext('themen/eine-welt-fuer-morgen')?.id).toBe('themen/zuletzt-im-weg')
+
+			expect(graph.getPrevious('themen/zuletzt-im-weg')?.id).toBe('themen/eine-welt-fuer-morgen')
+			expect(graph.getNext('themen/zuletzt-im-weg')?.id).toBe('themen/anfang-im-weg')
+
+			expect(graph.getPrevious('themen/anfang-im-weg')?.id).toBe('themen/zuletzt-im-weg')
+			expect(graph.getNext('themen/anfang-im-weg')).toBeUndefined()
+
+			// graph.themen itself keeps the folders' own read order (issue #82),
+			// unaffected by the Ortsleiste order above.
+			expect(graph.themen.map((thema) => thema.id)).toEqual([
+				'themen/anfang-im-weg',
+				'themen/eine-welt-fuer-morgen',
+				'themen/zuletzt-im-weg',
+			])
+		})
 	})
 
 	describe('Body (issue #35)', () => {
@@ -1711,17 +1842,17 @@ describe('buildContentGraph', () => {
 			expect(rundgangGraph.getNext('rundgaenge/ohne-zentrum')).toBeUndefined()
 		})
 
-		it('links Themen to their neighbours in resolved list order, carrying no number', () => {
-			expect(themaGraph.getNext('themen/ein-themen-ort')).toEqual({
-				id: 'themen/eine-welt-fuer-morgen',
-				url: '/themen/eine-welt-fuer-morgen',
-				title: 'Eine Welt für morgen',
+		it('links Themen to their neighbours in Ortsleiste order — the Leitthema, then Themen-Orte by branch Kapitel number (issue #124) — carrying no number', () => {
+			expect(themaGraph.getNext('themen/eine-welt-fuer-morgen')).toEqual({
+				id: 'themen/ein-themen-ort',
+				url: '/themen/ein-themen-ort',
+				title: 'Ein Themen-Ort',
 			})
-			expect(themaGraph.getPrevious('themen/eine-welt-fuer-morgen')?.id).toBe(
-				'themen/ein-themen-ort',
+			expect(themaGraph.getPrevious('themen/ein-themen-ort')?.id).toBe(
+				'themen/eine-welt-fuer-morgen',
 			)
-			expect(themaGraph.getPrevious('themen/ein-themen-ort')).toBeUndefined()
-			expect(themaGraph.getNext('themen/eine-welt-fuer-morgen')).toBeUndefined()
+			expect(themaGraph.getPrevious('themen/eine-welt-fuer-morgen')).toBeUndefined()
+			expect(themaGraph.getNext('themen/ein-themen-ort')).toBeUndefined()
 		})
 	})
 })
