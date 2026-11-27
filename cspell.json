@@ -6,9 +6,10 @@
 	"allowCompoundWords": true,
 	"ignoreRegExpList": [
 		// Frontmatter IDs and slugs are identifiers, not prose: `id: foo-bar`, `slug: foo-bar`,
-		// `customId: foo-bar`. Anchored to the key itself, not any key ending in "id"/"slug", so
-		// a real word like `valid` or `uuid` doesn't exempt its whole line.
-		"/^\\s*(?:id|slug|[a-zA-Z]+Id)\\s*:\\s*.*$/gm",
+		// `customId: foo-bar`, `weiterfuehrendIds: [foo-bar]`. Anchored to the key itself, not any
+		// key ending in "id"/"slug"/"ids", so a real word like `valid` or `uuid` doesn't exempt its
+		// whole line.
+		"/^\\s*(?:id|slug|[a-zA-Z]+Ids?)\\s*:\\s*.*$/gm",
 		// JSX tags and their props aren't prose either: `<ViertelCard id="01" />`.
 		"/<[^>]+>/g"
 	],

@@ -11,7 +11,9 @@ interface BildHeroProps extends React.ComponentProps<'section'> {
 	badge?: React.ReactNode
 	title: string
 	zitat?: string
-	children: React.ReactNode
+	// Unset on the Thema page's Themen-Ort hero (issue #125), whose intro
+	// sits in the page body below instead of inside the hero.
+	children?: React.ReactNode
 	actions?: React.ReactNode
 	illustration: React.ReactNode
 }
@@ -54,7 +56,7 @@ function BildHero({
 					{title}
 				</h1>
 				{zitat && <p className="font-serif text-[28px] text-foreground xl:text-[40px]">{zitat}</p>}
-				<div className="text-lg text-muted-foreground">{children}</div>
+				{children && <div className="text-lg text-muted-foreground">{children}</div>}
 				{actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
 			</div>
 			<div data-slot="bild-hero-media" className="shrink-0 [&>svg]:h-auto [&>svg]:max-w-full">
