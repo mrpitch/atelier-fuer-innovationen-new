@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type * as React from 'react'
 
 import { GangartBox } from '@/components/navigation/gangart-box'
+import { Illustration } from '@/components/ui/illustration'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item'
 import { MonoLabel } from '@/components/ui/mono-label'
 import type { ContentGraph, Viertel } from '@/lib/content'
@@ -28,7 +29,18 @@ function KapitelRandspalte({ graph, viertel, className, ...props }: KapitelRands
 		<div data-slot="kapitel-randspalte" className={className} {...props}>
 			<div className="flex flex-col gap-10">
 				{rundgang && station && (
-					<GangartBox rundgang={rundgang} station={station} viertel={viertel} />
+					<GangartBox
+						label={t('gangart.label')}
+						illustration={
+							<Illustration id={rundgang.id} label={rundgang.title} className="size-12 shrink-0" />
+						}
+						titel={t('gangart.titel', { number: station.number })}
+						text={t('gangart.viertelLine', { title: viertel.title })}
+						action={{
+							label: t('gangart.ansehen', { number: station.number }),
+							href: station.url,
+						}}
+					/>
 				)}
 				{aufsaetze.length > 0 && (
 					<nav aria-label={t('kapitel.imViertelAusserdemHeading')}>

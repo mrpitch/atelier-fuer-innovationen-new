@@ -26,4 +26,12 @@ describe('BildHero', () => {
 
 		expect(html).toMatch(/<h1 class="[^"]*hyphens-auto[^"]*xl:text-\[88px\]/)
 	})
+
+	it('leaves out the intro block when no children are given (issue #125)', () => {
+		const html = renderToStaticMarkup(
+			<BildHero eyebrow="THEMEN-ORT" title="Futursysteme" illustration={<span />} />,
+		)
+
+		expect(html).not.toContain('class="text-lg text-muted-foreground"')
+	})
 })
