@@ -81,7 +81,7 @@ function StartHub({ seite, className, ...props }: StartHubProps) {
 				</nav>
 			</PageSection>
 
-			<PageSection data-slot="start-rundgaenge-section">
+			<PageSection data-slot="start-rundgaenge-section" className="bg-muted/40">
 				{/* The same tagline doubles as the section's own accessible heading
 				    (Figma shows no visible one, "Show Heading: false" — the
 				    Rundgänge-Hub's own Tagline does the same, rundgaenge-hub.tsx). */}
