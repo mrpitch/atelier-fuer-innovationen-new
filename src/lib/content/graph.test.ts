@@ -1034,6 +1034,41 @@ describe('buildContentGraph', () => {
 		})
 	})
 
+	describe('Start', () => {
+		it('parses tagline, heading, intro and zitat, zitat with its optional zusatz (issue #129)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'start-optional-fields-valid'))
+
+			const start = graph.getSeite('')
+			expect(start?.tagline).toBe('Platzhalter-Tagline der Startseite.')
+			expect(start?.heading).toBe('Platzhalter-Überschrift der Startseite.')
+			expect(start?.intro).toBe('Platzhalter-Intro der Startseite.')
+			expect(start?.zitat).toEqual({
+				text: 'Ein Zitat für Tests.',
+				quelle: 'Eine Testperson',
+				zusatz: 'Eine Testrolle',
+			})
+		})
+
+		it('parses zitat without its optional zusatz (issue #129)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'start-zitat-no-zusatz'))
+
+			expect(graph.getSeite('')?.zitat).toEqual({
+				text: 'Ein Zitat ohne Zusatz.',
+				quelle: 'Eine Testperson',
+			})
+		})
+
+		it('parses tagline, heading, intro and zitat as optional; existing content without them still builds (issue #129)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
+
+			const start = graph.getSeite('')
+			expect(start?.tagline).toBeUndefined()
+			expect(start?.heading).toBeUndefined()
+			expect(start?.intro).toBeUndefined()
+			expect(start?.zitat).toBeUndefined()
+		})
+	})
+
 	describe('Thema', () => {
 		it('resolves the Leitthema and a Themen-Ort to their ID and URL', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'thema-valid'))

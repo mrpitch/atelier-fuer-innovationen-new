@@ -28,7 +28,15 @@ export interface BaseDocument {
 	readonly draft: boolean
 }
 
-export type Seite = BaseDocument
+// `tagline`, `heading`, `intro` and `zitat` (issue #129, epic #128) are the
+// Start document's own Hero copy and testimonial — optional on every Seite
+// (schemas.ts), but only the Startseite reads them.
+export interface Seite extends BaseDocument {
+	readonly tagline?: string
+	readonly heading?: string
+	readonly intro?: string
+	readonly zitat?: Zitat
+}
 
 // A Hinweis (issue #93): a Viertel's optional link to a document of any
 // type, resolved to that document's Short title and URL, the same shape a
