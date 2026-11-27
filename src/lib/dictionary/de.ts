@@ -60,6 +60,10 @@ export const de = {
 	'rundgang.stationenCount': '{n} Stationen',
 	'rundgang.duration': 'ca. {n} Min.',
 	'rundgang.summary': '{stationen} · {duration}',
+	'rundgang.karte.stationSingular': '1 Station',
+	'rundgang.karte.duration': '{n} Min.',
+	'rundgang.karte.routeSeparator': ' → ',
+	'rundgang.karte.starten': 'Rundgang starten',
 	'station.readingTime': 'ca. {n} Min.',
 	'themen.navigation': 'Die drei Themen',
 	'thema.heroEyebrow': 'THEMEN-ORT · VIERTEL {number} · {viertel}',
@@ -186,8 +190,6 @@ export const de = {
 	'rundgaenge.hub.schritt3Text':
 		'„Gangart wechseln“ führt zum Kapitel oder Viertel. Über „Route“ kehren Sie jederzeit zum Rundgang zurück.',
 	'start.hub.navigation': 'Bereiche der Wissensstadt',
-	'start.hub.rundgaengeHeading': 'Die Rundgänge',
-	'start.hub.rundgaengeLink': 'Alle Rundgänge →',
 	'start.hub.themenHeading': 'Die Themen',
 	'start.hub.themenLink': 'Alle Themen →',
 	'start.hero.rundgangAction': 'Rundgang starten',
@@ -197,6 +199,8 @@ export const de = {
 	'start.stadtplan.description':
 		'Der Stadtplan ist die Landkarte der Inhalte: Wählen Sie ein Viertel, um seine Texte, Rundgänge und Bausteine zu sehen.',
 	'start.stadtplan.cta': 'Zum Stadtplan →',
+	'start.rundgaenge.tagline': 'Stadtrundgänge',
+	'start.rundgaenge.cta': 'Alle Rundgänge →',
 } as const
 
 export type DictionaryKey = keyof typeof de

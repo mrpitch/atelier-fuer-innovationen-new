@@ -6,6 +6,20 @@ import { resolveReference } from './references'
 import type { Rundgang, Station, Visibility } from './types'
 import { pathUrl } from './urls'
 
+// A Rundgang's route (issue #131): each Station's own Ort, resolved against
+// `ortTitleById` (graph.ts, built from the Viertel and the Zentrum together),
+// in Station order. A Station with no Ort contributes nothing — the route
+// is never padded to keep every Station represented.
+function routeOrte(
+	stationen: readonly Station[],
+	ortTitleById: ReadonlyMap<string, string>,
+): readonly string[] {
+	return stationen.flatMap((station) => {
+		const title = station.ortId ? ortTitleById.get(station.ortId) : undefined
+		return title === undefined ? [] : [title]
+	})
+}
+
 const THEMA_ID_FIELD = 'themaId'
 
 // The Rundgänge area's landing Seite, the Rundgänge-Hub (ADR-0003: a
@@ -44,6 +58,7 @@ export function summarizeRundgang(
 	{ file: _file, ...document }: Loaded<'rundgang'>,
 	stationen: readonly Station[],
 	number: number,
+	ortTitleById: ReadonlyMap<string, string>,
 ): Rundgang {
 	return {
 		...document,
@@ -51,5 +66,6 @@ export function summarizeRundgang(
 		number,
 		stationenCount: stationen.length,
 		durationMinutes: sumReadingTime(stationen),
+		routeOrte: routeOrte(stationen, ortTitleById),
 	}
 }

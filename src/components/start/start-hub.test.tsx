@@ -61,7 +61,26 @@ describe('StartHub', () => {
 		expect(html).toContain('href="/stadt/zentrum"')
 	})
 
-	it('links to the Rundgänge and the Themen with the dictionary labels', () => {
+	it('renders one Rundgang-Karte per Rundgang, in rundgaenge/meta.json order, under the "Stadtrundgänge" tagline', () => {
+		const html = renderFixture('start-hub-valid')
+
+		expect(html).toContain('data-slot="start-rundgaenge-section"')
+		expect(html).toContain('Stadtrundgänge')
+		expect(html.match(/data-slot="rundgang-karte"/g)).toHaveLength(2)
+		expect(html.indexOf('>Testrundgang<')).toBeLessThan(html.indexOf('>Zweiter Testrundgang<'))
+		expect(html).toContain('>01<')
+		expect(html).toContain('>02<')
+
+		const [first, second] = graph.rundgaenge
+		if (!first || !second) throw new Error('fixture missing both Rundgänge')
+		const [firstStation] = graph.getStationenByRundgang(first.id)
+		const [secondStation] = graph.getStationenByRundgang(second.id)
+		if (!firstStation || !secondStation) throw new Error('fixture missing a Station')
+		expect(html).toContain(`href="${firstStation.url}"`)
+		expect(html).toContain(`href="${secondStation.url}"`)
+	})
+
+	it('links to the Rundgänge-Hub and the Themen-Hub with the dictionary labels', () => {
 		const html = renderFixture('start-hub-valid')
 
 		expect(html).toContain('href="/rundgaenge"')

@@ -763,6 +763,23 @@ describe('buildContentGraph', () => {
 			expect(besuch).not.toHaveProperty('stationen')
 		})
 
+		it("derives a Rundgang's route from its Stationen's Orte, skipping a Station that stands at none", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-route-valid'))
+
+			const gemischt = graph.getRundgang('rundgaenge/gemischt')
+			// station-a (Zentrum), station-b (no Ort), station-c (Erstes Viertel):
+			// station-b contributes nothing, the other two keep their own order.
+			expect(gemischt?.routeOrte).toEqual(['Zentrum', 'Erstes Viertel'])
+		})
+
+		it('derives an empty route for a Rundgang whose Stationen stand at no Ort at all', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-route-valid'))
+
+			const ohneOrt = graph.getRundgang('rundgaenge/ohne-ort')
+			expect(ohneOrt?.routeOrte).toEqual([])
+			expect(ohneOrt?.stationenCount).toBe(1)
+		})
+
 		it('derives the Stationen set at a Viertel or the Zentrum from the references, never from the Ort itself', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
 
