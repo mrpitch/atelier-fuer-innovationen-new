@@ -68,4 +68,4 @@ function GangartBox({
 	)
 }
 
-export { GangartBox, type GangartBoxAction, type GangartBoxProps }
+export { GangartBox }
