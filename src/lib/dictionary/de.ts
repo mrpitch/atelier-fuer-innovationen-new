@@ -14,7 +14,6 @@ export const de = {
 	'layout.footerMenu': 'Fußzeilen-Navigation',
 	'layout.footerLegalMenu': 'Rechtliche Hinweise',
 	'navigation.sitemap': 'Sitemap',
-	'navigation.sitemapLeitthema': 'Leitthema',
 	'stadt.navigation': 'Viertel und Zentrum der Wissensstadt',
 	'viertel.numberedTitle': '{number} {title}',
 	'viertel.steckbrief.prozessansatz': 'Prozessansatz',

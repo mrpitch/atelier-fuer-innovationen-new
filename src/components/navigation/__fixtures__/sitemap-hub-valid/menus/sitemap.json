@@ -1,0 +1,4 @@
+[
+	{ "label": "Projekt", "entries": [{ "id": "idee" }] },
+	{ "label": "Service", "entries": [{ "id": "impressum" }, { "id": "datenschutz" }] }
+]

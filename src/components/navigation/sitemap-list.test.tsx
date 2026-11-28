@@ -28,28 +28,37 @@ describe('SitemapList', () => {
 		expect(html).toMatch(/<nav[^>]*aria-label="Sitemap"/)
 	})
 
-	it('lays out one column per top-level Navigation group, each with a heading', () => {
+	it('lays out one column per `sitemap` Menu group, headed by the group label in menu order', () => {
 		const html = render()
 
-		expect(html).toMatch(/<h2[^>]*><a[^>]*href="\/idee"[^>]*>Idee<\/a><\/h2>/)
-		expect(html).toMatch(/<h2[^>]*><a[^>]*href="\/stadt"[^>]*>Stadtplan<\/a><\/h2>/)
+		const headings = (html.match(/<h2[^>]*>[\s\S]*?<\/h2>/g) ?? []).map((heading) =>
+			heading.replace(/<[^>]*>/g, ''),
+		)
+		expect(headings).toEqual(['Entdecken', 'Projekt'])
 	})
 
-	it('nests a group’s own pages under its column, as the Navigation nests them', () => {
+	it('nests an entry’s own pages under it, as the Sitemap tree nests them', () => {
 		const html = render()
 
-		const stadtColumn = html.slice(html.indexOf('>Stadtplan<'))
-		expect(stadtColumn).toContain('>Zentrum<')
-		expect(stadtColumn).toContain('>Ein Viertel<')
+		const stadtEntry = html.slice(html.indexOf('>Stadtplan<'))
+		expect(stadtEntry).toContain('>Zentrum<')
+		expect(stadtEntry).toContain('>Ein Viertel<')
 	})
 
-	it('groups the Leitthema’s Kapitel under one column instead of one column per Kapitel (issue #60’s root fallback)', () => {
+	it('lists the Startseite first in the first column, without its children', () => {
 		const html = render()
+		const entdecken = html.slice(html.indexOf('>Entdecken<'), html.indexOf('>Projekt<'))
 
-		const headings = html.match(/<h2[^>]*>[\s\S]*?<\/h2>/g) ?? []
-		expect(headings).toHaveLength(3)
-		expect(headings.some((heading) => heading.includes('Ein Kapitel'))).toBe(false)
-		expect(headings.some((heading) => heading.includes('Leitthema'))).toBe(true)
+		expect(entdecken.indexOf(' — /<')).toBeGreaterThan(-1)
+		expect(entdecken.indexOf(' — /<')).toBeLessThan(entdecken.indexOf('>Stadtplan<'))
+		expect(html.match(/href="\/idee"/g)).toHaveLength(1)
+	})
+
+	it('places a Kapitel by its own Menu entry, since the Leitthema has no Seite', () => {
+		const html = render()
+		const entdecken = html.slice(html.indexOf('>Entdecken<'), html.indexOf('>Projekt<'))
+
+		expect(entdecken).toContain('>Ein Kapitel<')
 	})
 
 	it('nests a deeper branch — a Kapitel’s own Abschnitt — under that Kapitel, not flattened into its column', () => {
@@ -72,7 +81,7 @@ describe('SitemapList', () => {
 		expect(html).toContain('list-disc')
 	})
 
-	it('links every page once, including the Startseite', () => {
+	it('links every Menu-listed page once', () => {
 		const html = render()
 		const kapitel = graph.getKapitel('leitthema/ein-kapitel')
 		const abschnitt = graph.getAbschnitt('leitthema/ein-kapitel/ein-abschnitt')
