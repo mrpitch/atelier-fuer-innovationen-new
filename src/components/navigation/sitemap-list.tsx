@@ -6,30 +6,57 @@ import type { NavigationNode } from '@/lib/content'
 import { contentGraph } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 
-function SitemapBranch({ nodes }: { nodes: readonly NavigationNode[] }) {
+// `split` runs the top-level list in two CSS columns from `lg` (never
+// breaking an entry across them), for the wide Entdecken column.
+function SitemapBranch({
+	nodes,
+	split = false,
+	nested = false,
+}: {
+	nodes: readonly NavigationNode[]
+	split?: boolean
+	nested?: boolean
+}) {
 	return (
-		<ul className="flex list-disc flex-col gap-3 pl-5 marker:text-muted-foreground">
+		<ul
+			className={cn(
+				'list-disc pl-5 marker:text-muted-foreground',
+				split
+					? 'lg:columns-2 lg:gap-x-10 [&>li]:mb-3 [&>li]:break-inside-avoid'
+					: 'flex flex-col gap-3',
+				nested && 'mt-3',
+			)}
+		>
 			{nodes.map((node) => (
-				<li key={node.id} className="flex flex-col gap-3">
+				<li key={node.id}>
 					<Link href={node.url} className="text-muted-foreground hover:text-foreground">
 						{node.title}
 					</Link>
-					{node.children.length > 0 && <SitemapBranch nodes={node.children} />}
+					{node.children.length > 0 && <SitemapBranch nodes={node.children} nested />}
 				</li>
 			))}
 		</ul>
 	)
 }
 
-// One column per Menu group of the `sitemap` Menu (issue #136, Figma:
+// One block per Menu group of the `sitemap` Menu (issue #136, Figma:
 // Entdecken, Lesen, Projekt, Service): the group's label is a plain-text
 // heading, and each of its entries is listed with its own pages nested below
-// exactly as the Sitemap tree nests them.
-function SitemapColumn({ title, nodes }: { title: string; nodes: readonly NavigationNode[] }) {
+// exactly as the Sitemap tree nests them. `wide` is the first group, which
+// spans two of the three columns from `lg` and splits its list across them.
+function SitemapColumn({
+	title,
+	nodes,
+	wide = false,
+}: {
+	title: string
+	nodes: readonly NavigationNode[]
+	wide?: boolean
+}) {
 	return (
-		<div data-slot="sitemap-column" className="flex flex-col gap-4">
+		<div data-slot="sitemap-column" className={cn('flex flex-col gap-4', wide && 'lg:col-span-2')}>
 			<h2 className="heading-sm text-foreground">{title}</h2>
-			{nodes.length > 0 && <SitemapBranch nodes={nodes} />}
+			{nodes.length > 0 && <SitemapBranch nodes={nodes} split={wide} />}
 		</div>
 	)
 }
@@ -64,16 +91,21 @@ function SitemapList({ className, ...props }: React.ComponentProps<'nav'>) {
 		return { label: group.label, nodes: index === 0 ? [startseite, ...nodes] : nodes }
 	})
 
+	const [first, ...others] = columns
+
 	return (
 		<nav
 			data-slot="sitemap-list"
 			aria-label={t('navigation.sitemap')}
-			className={cn('grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4', className)}
+			className={cn('grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3', className)}
 			{...props}
 		>
-			{columns.map((column) => (
-				<SitemapColumn key={column.label} title={column.label} nodes={column.nodes} />
-			))}
+			{first && <SitemapColumn title={first.label} nodes={first.nodes} wide />}
+			<div data-slot="sitemap-more" className="flex flex-col gap-10">
+				{others.map((column) => (
+					<SitemapColumn key={column.label} title={column.label} nodes={column.nodes} />
+				))}
+			</div>
 		</nav>
 	)
 }
