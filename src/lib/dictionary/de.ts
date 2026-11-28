@@ -219,6 +219,7 @@ export const de = {
 	'start.themen.description':
 		'Das Leitthema zieht sich durch alle acht Viertel. Zwei Themen-Orte zweigen unterwegs ab und eröffnen je eine eigene Perspektive.',
 	'start.themen.cta': 'Alle Themen →',
+	'legal.kicker': 'Rechtliches',
 } as const
 
 export type DictionaryKey = keyof typeof de
