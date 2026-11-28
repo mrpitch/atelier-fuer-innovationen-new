@@ -135,6 +135,7 @@ Every screen on the Figma pages 1–6 is drawn at 1440, 1024, 768 and 390px, wit
 | Stations-Bühne                    | Mobile          | Mobile                            | Mobile                   | Desktop       | `xl`             |
 | Bibliothek / Listen-Eintrag       | Mobile          | Mobile                            | Desktop                  | Desktop       | `lg`             |
 | Chronik / Zeitleisten-Eintrag     | Mobile          | Desktop                           | Desktop                  | Desktop       | `md`             |
+| Sitemap-Liste columns             | 1 column        | 2 columns                         | 4 columns                | 4 columns     | `md`, `lg`       |
 
 The Ortsleiste and the Bild-Hero switch at `xl` because their desktop rows don't fit 1024: long neighbour names ("Besuch in der Umgebung →") clip beside the breadcrumb, and the hero's text column would be too narrow for its title (issue #110). The Rundgang-Eintrag route wraps onto a second row when its column is narrower than the route. The Stationsnavigation's Mobile variant drops the stop illustrations from its two buttons; at 390 they don't fit beside each other.
 

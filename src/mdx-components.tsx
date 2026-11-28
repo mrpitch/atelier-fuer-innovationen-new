@@ -1,7 +1,6 @@
 import type { MDXComponents } from 'mdx/types'
 import type * as React from 'react'
 
-import { SitemapList } from '@/components/navigation/sitemap-list'
 import { ViertelTeaser } from '@/components/viertel/viertel-teaser'
 import { isRelativeImagePath, resolveBodyAssetPath } from '@/lib/content'
 
@@ -10,7 +9,7 @@ import { isRelativeImagePath, resolveBodyAssetPath } from '@/lib/content'
 // override on top of this (bodyImageComponents below) via
 // <Body components={...}>, which MDX merges with and overrides this global
 // set, per document.
-const components: MDXComponents = { SitemapList, ViertelTeaser }
+const components: MDXComponents = { ViertelTeaser }
 
 export function useMDXComponents(): MDXComponents {
 	return components

@@ -7,6 +7,7 @@ import { KapitelDetail } from '@/components/kapitel/kapitel-detail'
 import { SiteShell } from '@/components/layout/site-shell'
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
+import { SitemapHub } from '@/components/navigation/sitemap-hub'
 import { RundgaengeHub } from '@/components/rundgang/rundgaenge-hub'
 import { RundgangDetail } from '@/components/rundgang/rundgang-detail'
 import { StationDetail } from '@/components/rundgang/station-detail'
@@ -20,6 +21,7 @@ import type { Seite } from '@/lib/content'
 import {
 	contentGraph,
 	RUNDGAENGE_SEITE_ID,
+	SITEMAP_SEITE_ID,
 	STADT_SEITE_ID,
 	THEMEN_SEITE_ID,
 	urlFromSegments,
@@ -118,6 +120,20 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 			<SiteShell>
 				<main>
 					<ThemenHub seite={seite} locale={locale} />
+				</main>
+			</SiteShell>
+		)
+	}
+
+	// The Sitemap page (issue #136) is its own full-page layout — Breadcrumbs,
+	// Section Title XL and the restyled, generated Sitemap list, nothing else —
+	// not the generic Seite shape every other landing Seite below still gets;
+	// its MDX body is never rendered.
+	if (seite.id === SITEMAP_SEITE_ID) {
+		return (
+			<SiteShell>
+				<main>
+					<SitemapHub seite={seite} />
 				</main>
 			</SiteShell>
 		)

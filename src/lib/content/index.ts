@@ -14,7 +14,7 @@ export { buildContentGraph, contentGraph } from './graph'
 export type { FlatMenuName, GroupedMenuName, MenuGroupLink, MenuLink, ResolvedMenu } from './menu'
 export { shortTitleOrTitle, siteWordmark } from './presentation'
 export { RUNDGAENGE_SEITE_ID, STADT_SEITE_ID, THEMEN_SEITE_ID } from './rundgang'
-export { flattenNavigation } from './sitemap'
+export { flattenNavigation, SITEMAP_SEITE_ID } from './sitemap'
 export type {
 	Abschnitt,
 	Aufsatz,
