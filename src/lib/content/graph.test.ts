@@ -763,6 +763,23 @@ describe('buildContentGraph', () => {
 			expect(besuch).not.toHaveProperty('stationen')
 		})
 
+		it("derives a Rundgang's route from its Stationen's Orte, skipping a Station that stands at none", () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-route-valid'))
+
+			const gemischt = graph.getRundgang('rundgaenge/gemischt')
+			// station-a (Zentrum), station-b (no Ort), station-c (Erstes Viertel):
+			// station-b contributes nothing, the other two keep their own order.
+			expect(gemischt?.routeOrte).toEqual(['Zentrum', 'Erstes Viertel'])
+		})
+
+		it('derives an empty route for a Rundgang whose Stationen stand at no Ort at all', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-route-valid'))
+
+			const ohneOrt = graph.getRundgang('rundgaenge/ohne-ort')
+			expect(ohneOrt?.routeOrte).toEqual([])
+			expect(ohneOrt?.stationenCount).toBe(1)
+		})
+
 		it('derives the Stationen set at a Viertel or the Zentrum from the references, never from the Ort itself', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'rundgang-valid'))
 
@@ -1031,6 +1048,41 @@ describe('buildContentGraph', () => {
 			const graph = buildContentGraph(path.join(fixturesDir, 'schauen-rundgang-valid'))
 
 			expect(graph.getSchauenStation('stadt/ohne')).toBeUndefined()
+		})
+	})
+
+	describe('Start', () => {
+		it('parses tagline, heading, intro and zitat, zitat with its optional zusatz (issue #129)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'start-optional-fields-valid'))
+
+			const start = graph.getSeite('')
+			expect(start?.tagline).toBe('Platzhalter-Tagline der Startseite.')
+			expect(start?.heading).toBe('Platzhalter-Überschrift der Startseite.')
+			expect(start?.intro).toBe('Platzhalter-Intro der Startseite.')
+			expect(start?.zitat).toEqual({
+				text: 'Ein Zitat für Tests.',
+				quelle: 'Eine Testperson',
+				zusatz: 'Eine Testrolle',
+			})
+		})
+
+		it('parses zitat without its optional zusatz (issue #129)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'start-zitat-no-zusatz'))
+
+			expect(graph.getSeite('')?.zitat).toEqual({
+				text: 'Ein Zitat ohne Zusatz.',
+				quelle: 'Eine Testperson',
+			})
+		})
+
+		it('parses tagline, heading, intro and zitat as optional; existing content without them still builds (issue #129)', () => {
+			const graph = buildContentGraph(path.join(fixturesDir, 'valid'))
+
+			const start = graph.getSeite('')
+			expect(start?.tagline).toBeUndefined()
+			expect(start?.heading).toBeUndefined()
+			expect(start?.intro).toBeUndefined()
+			expect(start?.zitat).toBeUndefined()
 		})
 	})
 

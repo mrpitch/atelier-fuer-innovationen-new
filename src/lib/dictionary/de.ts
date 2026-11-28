@@ -60,6 +60,11 @@ export const de = {
 	'rundgang.stationenCount': '{n} Stationen',
 	'rundgang.duration': 'ca. {n} Min.',
 	'rundgang.summary': '{stationen} · {duration}',
+	'rundgang.karte.stationen.one': '{n} Station',
+	'rundgang.karte.stationen.other': '{n} Stationen',
+	'rundgang.karte.duration': '{n} Min.',
+	'rundgang.karte.routeSeparator': ' → ',
+	'rundgang.karte.starten': 'Rundgang starten',
 	'station.readingTime': 'ca. {n} Min.',
 	'themen.navigation': 'Die drei Themen',
 	'themen.hub.eyebrow': 'THEMEN · {leitthema} · {themenOrte}',
@@ -103,6 +108,7 @@ export const de = {
 	'thema.abzweige.karteLabel':
 		'Themen-Ort · Viertel {viertelNumber} · zweigt bei Kapitel {kapitelNumber} ab',
 	'thema.abzweige.karteAction': '{title} öffnen',
+	'thema.leitthemaKarteLabel': 'LEITTHEMA · 8 KAPITEL IN 8 VIERTELN',
 	'themenWeg.beginnen': 'Themen-Weg beginnen',
 	'ortsleiste.previous': '← {label}',
 	'ortsleiste.next': '{label} →',
@@ -199,6 +205,20 @@ export const de = {
 	'rundgaenge.hub.schritt3Titel': '03 · Abstecher jederzeit',
 	'rundgaenge.hub.schritt3Text':
 		'„Gangart wechseln“ führt zum Kapitel oder Viertel. Über „Route“ kehren Sie jederzeit zum Rundgang zurück.',
+	'start.hero.rundgangAction': 'Rundgang starten',
+	'start.hero.stadtplanAction': 'Zum Stadtplan',
+	'start.stadtplan.tagline': 'Der Stadtplan',
+	'start.stadtplan.heading': 'Jedes Viertel blickt aus einem anderen Winkel auf die Zukunft.',
+	'start.stadtplan.description':
+		'Der Stadtplan ist die Landkarte der Inhalte: Wählen Sie ein Viertel, um seine Texte, Rundgänge und Bausteine zu sehen.',
+	'start.stadtplan.cta': 'Zum Stadtplan →',
+	'start.rundgaenge.tagline': 'Stadtrundgänge',
+	'start.rundgaenge.cta': 'Alle Rundgänge →',
+	'start.themen.tagline': 'Drei Themen',
+	'start.themen.heading': 'Ein Leitthema, zwei Abzweige.',
+	'start.themen.description':
+		'Das Leitthema zieht sich durch alle acht Viertel. Zwei Themen-Orte zweigen unterwegs ab und eröffnen je eine eigene Perspektive.',
+	'start.themen.cta': 'Alle Themen →',
 } as const
 
 export type DictionaryKey = keyof typeof de

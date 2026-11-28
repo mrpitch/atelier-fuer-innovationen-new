@@ -11,24 +11,27 @@ import { RundgaengeHub } from '@/components/rundgang/rundgaenge-hub'
 import { RundgangDetail } from '@/components/rundgang/rundgang-detail'
 import { StationDetail } from '@/components/rundgang/station-detail'
 import { StadtplanHub } from '@/components/stadt/stadtplan-hub'
+import { StartHub } from '@/components/start/start-hub'
 import { ThemaDetail } from '@/components/thema/thema-detail'
 import { ThemenHub } from '@/components/thema/themen-hub'
 import { ViertelDetail } from '@/components/viertel/viertel-detail'
 import { ZentrumDetail } from '@/components/zentrum/zentrum-detail'
 import type { Seite } from '@/lib/content'
-import { contentGraph, RUNDGAENGE_SEITE_ID, urlFromSegments, urlSegments } from '@/lib/content'
+import {
+	contentGraph,
+	RUNDGAENGE_SEITE_ID,
+	STADT_SEITE_ID,
+	THEMEN_SEITE_ID,
+	urlFromSegments,
+	urlSegments,
+} from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
 import { bodyImageComponents } from '@/mdx-components'
 
-// The Stadt area's landing Seite: the Stadtplan-Hub (issue #95), its own
-// full-page layout rather than the generic Seite + area list every other
-// landing Seite below gets.
-const STADT_SEITE_ID = 'stadt'
-
-// The Themen area's landing Seite: the Themen-Hub (issue #149), its own
-// full-page layout rather than the generic Seite + area list every other
-// landing Seite below gets.
-const THEMEN_SEITE_ID = 'themen'
+// The Startseite (issue #129, epic #128): the root Seite's own full-page
+// layout — the StartHub — rather than the generic Seite + MDX body every
+// other Seite below still gets; its MDX body is never rendered.
+const START_SEITE_ID = ''
 
 // A slug param's segments, joined back into the URL graph.resolveUrl expects
 // (ADR-0001: an optional locale segment is part of that URL, not something
@@ -67,6 +70,19 @@ export async function generateMetadata({ params }: PageProps<'/[[...slug]]'>): P
 // Navigation under a locale: only the translatable fields a translation can
 // set change (issue #36).
 async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
+	// The Startseite (issue #129) is its own full-page layout — the StartHub —
+	// not the generic Seite shape every other landing Seite below still gets;
+	// its MDX body is never rendered.
+	if (seite.id === START_SEITE_ID) {
+		return (
+			<SiteShell>
+				<main>
+					<StartHub seite={seite} />
+				</main>
+			</SiteShell>
+		)
+	}
+
 	// The Stadtplan-Hub (issue #95) is its own full-page layout — Bild-Hero,
 	// Stadtplan and table — not the generic Seite shape every other landing
 	// Seite below still gets.
