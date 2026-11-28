@@ -6,7 +6,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Icon } from '@/components/ui/icons'
 import type { Rundgang, Station } from '@/lib/content'
-import { t } from '@/lib/dictionary'
+import { pluralForm, t } from '@/lib/dictionary'
 import { formatTwoDigits } from '@/lib/utils/format-two-digits'
 
 interface RundgangKarteProps extends React.ComponentProps<'div'> {
@@ -29,9 +29,9 @@ interface RundgangKarteProps extends React.ComponentProps<'div'> {
 function RundgangKarte({ rundgang, stationen, className, ...props }: RundgangKarteProps) {
 	const [firstStation] = stationen
 	const stationenText =
-		rundgang.stationenCount === 1
-			? t('rundgang.karte.stationSingular')
-			: t('rundgang.stationenCount', { n: rundgang.stationenCount })
+		pluralForm(rundgang.stationenCount) === 'one'
+			? t('rundgang.karte.stationen.one', { n: rundgang.stationenCount })
+			: t('rundgang.karte.stationen.other', { n: rundgang.stationenCount })
 
 	return (
 		<Card
