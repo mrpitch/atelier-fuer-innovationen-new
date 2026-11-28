@@ -59,7 +59,7 @@ function BildHero({
 		<section
 			data-slot="bild-hero"
 			className={cn(
-				'flex flex-col-reverse gap-10 px-5 pt-12 pb-20 xl:flex-row xl:items-center xl:justify-between xl:gap-20 xl:px-24',
+				'flex flex-col-reverse gap-10 px-5 pt-12 pb-20 xl:flex-row xl:items-center xl:justify-between xl:gap-20 xl:px-6',
 				className,
 			)}
 			{...props}

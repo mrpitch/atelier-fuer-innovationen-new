@@ -56,4 +56,30 @@ describe('Ortsleiste', () => {
 		expect(html).toContain('← 02 Zweites')
 		expect(html).toContain('href="/stadt/zweites-viertel"')
 	})
+
+	it('renders the other footer-legal pages as actions, excluding the current page and any Kontakt link', () => {
+		const graph = buildContentGraph(path.join(fixturesDir, 'ortsleiste-legal-valid'))
+		const actions = graph.getMenu('footer-legal').filter((link) => link.url !== '/impressum')
+		const html = renderToStaticMarkup(
+			<Ortsleiste breadcrumbs={graph.getBreadcrumbs('impressum')} actions={actions} />,
+		)
+
+		expect(html).toContain('Impressum')
+		expect(html).toContain('Datenschutz')
+		expect(html).toContain('href="/datenschutz"')
+		expect(html).toContain('Sitemap')
+		expect(html).toContain('href="/sitemap"')
+		expect(html).not.toContain('href="/impressum"')
+		expect(html).not.toContain('Kontakt')
+	})
+
+	it('renders no actions row when the footer-legal menu has no other page', () => {
+		const graph = buildContentGraph(path.join(fixturesDir, 'ortsleiste-legal-valid'))
+		const html = renderToStaticMarkup(
+			<Ortsleiste breadcrumbs={graph.getBreadcrumbs('impressum')} actions={[]} />,
+		)
+
+		expect(html).not.toContain('Datenschutz')
+		expect(html).not.toContain('Sitemap')
+	})
 })

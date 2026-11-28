@@ -68,11 +68,12 @@ function resolveItems(
 
 // RootLayout's own convention (not something the Menu schema can see, since
 // a Menu file alone never states its expected shape): header and
-// footer-legal must resolve flat, footer grouped (glossary: Menu group).
+// footer-legal must resolve flat; footer and sitemap grouped (glossary: Menu
+// group).
 // Checked here, during graph building, so a Menu file edited into the wrong
 // shape fails `content:check` instead of only crashing the Next.js build.
 export const FLAT_MENU_NAMES = ['header', 'footer-legal'] as const
-export const GROUPED_MENU_NAMES = ['footer'] as const
+export const GROUPED_MENU_NAMES = ['footer', 'sitemap'] as const
 export type FlatMenuName = (typeof FLAT_MENU_NAMES)[number]
 export type GroupedMenuName = (typeof GROUPED_MENU_NAMES)[number]
 

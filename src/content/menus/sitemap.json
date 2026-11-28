@@ -1,0 +1,27 @@
+[
+	{
+		"label": "Entdecken",
+		"entries": [
+			{ "id": "stadt" },
+			{ "id": "rundgaenge" },
+			{ "id": "themen" },
+			{ "id": "leitthema/ankunft" },
+			{ "id": "leitthema/marktplatz" },
+			{ "id": "leitthema/vernetzung" },
+			{ "id": "leitthema/buehne" },
+			{ "id": "leitthema/horizont" },
+			{ "id": "leitthema/werkbank" },
+			{ "id": "leitthema/sammlung" },
+			{ "id": "leitthema/wegweiser" }
+		]
+	},
+	{ "label": "Lesen", "entries": [{ "id": "bibliothek" }] },
+	{
+		"label": "Projekt",
+		"entries": [{ "id": "idee" }, { "id": "chronik" }, { "id": "menschen" }]
+	},
+	{
+		"label": "Service",
+		"entries": [{ "id": "impressum" }, { "id": "datenschutz" }, { "id": "sitemap" }]
+	}
+]

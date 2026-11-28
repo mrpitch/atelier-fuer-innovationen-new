@@ -13,6 +13,10 @@ import type {
 	Zentrum,
 } from './types'
 
+// The Sitemap area's own landing Seite. The page route and its full-page
+// layout (SitemapHub) both address it by this ID.
+export const SITEMAP_SEITE_ID = 'sitemap'
+
 // Every content type the Sitemap lists besides Seite, with its published
 // documents only (issue #60). Seite is the Navigation tree itself (issue
 // #34); each other type hangs off the Seite of its own area.

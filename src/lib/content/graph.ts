@@ -6,6 +6,7 @@ import { validateViertelTeaserReferences } from './body'
 import { flattenSet, lookupSet } from './documents'
 import {
 	ABSCHNITT_ORDER_FIELD,
+	ContentValidationError,
 	RUNDGANG_ORDER_FIELD,
 	STATION_ORDER_FIELD,
 	VIERTEL_ORDER_FIELD,
@@ -28,7 +29,7 @@ import { buildNavigation } from './navigation'
 import { shortTitleOrTitle } from './presentation'
 import { orderRundgaenge, summarizeRundgang } from './rundgang'
 import { stationOrderSchema } from './schemas'
-import { listSitemap } from './sitemap'
+import { listSitemap, SITEMAP_SEITE_ID } from './sitemap'
 import { orderStationen } from './station'
 import { resolveThemen } from './thema'
 import { buildTrail } from './trail'
@@ -258,10 +259,21 @@ export function buildContentGraph(
 
 	const loaded = loadDocuments(contentDir)
 
-	const allSeiten: Seite[] = loaded.seite.map(({ file: _file, ...document }) => ({
-		...document,
-		url: pathUrl(document.id),
-	}))
+	const allSeiten: Seite[] = loaded.seite.map(({ file, ...document }) => {
+		// The Sitemap Seite's own Seitenkopf (issue #136, SitemapHub) reads
+		// `tagline` as its kicker, unlike every other Seite, which renders fine
+		// without one (content-layer.md) — checked here, not just left to crash
+		// at render, so a missing one fails `content:check` and the build with
+		// the one shape every content problem fails in (ContentValidationError).
+		if (document.id === SITEMAP_SEITE_ID && !document.tagline) {
+			throw new ContentValidationError(
+				file,
+				'tagline',
+				'the Sitemap Seite has no tagline, its Seitenkopf kicker',
+			)
+		}
+		return { ...document, url: pathUrl(document.id) }
+	})
 	const seiten = allSeiten.filter(isVisible)
 	const navigation = buildNavigation(allSeiten, loadMeta(contentDir), isVisible)
 	const site = loadSite(contentDir)

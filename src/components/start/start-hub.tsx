@@ -2,6 +2,7 @@ import { cn } from 'cn'
 import Link from 'next/link'
 import type * as React from 'react'
 
+import { fullBleedBackground } from '@/components/layout/full-bleed'
 import { HeroSection7 } from '@/components/pro-blocks/landing-page/hero-sections/hero-section-7'
 import { TestimonialsSection1 } from '@/components/pro-blocks/landing-page/testimonials-sections/testimonials-section-1'
 import { RundgangKarte } from '@/components/rundgang/rundgang-karte'
@@ -104,7 +105,10 @@ function StartHub({ seite, className, ...props }: StartHubProps) {
 				</nav>
 			</PageSection>
 
-			<PageSection data-slot="start-rundgaenge-section" className="bg-muted/40">
+			<PageSection
+				data-slot="start-rundgaenge-section"
+				className={cn(fullBleedBackground, 'bg-muted/40')}
+			>
 				{/* The same tagline doubles as the section's own accessible heading
 				    (Figma shows no visible one, "Show Heading: false" — the
 				    Rundgänge-Hub's own Tagline does the same, rundgaenge-hub.tsx). */}

@@ -51,6 +51,9 @@
 		// A Station's placeholder title (issue #116, Figma): the Kondratiev
 		// waves of economic theory, spelled as the Figma design's own copy
 		// has it, not the German-literature "Kondratjew".
-		"Kondratieffs"
+		"Kondratieffs",
+		// A common German loanword, the Datenschutz Seite's own placeholder
+		// heading text (issue #135, Figma).
+		"Hosting"
 	]
 }
