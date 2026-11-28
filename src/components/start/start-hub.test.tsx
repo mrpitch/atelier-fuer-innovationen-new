@@ -41,15 +41,26 @@ describe('StartHub', () => {
 
 	it('links the Hero buttons to the first Station of the first Rundgang and the Stadtplan-Hub', () => {
 		const html = renderFixture('start-hub-valid')
+		const heroMatch = /<section data-slot="hero-section-7"[^]*?<\/section>/.exec(html)
+		if (!heroMatch) throw new Error('Hero section missing from the render')
+		const hero = heroMatch[0]
 		const [firstRundgang] = graph.rundgaenge
 		if (!firstRundgang) throw new Error('fixture missing a Rundgang')
 		const [firstStation] = graph.getStationenByRundgang(firstRundgang.id)
 		if (!firstStation) throw new Error('fixture missing a Station')
+		// The first Rundgang has no Station at the Zentrum, so the Zentrum's
+		// Schauen Station belongs to another Rundgang and must not be the target.
+		const { zentrum } = graph
+		if (!zentrum) throw new Error('fixture missing a Zentrum')
+		const schauenStation = graph.getSchauenStation(zentrum.id)
+		if (!schauenStation) throw new Error('fixture missing a Schauen Station')
+		expect(schauenStation.rundgangId).not.toBe(firstRundgang.id)
 
-		expect(html).toContain(`href="${firstStation.url}"`)
-		expect(html).toContain('Rundgang starten')
-		expect(html).toContain('href="/stadt"')
-		expect(html).toContain('Zum Stadtplan')
+		expect(hero).toContain(`href="${firstStation.url}"`)
+		expect(hero).not.toContain(`href="${schauenStation.url}"`)
+		expect(hero).toContain('Rundgang starten')
+		expect(hero).toContain('href="/stadt"')
+		expect(hero).toContain('Zum Stadtplan')
 	})
 
 	it('reuses the Stadt epic’s Stadtplan, whose Zentrum tile opens the Zentrum page', () => {
