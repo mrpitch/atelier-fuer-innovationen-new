@@ -58,11 +58,12 @@ function SitemapColumn({
 
 // Unlike Breadcrumbs/PreviousNext, this reads the content graph itself
 // (issue #34): it's placed by the Sitemap Seite's own full-page layout
-// (SitemapHub), not handed items by page.tsx, so there is no parent already
-// holding them. Restyled, not replaced, for the Figma composition (issue
-// #136): the Sitemap tree's root (the Startseite) gets its own link above
-// the grid; its children become the grid's columns, four across at `lg`,
-// down to one stacked column below `md` (Kartei design system, Breakpoints).
+// (SitemapHub), which holds the graph for its own breadcrumbs but doesn't
+// pass this list its tree, so the list reads the graph itself. Restyled,
+// not replaced, for the Figma composition (issue #136): the Sitemap tree's
+// root (the Startseite) gets its own link above the grid; its children
+// become the grid's columns, four across at `lg`, down to one stacked
+// column below `md` (Kartei design system, Breakpoints).
 //
 // `graph.sitemap`'s root children are the real top-level Seiten (Navigation
 // order) plus, for an area with no published Seite of its own (issue #60's
