@@ -161,6 +161,20 @@ describe('buildContentGraph', () => {
 				'rundgaenge/ein-rundgang/eine-station',
 			])
 		})
+
+		it('fails when the Sitemap Seite has no tagline, its Seitenkopf kicker (issue #136), naming the file and the field', () => {
+			expect.assertions(4)
+
+			try {
+				buildContentGraph(path.join(fixturesDir, 'sitemap-seite-no-tagline'))
+			} catch (error) {
+				expect(error).toBeInstanceOf(ContentValidationError)
+				const validationError = error as ContentValidationError
+				expect(validationError.file).toBe('sitemap/index.mdx')
+				expect(validationError.field).toBe('tagline')
+				expect(validationError.reason).toMatch(/tagline/i)
+			}
+		})
 	})
 
 	describe('Drafts', () => {

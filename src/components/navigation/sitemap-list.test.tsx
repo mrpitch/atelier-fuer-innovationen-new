@@ -43,6 +43,15 @@ describe('SitemapList', () => {
 		expect(stadtColumn).toContain('>Ein Viertel<')
 	})
 
+	it('groups the Leitthema’s Kapitel under one column instead of one column per Kapitel (issue #60’s root fallback)', () => {
+		const html = render()
+
+		const headings = html.match(/<h2[^>]*>[\s\S]*?<\/h2>/g) ?? []
+		expect(headings).toHaveLength(3)
+		expect(headings.some((heading) => heading.includes('Ein Kapitel'))).toBe(false)
+		expect(headings.some((heading) => heading.includes('Leitthema'))).toBe(true)
+	})
+
 	it('nests a deeper branch — a Kapitel’s own Abschnitt — under that Kapitel, not flattened into its column', () => {
 		const html = render()
 

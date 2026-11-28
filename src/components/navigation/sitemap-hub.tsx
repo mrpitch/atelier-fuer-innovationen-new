@@ -19,9 +19,13 @@ interface SitemapHubProps extends React.ComponentProps<'div'> {
 // generated Sitemap list. Nothing else (the issue's own "What to build"): no
 // previous/next, since a utility page like this has no reading-order
 // neighbour.
+//
+// The Sitemap Seite always has a `tagline` by the time this renders: graph.ts
+// enforces it while building the graph (a `ContentValidationError`, same as
+// every other content problem — content-layer.md), so `content:check` and the
+// build both catch a Sitemap Seite missing one instead of this component.
 function SitemapHub({ seite, className, ...props }: SitemapHubProps) {
 	const graph = contentGraph()
-	if (!seite.tagline) throw new Error('SitemapHub: the Sitemap Seite has no tagline (kicker)')
 
 	return (
 		<div data-slot="sitemap-hub" className={cn(className)} {...props}>
