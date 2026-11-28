@@ -41,6 +41,18 @@ describe('SitemapHub', () => {
 		expect(html).toContain('>Idee<')
 	})
 
+	it('shows the other legal pages as Ortsleiste actions, not the Sitemap itself', () => {
+		const html = render()
+		const ortsleiste = html.slice(
+			html.indexOf('data-slot="ortsleiste"'),
+			html.indexOf('data-slot="sitemap-hub-section"'),
+		)
+
+		expect(ortsleiste).toContain('href="/impressum"')
+		expect(ortsleiste).toContain('href="/datenschutz"')
+		expect(ortsleiste).not.toContain('href="/sitemap"')
+	})
+
 	it('renders nothing besides the Seitenkopf and the Sitemap list — no previous/next', () => {
 		const html = render()
 

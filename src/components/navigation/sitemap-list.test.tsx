@@ -62,7 +62,14 @@ describe('SitemapList', () => {
 
 		// The Abschnitt sits in its own nested <ul>, inside the Kapitel's <li>.
 		const kapitelLi = html.slice(kapitelIndex, abschnittIndex + '>Ein Abschnitt<'.length)
-		expect(kapitelLi).toMatch(/<ul[^>]*>[^<]*<li[^>]*>[^<]*<a[^>]*>Ein Abschnitt</)
+		expect(kapitelLi).toMatch(/<ul[^>]*>[^<]*<li[^>]*><span><a[^>]*>Ein Abschnitt</)
+	})
+
+	it('lists each page as "Titel — /url" in a bulleted list', () => {
+		const html = render()
+
+		expect(html).toContain(' — /stadt/zentrum')
+		expect(html).toContain('list-disc')
 	})
 
 	it('links every page once, including the Startseite', () => {

@@ -8,17 +8,16 @@ import { t } from '@/lib/dictionary'
 
 function SitemapBranch({ nodes }: { nodes: readonly NavigationNode[] }) {
 	return (
-		<ul className="flex flex-col gap-3">
+		<ul className="flex list-disc flex-col gap-3 pl-5 marker:text-muted-foreground">
 			{nodes.map((node) => (
 				<li key={node.id} className="flex flex-col gap-3">
-					<Link href={node.url} className="text-muted-foreground hover:text-foreground">
-						{node.title}
-					</Link>
-					{node.children.length > 0 && (
-						<div className="pl-4">
-							<SitemapBranch nodes={node.children} />
-						</div>
-					)}
+					<span>
+						<Link href={node.url} className="text-muted-foreground hover:text-foreground">
+							{node.title}
+						</Link>
+						<span className="text-muted-foreground">{` — ${node.url}`}</span>
+					</span>
+					{node.children.length > 0 && <SitemapBranch nodes={node.children} />}
 				</li>
 			))}
 		</ul>

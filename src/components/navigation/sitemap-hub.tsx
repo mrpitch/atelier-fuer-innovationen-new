@@ -12,8 +12,9 @@ interface SitemapHubProps extends React.ComponentProps<'div'> {
 	seite: Seite
 }
 
-// /sitemap (issue #136, Figma page 6, 36617:15595): the Ortsleiste, the Section
-// Title XL Seitenkopf (issue #135's size="xl" rung of SectionTitle) — kicker,
+// /sitemap (issue #136, Figma page 6, 36617:15595): the Ortsleiste (the other legal
+// pages as actions, as on a legal page itself), the Section Title XL Seitenkopf (issue #135's size="xl" rung of
+// SectionTitle) — kicker,
 // title and description all from the Sitemap Seite's own frontmatter, the
 // same `tagline` field the Startseite's own Hero reads — and the restyled,
 // generated Sitemap list. Nothing else (the issue's own "What to build"): no
@@ -26,10 +27,11 @@ interface SitemapHubProps extends React.ComponentProps<'div'> {
 // build both catch a Sitemap Seite missing one instead of this component.
 function SitemapHub({ seite, className, ...props }: SitemapHubProps) {
 	const graph = contentGraph()
+	const actions = graph.getMenu('footer-legal').filter((link) => link.url !== seite.url)
 
 	return (
 		<div data-slot="sitemap-hub" className={cn(className)} {...props}>
-			<Ortsleiste breadcrumbs={graph.getBreadcrumbs(seite.id)} />
+			<Ortsleiste breadcrumbs={graph.getBreadcrumbs(seite.id)} actions={actions} />
 			<PageSection data-slot="sitemap-hub-section" className="flex flex-col gap-14">
 				<SectionTitle
 					tagline={seite.tagline}
