@@ -13,16 +13,13 @@ import { buttonVariants } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icons'
 import { Illustration } from '@/components/ui/illustration'
 import type { Seite } from '@/lib/content'
-import { contentGraph, RUNDGAENGE_SEITE_ID } from '@/lib/content'
+import { contentGraph, RUNDGAENGE_SEITE_ID, STADT_SEITE_ID, THEMEN_SEITE_ID } from '@/lib/content'
 import { t } from '@/lib/dictionary'
 import { formatTwoDigits } from '@/lib/utils/format-two-digits'
 
 interface StartHubProps extends React.ComponentProps<'div'> {
 	seite: Seite
 }
-
-const STADT_SEITE_ID = 'stadt'
-const THEMEN_SEITE_ID = 'themen'
 
 // The Startseite (issues #130, #131, epic #128): the Home / Hero built from
 // `tagline`, `heading` and `intro` (Pro Blocks Hero Section 7, Figma T01

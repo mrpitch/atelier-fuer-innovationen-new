@@ -17,7 +17,14 @@ import { ThemenHub } from '@/components/thema/themen-hub'
 import { ViertelDetail } from '@/components/viertel/viertel-detail'
 import { ZentrumDetail } from '@/components/zentrum/zentrum-detail'
 import type { Seite } from '@/lib/content'
-import { contentGraph, RUNDGAENGE_SEITE_ID, urlFromSegments, urlSegments } from '@/lib/content'
+import {
+	contentGraph,
+	RUNDGAENGE_SEITE_ID,
+	STADT_SEITE_ID,
+	THEMEN_SEITE_ID,
+	urlFromSegments,
+	urlSegments,
+} from '@/lib/content'
 import { documentMetadata } from '@/lib/utils/document-metadata'
 import { bodyImageComponents } from '@/mdx-components'
 
@@ -25,16 +32,6 @@ import { bodyImageComponents } from '@/mdx-components'
 // layout — the StartHub — rather than the generic Seite + MDX body every
 // other Seite below still gets; its MDX body is never rendered.
 const START_SEITE_ID = ''
-
-// The Stadt area's landing Seite: the Stadtplan-Hub (issue #95), its own
-// full-page layout rather than the generic Seite + area list every other
-// landing Seite below gets.
-const STADT_SEITE_ID = 'stadt'
-
-// The Themen area's landing Seite: the Themen-Hub (issue #149), its own
-// full-page layout rather than the generic Seite + area list every other
-// landing Seite below gets.
-const THEMEN_SEITE_ID = 'themen'
 
 // A slug param's segments, joined back into the URL graph.resolveUrl expects
 // (ADR-0001: an optional locale segment is part of that URL, not something

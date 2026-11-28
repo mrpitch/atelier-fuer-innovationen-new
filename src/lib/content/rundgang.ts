@@ -27,6 +27,11 @@ const THEMA_ID_FIELD = 'themaId'
 // beenden" both address it by this ID.
 export const RUNDGAENGE_SEITE_ID = 'rundgaenge'
 
+// The Stadt and Themen areas' landing Seiten: each has its own full-page hub
+// (Stadtplan-Hub, Themen-Hub), and the Startseite links to both.
+export const STADT_SEITE_ID = 'stadt'
+export const THEMEN_SEITE_ID = 'themen'
+
 // Orders every Rundgang by rundgaenge/meta.json (issue #116): strict like
 // orderViertel, against every Rundgang document, Drafts included — a
 // Rundgang's own number, previous/next and the Schauen Gangart
