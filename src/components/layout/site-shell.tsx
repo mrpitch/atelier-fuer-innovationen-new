@@ -6,7 +6,8 @@ import { Wortmarke } from '@/components/layout/wortmarke'
 import { contentGraph } from '@/lib/content'
 
 // The site Header and Footer (Kartei design system, Navigation), around
-// every page's own content — every route calls this except a Station page's
+// every page's own content, capped to the 1280px the Header and Footer share
+// (Container) — every route calls this except a Station page's
 // (issue #120): its own Rundgang-Leiste takes their place, so RootLayout
 // stopped rendering them for every route alike.
 function SiteShell({ children }: { children: React.ReactNode }) {
@@ -19,7 +20,9 @@ function SiteShell({ children }: { children: React.ReactNode }) {
 	return (
 		<>
 			<Header wortmarke={wortmarke} menu={headerMenu} />
-			{children}
+			<div data-slot="site-content" className="mx-auto w-full max-w-7xl">
+				{children}
+			</div>
 			<Footer
 				wortmarke={wortmarke}
 				copyright={graph.site.copyright}
