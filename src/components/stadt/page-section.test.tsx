@@ -8,7 +8,7 @@ describe('PageSection', () => {
 		const html = renderToStaticMarkup(<PageSection className="bg-muted">x</PageSection>)
 
 		expect(html).toMatch(/^<section/)
-		expect(html).toContain('px-5 py-14 md:px-24 md:py-16')
+		expect(html).toContain('px-5 py-14 md:px-6 md:py-16')
 		expect(html).toContain('bg-muted')
 	})
 

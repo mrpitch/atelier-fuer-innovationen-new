@@ -80,7 +80,7 @@ async function ThemenOrtDetail({ thema, locale, ...props }: ThemenOrtDetailProps
 
 			<div
 				data-slot="thema-ort-body"
-				className="flex flex-col gap-10 px-5 py-14 md:py-16 lg:flex-row lg:items-start lg:gap-x-14 xl:gap-x-24 xl:px-24"
+				className="flex flex-col gap-10 px-5 py-14 md:py-16 lg:flex-row lg:items-start lg:gap-x-14 xl:gap-x-24 xl:px-6"
 			>
 				{/* 720px: the Body text column (Figma Body 36603:14570). */}
 				{/* eslint-disable-next-line restrictions/arbitrary-size-classes */}

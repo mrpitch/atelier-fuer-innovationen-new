@@ -17,7 +17,7 @@ describe('BildHero', () => {
 
 		const classes = /<section[^>]* class="([^"]*)"/.exec(html)?.[1].split(' ') ?? []
 
-		expect(classes).toEqual(expect.arrayContaining(['xl:flex-row', 'xl:items-center', 'xl:px-24']))
+		expect(classes).toEqual(expect.arrayContaining(['xl:flex-row', 'xl:items-center', 'xl:px-6']))
 		expect(classes).not.toContain('lg:flex-row')
 	})
 

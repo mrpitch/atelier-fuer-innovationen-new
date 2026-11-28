@@ -8,7 +8,7 @@ function PageSection({ className, render, ...props }: useRender.ComponentProps<'
 	return useRender({
 		defaultTagName: 'section',
 		props: mergeProps<'section'>(
-			{ className: cn('px-5 py-14 md:px-24 md:py-16', className) },
+			{ className: cn('px-5 py-14 md:px-6 md:py-16', className) },
 			props,
 		),
 		render,

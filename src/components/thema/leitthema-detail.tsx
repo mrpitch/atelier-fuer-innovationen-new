@@ -103,7 +103,7 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 				<p>{thema.description}</p>
 			</BildHero>
 
-			<PageSection data-slot="themen-weg-section" className="md:px-5 xl:px-24">
+			<PageSection data-slot="themen-weg-section" className="md:px-5 xl:px-6">
 				<SectionTitle
 					tagline={t('thema.weg.tagline')}
 					title={t('thema.weg.title')}
@@ -149,7 +149,7 @@ async function LeitthemaDetail({ thema, locale: _locale, ...props }: LeitthemaDe
 
 			{thema.zitat && <TestimonialsSection1 zitat={thema.zitat} />}
 
-			<PageSection data-slot="abzweige-section" className="md:px-5 xl:px-24">
+			<PageSection data-slot="abzweige-section" className="md:px-5 xl:px-6">
 				<SectionTitle
 					tagline={t('thema.abzweige.tagline')}
 					title={t('thema.abzweige.title')}

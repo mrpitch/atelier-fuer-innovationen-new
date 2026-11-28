@@ -2,6 +2,7 @@ import { cn } from 'cn'
 import Link from 'next/link'
 import type * as React from 'react'
 
+import { fullBleedBackground } from '@/components/layout/full-bleed'
 import { BildHero } from '@/components/ui/bild-hero'
 import { buttonVariants } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icons'
@@ -83,7 +84,10 @@ async function StadtplanHub({ seite, locale, className, ...props }: StadtplanHub
 				</nav>
 			</PageSection>
 
-			<PageSection data-slot="stadt-tabelle-section" className="bg-muted">
+			<PageSection
+				data-slot="stadt-tabelle-section"
+				className={cn(fullBleedBackground, 'bg-muted')}
+			>
 				<StadtTabelle data={buildStadtTabelle(graph, viertel, zentrum)} />
 			</PageSection>
 		</div>
