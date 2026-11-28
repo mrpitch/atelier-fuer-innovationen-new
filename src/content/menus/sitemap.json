@@ -6,13 +6,13 @@
 			{ "id": "rundgaenge" },
 			{ "id": "themen" },
 			{ "id": "leitthema/ankunft" },
+			{ "id": "leitthema/marktplatz" },
+			{ "id": "leitthema/vernetzung" },
 			{ "id": "leitthema/buehne" },
 			{ "id": "leitthema/horizont" },
-			{ "id": "leitthema/marktplatz" },
+			{ "id": "leitthema/werkbank" },
 			{ "id": "leitthema/sammlung" },
-			{ "id": "leitthema/vernetzung" },
-			{ "id": "leitthema/wegweiser" },
-			{ "id": "leitthema/werkbank" }
+			{ "id": "leitthema/wegweiser" }
 		]
 	},
 	{ "label": "Lesen", "entries": [{ "id": "bibliothek" }] },
