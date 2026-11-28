@@ -1,6 +1,7 @@
 import { cn } from 'cn'
 import type * as React from 'react'
 
+import { fullBleedBackground } from '@/components/layout/full-bleed'
 import { FeatureSection9 } from '@/components/pro-blocks/landing-page/feature-sections/feature-section-9'
 import { Tagline } from '@/components/pro-blocks/landing-page/tagline'
 import { PageSection } from '@/components/stadt/page-section'
@@ -94,6 +95,7 @@ async function RundgaengeHub({ seite, locale, className, ...props }: RundgaengeH
 			    position-derived progress (epic #115, "Position … is not reading
 			    state"), not a promise that it's saved between visits. */}
 			<FeatureSection9
+				className={fullBleedBackground}
 				tagline={t('rundgaenge.hub.featureTagline')}
 				heading={t('rundgaenge.hub.featureHeading')}
 				steps={[
