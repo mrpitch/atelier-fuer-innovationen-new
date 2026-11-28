@@ -41,7 +41,7 @@ interface ThemaKarteProps
 // would force-capitalize it; the Leitthema variant's own label is typed
 // uppercase already ("LEITTHEMA · …"), so the same plain `<p>` renders it
 // unchanged either way.
-const themaKarteVariants = cva('flex-col items-center gap-7 p-8', {
+const themaKarteVariants = cva('group/karte flex-col items-center gap-7 p-8', {
 	variants: {
 		variant: {
 			'themen-ort': 'md:flex-row md:items-start',
@@ -62,8 +62,6 @@ function ThemaKarte({
 	className,
 	...props
 }: ThemaKarteProps) {
-	const isLeitthema = variant === 'leitthema'
-
 	return (
 		<Card
 			data-slot="thema-karte"
@@ -82,11 +80,11 @@ function ThemaKarte({
 			<div
 				className={cn(
 					'flex min-w-0 flex-col gap-3 text-center',
-					isLeitthema ? 'lg:text-left' : 'md:text-left',
+					'group-data-[variant=themen-ort]/karte:md:text-left group-data-[variant=leitthema]/karte:lg:text-left',
 				)}
 			>
 				<p className="font-mono text-xs font-medium text-primary">{label}</p>
-				<p className={cn('font-heading text-foreground', isLeitthema ? 'text-4xl' : 'text-2xl')}>
+				<p className="font-heading text-2xl text-foreground group-data-[variant=leitthema]/karte:text-4xl">
 					{titel}
 				</p>
 				<p className="font-serif text-base text-muted-foreground">{text}</p>
@@ -94,7 +92,7 @@ function ThemaKarte({
 				<div
 					className={cn(
 						'flex flex-wrap items-center justify-center gap-3',
-						isLeitthema ? 'lg:justify-start' : 'md:justify-start',
+						'group-data-[variant=themen-ort]/karte:md:justify-start group-data-[variant=leitthema]/karte:lg:justify-start',
 					)}
 				>
 					{action}
