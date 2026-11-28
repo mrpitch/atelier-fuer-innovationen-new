@@ -1,7 +1,7 @@
 import { cn } from 'cn'
 import type * as React from 'react'
 
-import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
+import { Ortsleiste } from '@/components/navigation/ortsleiste'
 import { SitemapList } from '@/components/navigation/sitemap-list'
 import { PageSection } from '@/components/stadt/page-section'
 import { SectionTitle } from '@/components/stadt/section-title'
@@ -12,7 +12,7 @@ interface SitemapHubProps extends React.ComponentProps<'div'> {
 	seite: Seite
 }
 
-// /sitemap (issue #136, Figma page 6, 36617:15595): Breadcrumbs, the Section
+// /sitemap (issue #136, Figma page 6, 36617:15595): the Ortsleiste, the Section
 // Title XL Seitenkopf (issue #135's size="xl" rung of SectionTitle) — kicker,
 // title and description all from the Sitemap Seite's own frontmatter, the
 // same `tagline` field the Startseite's own Hero reads — and the restyled,
@@ -29,7 +29,7 @@ function SitemapHub({ seite, className, ...props }: SitemapHubProps) {
 
 	return (
 		<div data-slot="sitemap-hub" className={cn(className)} {...props}>
-			<Breadcrumbs items={graph.getBreadcrumbs(seite.id)} />
+			<Ortsleiste breadcrumbs={graph.getBreadcrumbs(seite.id)} />
 			<PageSection data-slot="sitemap-hub-section" className="flex flex-col gap-14">
 				<SectionTitle
 					tagline={seite.tagline}

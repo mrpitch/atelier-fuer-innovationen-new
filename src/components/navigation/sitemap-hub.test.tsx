@@ -32,10 +32,10 @@ describe('SitemapHub', () => {
 		expect(html).toContain('Alle Bereiche der Wissensstadt auf einen Blick – mit ihren Adressen.')
 	})
 
-	it('shows the Breadcrumbs to the Sitemap Seite and the generated, nested Sitemap list beneath it', () => {
+	it('shows the Ortsleiste breadcrumb to the Sitemap Seite and the generated, nested Sitemap list beneath it', () => {
 		const html = render()
 
-		expect(html).toContain('data-slot="breadcrumbs"')
+		expect(html).toContain('data-slot="ortsleiste"')
 		expect(html).toContain('data-slot="sitemap-list"')
 		// The embedded list's own column for the fixture's other top-level Seite.
 		expect(html).toContain('>Idee<')
