@@ -11,12 +11,9 @@ function SitemapBranch({ nodes }: { nodes: readonly NavigationNode[] }) {
 		<ul className="flex list-disc flex-col gap-3 pl-5 marker:text-muted-foreground">
 			{nodes.map((node) => (
 				<li key={node.id} className="flex flex-col gap-3">
-					<span>
-						<Link href={node.url} className="text-muted-foreground hover:text-foreground">
-							{node.title}
-						</Link>
-						<span className="text-muted-foreground">{` — ${node.url}`}</span>
-					</span>
+					<Link href={node.url} className="text-muted-foreground hover:text-foreground">
+						{node.title}
+					</Link>
 					{node.children.length > 0 && <SitemapBranch nodes={node.children} />}
 				</li>
 			))}

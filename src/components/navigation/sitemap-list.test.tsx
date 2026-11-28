@@ -49,8 +49,8 @@ describe('SitemapList', () => {
 		const html = render()
 		const entdecken = html.slice(html.indexOf('>Entdecken<'), html.indexOf('>Projekt<'))
 
-		expect(entdecken.indexOf(' — /<')).toBeGreaterThan(-1)
-		expect(entdecken.indexOf(' — /<')).toBeLessThan(entdecken.indexOf('>Stadtplan<'))
+		expect(entdecken.indexOf('href="/"')).toBeGreaterThan(-1)
+		expect(entdecken.indexOf('href="/"')).toBeLessThan(entdecken.indexOf('>Stadtplan<'))
 		expect(html.match(/href="\/idee"/g)).toHaveLength(1)
 	})
 
@@ -71,14 +71,14 @@ describe('SitemapList', () => {
 
 		// The Abschnitt sits in its own nested <ul>, inside the Kapitel's <li>.
 		const kapitelLi = html.slice(kapitelIndex, abschnittIndex + '>Ein Abschnitt<'.length)
-		expect(kapitelLi).toMatch(/<ul[^>]*>[^<]*<li[^>]*><span><a[^>]*>Ein Abschnitt</)
+		expect(kapitelLi).toMatch(/<ul[^>]*>[^<]*<li[^>]*><a[^>]*>Ein Abschnitt</)
 	})
 
-	it('lists each page as "Titel — /url" in a bulleted list', () => {
+	it('lists pages as a bulleted list, without their paths', () => {
 		const html = render()
 
-		expect(html).toContain(' — /stadt/zentrum')
 		expect(html).toContain('list-disc')
+		expect(html).not.toContain(' — /')
 	})
 
 	it('links every Menu-listed page once', () => {
