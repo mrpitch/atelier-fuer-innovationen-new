@@ -37,11 +37,15 @@ function StartHub({ seite, className, ...props }: StartHubProps) {
 	const rundgaenge = graph.getSeite(RUNDGAENGE_SEITE_ID)
 	const themen = graph.getSeite(THEMEN_SEITE_ID)
 	const { viertel, zentrum, leitthema } = graph
-	// "Als Rundgang ansehen" below, and the Hero's own "Rundgang starten", both
-	// go to Station 0 of the Zentrum's Schauen Rundgang — the same helper and
-	// destination the Leitthema page's own hero and the Stadtplan-Hub use
-	// (leitthema-detail.tsx, stadtplan-hub.tsx).
+	// "Als Rundgang ansehen" below goes to Station 0 of the Zentrum's Schauen
+	// Rundgang — the same helper and destination the Leitthema page's own hero
+	// and the Stadtplan-Hub use (leitthema-detail.tsx, stadtplan-hub.tsx).
 	const ersteStation = zentrum && graph.getSchauenStation(zentrum.id)
+	// The Hero's "Rundgang starten" opens the first Station of the first
+	// Rundgang in rundgaenge/meta.json, the same one the first Rundgang-Karte
+	// starts.
+	const [ersterRundgang] = graph.rundgaenge
+	const [heroStation] = ersterRundgang ? graph.getStationenByRundgang(ersterRundgang.id) : []
 	// "Themen-Weg beginnen" goes to Kapitel 1 (ADR-0003: "Kapitel n = Viertel n").
 	const erstesKapitel = graph.kapitel.find((kapitel) => kapitel.number === 1)
 	// The eight Viertel illustrations in Kapitel order, for the Leitthema
@@ -68,8 +72,8 @@ function StartHub({ seite, className, ...props }: StartHubProps) {
 				intro={seite.intro}
 				actions={
 					<>
-						{ersteStation && (
-							<Link href={ersteStation.url} className={buttonVariants({ variant: 'default' })}>
+						{heroStation && (
+							<Link href={heroStation.url} className={buttonVariants({ variant: 'default' })}>
 								{t('start.hero.rundgangAction')}
 							</Link>
 						)}
