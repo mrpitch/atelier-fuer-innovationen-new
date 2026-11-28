@@ -8,8 +8,7 @@ describe('ViertelTeaser', () => {
 		// stadt/annaeherung is a real Viertel (src/content), not a fixture:
 		// unlike ViertelTeaserCard, ViertelTeaser is the component content
 		// actually uses in a body — it reads the real content graph itself
-		// (content-layer.md), the same way SitemapList does, so it can't be
-		// pointed at a fixture directory.
+		// (content-layer.md), so it can't be pointed at a fixture directory.
 		const html = renderToStaticMarkup(<ViertelTeaser id="stadt/annaeherung" />)
 
 		expect(html).toContain('Annäherung')

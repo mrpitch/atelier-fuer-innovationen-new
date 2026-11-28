@@ -30,7 +30,10 @@ export interface BaseDocument {
 
 // `tagline`, `heading`, `intro` and `zitat` (issue #129, epic #128) are the
 // Start document's own Hero copy and testimonial — optional on every Seite
-// (schemas.ts), but only the Startseite reads them.
+// (schemas.ts), since the schema can't tell one Seite from another by its
+// frontmatter alone. Only the Startseite reads `heading`, `intro` and
+// `zitat`; the Sitemap Seite's own Seitenkopf (issue #136) reads `tagline`
+// too, as its kicker.
 export interface Seite extends BaseDocument {
 	readonly tagline?: string
 	readonly heading?: string

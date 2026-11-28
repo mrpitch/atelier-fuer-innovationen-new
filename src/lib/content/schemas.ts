@@ -32,7 +32,9 @@ export type Zitat = z.infer<typeof zitatSchema>
 // and `zitat` its own testimonial, in the shared Zitat shape above (issue
 // #129, epic #128). All four are optional on every Seite, since the schema
 // can't tell the root Seite (the Start document, ID `''`) from any other by
-// its frontmatter alone; only the Startseite reads them.
+// its frontmatter alone; only the Startseite reads `heading`, `intro` and
+// `zitat`. The Sitemap Seite's own Seitenkopf (issue #136) reads `tagline`
+// too, as its kicker.
 export const seiteFrontmatterSchema = z.object({
 	...baseShape,
 	tagline: z.string().min(1).optional(),

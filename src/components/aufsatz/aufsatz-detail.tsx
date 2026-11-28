@@ -13,9 +13,9 @@ interface AufsatzDetailProps extends React.ComponentProps<'div'> {
 
 // An Aufsatz's own page content (issue #29), shared between its dedicated
 // German route (src/app/bibliothek/aufsaetze/[slug]/page.tsx) and the
-// catch-all route's prefixed, localized rendering (issue #36). Like
-// SitemapList, it reads the content graph itself: it needs the body and the
-// trail for whichever view (German or translated) the route resolved.
+// catch-all route's prefixed, localized rendering (issue #36). It reads the
+// content graph itself: it needs the body and the trail for whichever view
+// (German or translated) the route resolved.
 async function AufsatzDetail({ aufsatz, locale, ...props }: AufsatzDetailProps) {
 	const graph = contentGraph()
 	const Body = await graph.getBody(aufsatz.id, locale)
