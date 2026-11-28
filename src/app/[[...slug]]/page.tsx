@@ -5,6 +5,7 @@ import { AbschnittDetail } from '@/components/abschnitt/abschnitt-detail'
 import { AufsatzDetail } from '@/components/aufsatz/aufsatz-detail'
 import { KapitelDetail } from '@/components/kapitel/kapitel-detail'
 import { SiteShell } from '@/components/layout/site-shell'
+import { LegalDetail } from '@/components/legal/legal-detail'
 import { Breadcrumbs } from '@/components/navigation/breadcrumbs'
 import { PreviousNext } from '@/components/navigation/previous-next'
 import { SitemapHub } from '@/components/navigation/sitemap-hub'
@@ -34,6 +35,12 @@ import { bodyImageComponents } from '@/mdx-components'
 // layout — the StartHub — rather than the generic Seite + MDX body every
 // other Seite below still gets; its MDX body is never rendered.
 const START_SEITE_ID = ''
+
+// The two legal Seiten (issue #135): LegalDetail's own Section Title XL and
+// Ortsleiste-with-actions layout, not the generic Seite shape every other
+// landing Seite below still gets.
+const IMPRESSUM_SEITE_ID = 'impressum'
+const DATENSCHUTZ_SEITE_ID = 'datenschutz'
 
 // A slug param's segments, joined back into the URL graph.resolveUrl expects
 // (ADR-0001: an optional locale segment is part of that URL, not something
@@ -134,6 +141,18 @@ async function SeitePage({ seite, locale }: { seite: Seite; locale?: string }) {
 			<SiteShell>
 				<main>
 					<SitemapHub seite={seite} />
+				</main>
+			</SiteShell>
+		)
+	}
+
+	// The two legal Seiten (issue #135) get their own layout — see
+	// IMPRESSUM_SEITE_ID/DATENSCHUTZ_SEITE_ID above.
+	if (seite.id === IMPRESSUM_SEITE_ID || seite.id === DATENSCHUTZ_SEITE_ID) {
+		return (
+			<SiteShell>
+				<main>
+					<LegalDetail seite={seite} locale={locale} />
 				</main>
 			</SiteShell>
 		)

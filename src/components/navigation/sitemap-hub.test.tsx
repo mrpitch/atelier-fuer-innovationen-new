@@ -27,7 +27,7 @@ describe('SitemapHub', () => {
 	it("renders the Sitemap Seite's own tagline, title and description as the Section Title XL", () => {
 		const html = render()
 
-		expect(html).toMatch(/<p[^>]*data-slot="mono-label"[^>]*>Übersicht<\/p>/)
+		expect(html).toMatch(/data-slot="tagline"[^>]*>Übersicht</)
 		expect(html).toMatch(/<h1[^>]*>Sitemap<\/h1>/)
 		expect(html).toContain('Alle Bereiche der Wissensstadt auf einen Blick – mit ihren Adressen.')
 	})
